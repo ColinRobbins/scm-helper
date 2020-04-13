@@ -1,0 +1,9 @@
+.vscode/*
+build/*
+dist/*
+lightwave.egg-info/*
+*.pyc
+config/*
+files/*
+backups/*
+*.csv

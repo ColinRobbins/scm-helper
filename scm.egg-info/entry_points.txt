@@ -1,0 +1,3 @@
+[console_scripts]
+scm = scm_helper.scm:main
+
