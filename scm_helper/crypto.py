@@ -141,7 +141,7 @@ class Crypto:
         """Read email password."""
 
         if not os.path.exists(filename):
-            return self.get_password(filename)
+            return self.get_email_password(filename)
         try:
             fernet = Fernet(self.__key)
 
@@ -158,7 +158,7 @@ class Crypto:
             notify("Cannot decrypt password file - wrong password?\n")
             return None
 
-    def get_key(self, filename):
+    def get_email_password(self, filename):
         """Encrypt Password file."""
         apikey = getpass.getpass("Enter email password: ")
         
