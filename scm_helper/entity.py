@@ -5,12 +5,12 @@ import json
 import sys
 import pprint
 
-from .config import (A_ACTIVE, A_ARCHIVED, A_GUID, A_MEMBERS, CTYPE_COACH,
+from config import (A_ACTIVE, A_ARCHIVED, A_GUID, A_MEMBERS, CTYPE_COACH,
                     CTYPE_COMMITTEE, CTYPE_OPENWATER, CTYPE_PARENT, CTYPE_POLO,
                     CTYPE_SWIMMER, CTYPE_SYNCHRO, CTYPE_VOLUNTEER,
                     SCM_DATE_FORMAT)
-from .issue import E_INACTIVE, issue
-from .notify import interact, notify
+from issue import E_INACTIVE, issue
+from notify import interact, notify
 
 
 class Entities:
@@ -125,7 +125,7 @@ class Entities:
 
     def print_summary(self):
         """Print a summary."""
-        print(f"{self._name}: {self.count}")
+        return f"{self._name}: {self.count}"
 
     @property
     def name(self):

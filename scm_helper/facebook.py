@@ -1,9 +1,9 @@
 """Read and process a file of Facebook date."""
 import re
 
-from .config import C_FACEBOOK, FILE_READ, get_config
-from .files import Files
-from .notify import notify
+from config import C_FACEBOOK, FILE_READ, get_config
+from files import Files
+from notify import notify
 
 # should probably parse the structure, but a simple regex seems to work...
 FACEBOOK_RE = re.compile(

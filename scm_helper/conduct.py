@@ -1,10 +1,10 @@
 """SCM Conduct."""
-from .config import (A_GUID, A_MEMBERS, C_CONDUCT, C_IGNORE_GROUP, C_TYPES,
+from config import (A_GUID, A_MEMBERS, C_CONDUCT, C_IGNORE_GROUP, C_TYPES,
                     CTYPE_COACH, CTYPE_COMMITTEE, CTYPE_PARENT, CTYPE_SWIMMER,
                     CTYPE_VOLUNTEER, get_config)
-from .entity import Entities, Entity
-from .issue import E_NO_CONDUCT, E_NO_CONDUCT_DATE, issue
-from .notify import notify
+from entity import Entities, Entity
+from issue import E_NO_CONDUCT, E_NO_CONDUCT_DATE, issue
+from notify import notify
 
 
 class CodesOfConduct(Entities):

@@ -1,7 +1,7 @@
 """Parent routines."""
-from .config import (C_AGE, C_CHILD, A_ISPARENT, A_USERNAME, C_LOGIN, C_MANDATORY, C_MIN_AGE, C_PARENTS,
+from config import (C_AGE, C_CHILD, A_ISPARENT, A_USERNAME, C_LOGIN, C_MANDATORY, C_MIN_AGE, C_PARENTS,
                     get_config)
-from .issue import (E_INACTIVE, E_NO_CHILD, E_NO_LOGIN, E_PARENT_AGE,
+from issue import (E_INACTIVE, E_NO_CHILD, E_NO_LOGIN, E_PARENT_AGE,
                    E_PARENT_AGE_TOO_OLD, issue)
 
 

@@ -1,8 +1,8 @@
 """Send email."""
 import sys
-from .config import C_EMAIL, C_SMTP_SERVER, O_TO, C_SMTP_PORT, C_USERNAME, C_SEND_TO, C_TLS, C_PASSWORD, get_config
+from config import C_EMAIL, C_SMTP_SERVER, O_TO, C_SMTP_PORT, C_USERNAME, C_SEND_TO, C_TLS, C_PASSWORD, get_config
 import smtplib
-from .notify import notify
+from notify import notify
 
 
 def send_email(scm, text, subject):

@@ -1,13 +1,13 @@
 """Swimmer routines."""
 
-from .config import (C_ABSENCE, C_CHECK_SE_NUMBER, C_CONF_DIFF, C_GROUP,
+from config import (C_ABSENCE, C_CHECK_SE_NUMBER, C_CONF_DIFF, C_GROUP,
                     C_GROUPS, C_IGNORE_ATTENDANCE, C_MANDATORY, C_MAX_AGE,
                     C_MIN_AGE, C_PARENT, C_SESSION, C_SESSIONS, C_SWIMMERS,
                     C_TIME, C_TYPES, C_UNIQUE, C_USERNAME, C_VERIFY, C_NO_CLUB_SESSIONS,
                     CTYPE_POLO, CTYPE_SYNCHRO, EXCEPTION_EMAILDIFF,
                     EXCEPTION_NOGROUPS, EXCEPTION_TWOGROUPS, PRINT_DATE_FORMAT,
                     get_config)
-from .issue import (E_ABSENT, E_ASA, E_CONFIRM_DIFF, E_DATE_JOINED, E_DOB,
+from issue import (E_ABSENT, E_ASA, E_CONFIRM_DIFF, E_DATE_JOINED, E_DOB,
                    E_EMAIL_MATCH, E_GENDER, E_INACTIVE, E_LOGIN_TOO_YOUNG,
                    E_NEVERSEEN, E_NO_GROUP, E_NO_PARENT, E_NUM_PARENTS,
                    E_TWO_GROUPS, issue, debug)

@@ -1,11 +1,11 @@
 """SCM Group."""
-from .config import (C_CHECK_DBS, C_GROUP, C_GROUPS, C_IGNORE_GROUP,
+from config import (C_CHECK_DBS, C_GROUP, C_GROUPS, C_IGNORE_GROUP,
                     C_IGNORE_SWIMMER, C_MAX_AGE, C_MIN_AGE, C_NO_CLUB_SESSIONS,
                     C_NO_SESSION_ALLOWED, C_NO_SESSIONS, C_SESSION, C_TYPE,
                     CTYPE_COACH, CTYPE_SWIMMER, EXCEPTION_GROUPNOSESSION,
                     EXCEPTION_NONSWIMMINGMASTER, get_config)
-from .entity import Entities, Entity, check_type
-from .issue import (E_NO_SWIMMERS, E_NOT_IN_SESSION, E_SESSIONS, E_TYPE, debug,
+from entity import Entities, Entity, check_type
+from issue import (E_NO_SWIMMERS, E_NOT_IN_SESSION, E_SESSIONS, E_TYPE, debug,
                    issue)
 
 A_GROUP_NAME = "GroupName"

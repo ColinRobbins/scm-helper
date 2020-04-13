@@ -1,7 +1,7 @@
 """Coach routines."""
-from .config import (C_COACHES, C_MANDATORY, C_ROLE, EXCEPTION_NOSESSIONS,
+from config import (C_COACHES, C_MANDATORY, C_ROLE, EXCEPTION_NOSESSIONS,
                     EXCEPTION_PERMISSIONS, get_config)
-from .issue import (E_COACH_WITH_SESSIONS, E_NO_ROLE_COACH, E_NO_SESSIONS,
+from issue import (E_COACH_WITH_SESSIONS, E_NO_ROLE_COACH, E_NO_SESSIONS,
                    E_NOT_A_COACH, E_PERMISSION_EXTRA, E_PERMISSION_MISSING,
                    debug, issue)
 

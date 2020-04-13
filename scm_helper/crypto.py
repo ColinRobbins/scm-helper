@@ -10,7 +10,7 @@ from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 
-from .notify import notify, interact
+from notify import notify, interact
 
 WRITE_BINARY = "wb"
 READ_BINARY = "rb"
@@ -19,19 +19,15 @@ READ_BINARY = "rb"
 class Crypto:
     """Encryption class."""
 
-    def __init__(self, salt):
+    def __init__(self, salt, password):
         """Initialise."""
         self.salt = salt
-        self.__password = getpass.getpass("Enter SCM helper password: ")
+        if password is None:
+            self.__password = getpass.getpass("Enter SCM helper password: ")
+        else:
+            self.__password = password
+            
         self.__key = self.get_encryption_key(self.__password)
-
-#    def confirm_password(self):
-#        """Confirm password..."""
-#        password = getpass.getpass("Confirm password: ")
-#        if password != self.__password:
-#            notify("Passwords not the same.\n")
-#           return False
-#        return True
 
     def encrypt_file(self, name, data):
         """Encrypt file."""
@@ -42,6 +38,9 @@ class Crypto:
 
             directory = os.path.join("backups", f"{today}")
 
+            if not os.path.exists("backups"):
+                os.mkdir("backups")
+                
             if not os.path.exists(directory):
                 os.mkdir(directory)
 

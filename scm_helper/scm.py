@@ -1,14 +1,18 @@
 #!/usr/bin/python3
 """SCM support tools."""
 import getopt
+import platform
 import sys
 
-from .api import API
-from .facebook import Facebook
-from .file import Csv
-from .issue import REPORTS, IssueHandler
-from .notify import notify
-from .sendmail import send_email
+from tkinter import Tk
+
+from api import API
+from facebook import Facebook
+from file import Csv
+from issue import REPORTS, IssueHandler
+from notify import notify
+from sendmail import send_email
+from gui import ScmGui
 
 USAGE = """
    --analyse = run analysis on archive date
@@ -28,6 +32,7 @@ USAGE = """
    -m, --member = print sorted by member
    --newstarter = report on new starters anyway (normally inhibited)
    --notes = print notes
+   --password <password> = supply the password - useful for scripting.
    -q, --quiet = quiet mode
    --report <report> = which reports to run
    --restore <type> = restore an entity of <type> (need -archive as well)
@@ -54,6 +59,7 @@ LONG_OPTS = [
     "member",
     "newstarter",
     "notes",
+    "password",
     "quiet",
     "report=",
     "restore=",
@@ -115,7 +121,7 @@ def main(argv=None):
 
     parse_opts(argv, scm)
 
-    if scm.initialise() is False:
+    if scm.initialise(scm.option("--password")) is False:
         sys.exit()
         
     output = ""
@@ -146,7 +152,6 @@ def main(argv=None):
     if scm.option("--verify"):
         if scm.decrypt(scm.option("--verify")) is False:
             sys.exit(2)
-            
     else:
         if scm.get_data(False) is False:
             sys.exit(2)
@@ -257,6 +262,23 @@ def main(argv=None):
     del scm
     del issues
 
+def gui(argv=None):
+    """Start GUI."""
+    if argv is None:
+        argv = sys.argv[1:]
+    
+    if len(argv) > 0:
+        main()  # Command line options = run command line version
+    else:
+        root = Tk()
+        my_gui = ScmGui(root)
+        root.mainloop()
 
 if __name__ == "__main__":
-    main()
+    platform = platform.system()
+    if platform == "Windows":
+        gui()
+    else:
+        main()
+    
+

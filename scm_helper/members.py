@@ -1,9 +1,9 @@
 """SCM Members."""
-from .config import (A_ACTIVE, A_FIRSTNAME, A_LASTNAME, C_NAME, C_TYPES,
+from config import (A_ACTIVE, A_FIRSTNAME, A_LASTNAME, C_NAME, C_TYPES,
                     CTYPE_SYNCHRO, get_config)
-from .entity import Entities
-from .issue import E_DUPLICATE, debug, issue
-from .member import Member
+from entity import Entities
+from issue import E_DUPLICATE, debug, issue
+from member import Member
 
 
 class Members(Entities):
@@ -123,15 +123,19 @@ class Members(Entities):
     def print_summary(self):
         """Print a summary."""
         name = get_config(self.scm, C_TYPES, CTYPE_SYNCHRO, C_NAME)
+        
+        opt = ""
 
-        print(f"Members: {self.count}")
-        print(f"   Swimmers: {self.count_swimmers}")
-        print(f"   {name}: {self.count_synchro}")
-        print(f"   Water Polo: {self.count_waterpolo}")
-        print(f"   Voluntes: {self.count_volunteer}")
-        print(f"   Coaches: {self.count_coaches}")
-        print(f"   Parents: {self.count_parents}")
-        print(f"   Inactive: {self.count_inactive}")
+        opt += f"Members: {self.count}"
+        opt += f"   Swimmers: {self.count_swimmers}"
+        opt += f"   {name}: {self.count_synchro}"
+        opt += f"   Water Polo: {self.count_waterpolo}"
+        opt += f"   Voluntes: {self.count_volunteer}"
+        opt += f"   Coaches: {self.count_coaches}"
+        opt += f"   Parents: {self.count_parents}"
+        opt += f"   Inactive: {self.count_inactive}"
+        
+        return opt
 
     @property
     def url(self):

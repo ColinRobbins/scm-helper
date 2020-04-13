@@ -1,11 +1,11 @@
 """SCM Session."""
 import datetime
 
-from .config import (A_ARCHIVED, A_GUID, A_LAST_ATTENDED, A_MEMBERS, C_ABSENCE,
+from config import (A_ARCHIVED, A_GUID, A_LAST_ATTENDED, A_MEMBERS, C_ABSENCE,
                     C_GROUPS, C_IGNORE_ATTENDANCE, C_REGISTER, C_SESSION,
                     C_SESSIONS, PRINT_DATE_FORMAT, SCM_DATE_FORMAT, get_config)
-from .entity import Entities, Entity
-from .issue import (E_INACTIVE, E_NEVER_ATTENDED, E_NO_COACH, E_NO_REGISTER,
+from entity import Entities, Entity
+from issue import (E_INACTIVE, E_NEVER_ATTENDED, E_NO_COACH, E_NO_REGISTER,
                    E_NO_SWIMMERS, E_NOT_ATTENDED, E_NOT_IN_GROUP, issue)
 
 A_SESSION_NAME = "SessionName"

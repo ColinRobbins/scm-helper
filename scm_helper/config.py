@@ -1,5 +1,5 @@
 """Configuration stuff."""
-from .notify import notify
+from notify import notify
 from schema import And, Optional, Schema, SchemaError
 
 # SCM access URLs etc

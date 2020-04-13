@@ -1,11 +1,11 @@
 """SCM List."""
-from .config import (A_GUID, A_MEMBERS, C_ALLOW_GROUP, C_EDIT, C_GENDER,
+from config import (A_GUID, A_MEMBERS, C_ALLOW_GROUP, C_EDIT, C_GENDER,
                     C_GROUP, C_LIST, C_LISTS, C_MAX_AGE, C_MAX_AGE_EOY,
                     C_MAX_YEAR, C_MIN_AGE, C_MIN_AGE_EOY, C_MIN_YEAR, C_SUFFIX,
                     C_TYPE, C_UNIQUE, EXCEPTION_NOEMAIL, get_config)
-from .entity import Entities, Entity, check_type
-from .issue import E_LIST_ERROR, E_NO_SWIMMERS, R_LIST, issue
-from .notify import notify, interact
+from entity import Entities, Entity, check_type
+from issue import E_LIST_ERROR, E_NO_SWIMMERS, R_LIST, issue
+from notify import notify, interact
 
 A_LISTNAME = "ListName"
 

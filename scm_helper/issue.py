@@ -1,7 +1,7 @@
 """Issue handling."""
 import sys
 
-from .config import C_IGNORE_ERROR, C_ISSUES, EXCEPTION_GENERAL, O_NEWSTARTER
+from config import C_IGNORE_ERROR, C_ISSUES, EXCEPTION_GENERAL, O_NEWSTARTER
 
 R_COACH = "coaches"
 R_CONFIRMATION = "confirmation"

@@ -3,12 +3,12 @@ import csv
 import datetime
 import re
 
-from .config import (A_ASA_CATEGORY, A_ASA_NUMBER, A_DOB, A_FIRSTNAME,
+from config import (A_ASA_CATEGORY, A_ASA_NUMBER, A_DOB, A_FIRSTNAME,
                     A_KNOWNAS, A_LASTNAME, C_CHECK_SE_NUMBER, C_DOB_FORMAT,
                     C_FILES, C_IGNORE_GROUP, C_MAPPING, SCM_DATE_FORMAT,
                     get_config)
-from .files import Files
-from .notify import notify
+from files import Files
+from notify import notify
 
 CAT_RE = re.compile(r"\d")
 

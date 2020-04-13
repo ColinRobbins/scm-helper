@@ -3,22 +3,22 @@ from datetime import date, datetime
 import requests
 import yaml
 
-from .conduct import CodesOfConduct
-from .config import (BACKUP_URLS, C_ALLOW_UPDATE, C_CLUB, CODES_OF_CONDUCT,
+from conduct import CodesOfConduct
+from config import (BACKUP_URLS, C_ALLOW_UPDATE, C_CLUB, CODES_OF_CONDUCT,
                     CONFIG_FILE, DEBUG_LEVEL, FILE_READ, GROUPS, KEYFILE,
                     LISTS, MEMBERS, ROLES, SESSIONS, URL_CONDUCT, URL_GROUPS,
                     URL_LISTS, URL_MEMBERS, URL_ROLES, URL_SESSIONS,
                     O_VERIFY,  O_BACKUP, O_FORMAT, O_FIX,
                     USER_AGENT, get_config, verify_schema, verify_schema_data)
-from .crypto import Crypto
-from .entity import Entities
-from .groups import Groups
-from .issue import debug, set_debug_level
-from .lists import Lists
-from .members import Members
-from .notify import notify
-from .roles import Roles
-from .sessions import Sessions
+from crypto import Crypto
+from entity import Entities
+from groups import Groups
+from issue import debug, set_debug_level
+from lists import Lists
+from members import Members
+from notify import notify
+from roles import Roles
+from sessions import Sessions
 from shutil import copyfile
 import os.path
 
@@ -56,7 +56,7 @@ class API:
         offset = datetime(int(q_year), int(q_month), 1)
         self.q_offset = (self.today - offset).days
 
-    def get_config(self):
+    def get_config(self, password):
         """Read configuration file."""
         try:
             with open(CONFIG_FILE) as file:
@@ -71,7 +71,7 @@ class API:
         if verify_schema(self._config) is False:
             return False
         
-        self.crypto = Crypto(self._config[C_CLUB])  # Salt
+        self.crypto = Crypto(self._config[C_CLUB], password)  # Salt
 
         keyfile = self.config(KEYFILE)
         if keyfile is None:
@@ -87,9 +87,9 @@ class API:
 
         return True
 
-    def initialise(self):
+    def initialise(self, password):
         """Initialise."""
-        if self.get_config() is False:
+        if self.get_config(password) is False:
             return False
 
         mapping = [
@@ -245,23 +245,24 @@ class API:
 
     def print_summary(self):
         """Print summary."""
+        output = ""
         for aclass in self.classes:
-            aclass.print_summary()
+            output += aclass.print_summary()
         print (f"   Not confirmed: {self.members.count_not_confirmed}\n")
 
         if self.backup_classes:
             for aclass in self.backup_classes:
-                aclass.print_summary()
+                output += aclass.print_summary()
                 
         if self.option(O_FIX): # fixed them!
             return
         
         if self.option(O_VERIFY):
             return  # fixable not available with backup data
-
+        
         length = len(self.fixable)
         if length > 0:
-            print (f"{length} fixable errors, rerun with --fix to apply.")
+            output += f"{length} fixable errors, rerun with --fix to apply."
 
     def setopt(self, opt, args):
         """Set options."""

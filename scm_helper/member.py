@@ -2,9 +2,9 @@
 import datetime
 import re
 
-from .coach import analyse_coach
-from .conduct import check_conduct
-from .config import (A_ACTIVE, A_ASA_CATEGORY, A_ISCOACH,A_ASA_NUMBER, A_USERNAME, A_DOB, A_FIRSTNAME,
+from coach import analyse_coach
+from conduct import check_conduct
+from config import (A_ACTIVE, A_ASA_CATEGORY, A_ISCOACH,A_ASA_NUMBER, A_USERNAME, A_DOB, A_FIRSTNAME,
                     A_GUID, A_KNOWNAS, A_LASTNAME, C_ALIGN_QUARTER, A_ISPARENT, A_ISVOLUNTEER, A_ISCOACH,
                     C_CONFIRMATION, C_DBS, C_EXPIRY, C_GRACE, C_GROUP, C_LISTS, C_TYPE,
                     C_GROUPS, C_IGNORE, C_IGNORE_COACH, C_IGNORE_COMMITTEE,
@@ -14,15 +14,15 @@ from .config import (A_ACTIVE, A_ASA_CATEGORY, A_ISCOACH,A_ASA_NUMBER, A_USERNAM
                     CTYPE_POLO, CTYPE_SWIMMER, CTYPE_SYNCHRO, CTYPE_VOLUNTEER,
                     EXCEPTION_NODBS, EXCEPTION_NOEMAIL, EXCEPTION_NOSAFEGUARD,
                     PRINT_DATE_FORMAT, SCM_DATE_FORMAT, get_config)
-from .entity import Entity, get_date, print_all
-from .issue import (E_CONFIRMATION_EXPIRED, E_DATE, E_DBS_EXPIRED,
+from entity import Entity, get_date, print_all
+from issue import (E_CONFIRMATION_EXPIRED, E_DATE, E_DBS_EXPIRED,
                    E_EMAIL_SPACE, E_INACTIVE_TOOLONG, E_NAME_CAPITAL, E_NO_DBS,
                    E_NO_EMAIL, E_NO_JOB, E_JOB, E_NO_LEAVE_DATE, E_NO_SAFEGUARD,
                    E_NOT_CONFIRMED, E_OWNPARENT, E_SAFEGUARD_EXPIRED,
                    E_TOO_OLD, E_TOO_YOUNG, E_TYPE_GROUP, E_UNKNOWN,
                    E_VOLUNTEER, debug, issue)
-from .parent import analyse_parent
-from .swimmer import analyse_swimmer
+from parent import analyse_parent
+from swimmer import analyse_swimmer
 
 FACEBOOK_RE = re.compile(r"Facebook: *([a-zA-Z\- ]+)")
 API_RE = re.compile(r"API:.+")  # The whole line

@@ -1,10 +1,10 @@
 """SCM Role."""
-from .coach import check_coach_permissions
-from .config import (C_CHECK_PERMISSIONS, C_CHECK_RESTRICTIONS, C_IS_COACH,
+from coach import check_coach_permissions
+from config import (C_CHECK_PERMISSIONS, C_CHECK_RESTRICTIONS, C_IS_COACH,
                     C_LOGIN, C_MANDATORY, A_ISVOLUNTEER, C_ROLE, C_ROLES, C_UNUSED,
                     CTYPE_VOLUNTEER, get_config)
-from .entity import Entities, Entity
-from .issue import (E_COACH_ROLE, E_INACTIVE, E_NO_LOGIN, E_NO_RESTRICTIONS,
+from entity import Entities, Entity
+from issue import (E_COACH_ROLE, E_INACTIVE, E_NO_LOGIN, E_NO_RESTRICTIONS,
                    E_NO_SWIMMERS, E_UNUSED_LOGIN, E_VOLUNTEER, issue)
 
 
