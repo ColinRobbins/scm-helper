@@ -4,15 +4,12 @@ import getopt
 import platform
 import sys
 
-from tkinter import Tk
-
 from api import API
 from facebook import Facebook
 from file import Csv
 from issue import REPORTS, IssueHandler
 from notify import notify
 from sendmail import send_email
-from gui import ScmGui
 
 USAGE = """
    --analyse = run analysis on archive date
@@ -180,6 +177,7 @@ def main(argv=None):
     quiet = False
     if scm.option("--quiet"):
         quiet = True
+        set_notify(False)
 
     if scm.linkage() is False:
         sys.exit()
@@ -251,7 +249,7 @@ def main(argv=None):
 
     if quiet is False:
         print("Summary...")
-        scm.print_summary()
+        print(scm.print_summary())
 
     # not needed here, but used to prove point
     scm.delete()
@@ -270,6 +268,8 @@ def gui(argv=None):
     if len(argv) > 0:
         main()  # Command line options = run command line version
     else:
+        from gui import ScmGui
+        from tkinter import Tk   # only import tkiner if needed.
         root = Tk()
         my_gui = ScmGui(root)
         root.mainloop()

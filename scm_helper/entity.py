@@ -125,7 +125,7 @@ class Entities:
 
     def print_summary(self):
         """Print a summary."""
-        return f"{self._name}: {self.count}"
+        return f"{self._name}: {self.count}\n"
 
     @property
     def name(self):

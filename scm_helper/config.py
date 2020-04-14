@@ -22,7 +22,10 @@ URL_NOTICE = f"{URL_BASE}/NoticeBoard"
 
 # Do not change below here...
 
-CONFIG_FILE = "config/config.yaml"
+CONFIG_FILE = "config.yaml"
+CONFIG_DIR = "scm-helper"
+BACKUP_DIR = "backups"
+KEYFILE = "apikey.enc"
 
 CODES_OF_CONDUCT = "Conduct"
 GROUPS = "Groups"
@@ -50,13 +53,14 @@ BACKUP_URLS = [
 
 
 FILE_READ = "r"
+FILE_WRITE = "w"
 
 # JSON labels
 GUID = "Guid"
 
 # Config.yaml parameters
 DEBUG_LEVEL = "debug_level"
-KEYFILE = "keyfile"
+
 
 # Exceptions in Notes
 EXCEPTION_EMAILDIFF = "API: different email OK"
@@ -90,6 +94,7 @@ A_LAST_ATTENDED = "LastAttended"
 A_LASTNAME = "Lastname"
 A_MEMBERS = "Members"
 A_USERNAME = "Username"
+A_PARENTS = "Parents"
 
 # Config parameters
 C_ABSENCE = "absence"
@@ -133,7 +138,6 @@ C_INACTIVE = "inactive"
 C_IS_COACH = "is_coach"
 C_ISSUES = "issues"
 C_JOBTITLE = "jobtitle"
-C_KEYFILE = "keyfile"
 C_LIST = "list"
 C_LISTS = "lists"
 C_LOGIN = "login"
@@ -176,7 +180,7 @@ C_UNIQUE = "unique"
 C_UNUSED = "unused"
 C_USERNAME = "username"
 C_VERIFY = "verify"
-C_VOLUANTEER = "voluanteer"
+C_VOLUNTEER = "volunteer"
 
 CTYPE_COACH = "coach"
 CTYPE_COMMITTEE = "committee"
@@ -252,7 +256,6 @@ def member_type(data):
 SCHEMA = Schema(
     {
         C_CLUB: str,
-        C_KEYFILE: str,
         C_ALLOW_UPDATE: bool,
         Optional(C_DEBUG_LEVEL): int,
         Optional(C_EMAIL): {
@@ -281,9 +284,9 @@ SCHEMA = Schema(
         },
         C_COACHES: {C_ROLE: {C_MANDATORY: bool}},
         Optional(C_ROLES): {
-            Optional(C_VOLUANTEER): {C_MANDATORY: bool},
+            Optional(C_VOLUNTEER): {C_MANDATORY: bool},
             Optional(C_LOGIN): {C_UNUSED: int},
-            C_ROLE: {
+            Optional(C_ROLE): {
                 role: {
                     Optional(C_CHECK_PERMISSIONS): bool,
                     Optional(C_IS_COACH): bool,
@@ -293,7 +296,7 @@ SCHEMA = Schema(
         },
         Optional(C_GROUPS): {
             Optional(C_PRIORITY): [group],
-            C_GROUP: {
+            Optional(C_GROUP): {
                 group: {
                     Optional(C_CHECK_DBS): bool,
                     Optional(C_IGNORE_GROUP): bool,
@@ -313,8 +316,8 @@ SCHEMA = Schema(
         Optional(C_SESSIONS): {
             Optional(C_ABSENCE): int,
             Optional(C_REGISTER): int,
-            C_SESSION: {
-                session: {C_GROUPS: [group], Optional(C_IGNORE_ATTENDANCE): bool}
+            Optional(C_SESSION): {
+                session: {Optional(C_GROUPS): [group], Optional(C_IGNORE_ATTENDANCE): bool}
             },
         },
         Optional(C_CONDUCT): {
@@ -348,13 +351,14 @@ SCHEMA = Schema(
                 Optional(C_PSEUDO): [group],
                 Optional(C_JOBTITLE): bool,
                 Optional(C_GROUPS): [group],
+                Optional(C_PARENTS): bool
             }
         },
         Optional(C_LISTS): {
             C_SUFFIX: str,
             C_EDIT: bool,
             C_CONFIRMATION: bool,
-            C_LIST: {
+            Optional(C_LIST): {
                 str: {
                     Optional(C_GENDER): And(str, lambda s: s in ("male", "female")),
                     Optional(C_GROUP): group,

@@ -12,7 +12,7 @@ from config import (A_ACTIVE, A_ASA_CATEGORY, A_ISCOACH,A_ASA_NUMBER, A_USERNAME
                     C_NAME, C_NEWSTARTER, C_PRIORITY, C_PSEUDO, C_TIME,
                     C_TYPES, CTYPE_COACH, CTYPE_COMMITTEE, CTYPE_PARENT,
                     CTYPE_POLO, CTYPE_SWIMMER, CTYPE_SYNCHRO, CTYPE_VOLUNTEER,
-                    EXCEPTION_NODBS, EXCEPTION_NOEMAIL, EXCEPTION_NOSAFEGUARD,
+                    EXCEPTION_NODBS, EXCEPTION_NOEMAIL, EXCEPTION_NOSAFEGUARD, A_PARENTS,
                     PRINT_DATE_FORMAT, SCM_DATE_FORMAT, get_config)
 from entity import Entity, get_date, print_all
 from issue import (E_CONFIRMATION_EXPIRED, E_DATE, E_DBS_EXPIRED,
@@ -32,7 +32,6 @@ DATE2_RE = re.compile(r"\d\d/\d\d/\d\d\d\d")  # date
 
 A_DATELEFT = "DateLeft"
 A_DBS_RENEWAL_DATE = "DBSRenewalDate"
-A_PARENTS = "Parents"
 A_SAFEGUARDING_RENEWAL_DATE = "SafeguardingRenewalDate"
 A_SWIMMERS = "Swimmers"
 
@@ -272,6 +271,9 @@ class Member(Entity):
             return
 
         issue(self, E_NO_LEAVE_DATE, None, -1)
+        fix = {}
+        fix[A_DATELEFT] = lastmod.strftime(SCM_DATE_FORMAT)
+        self.fixit(fix)
         return
 
     def _list_add(self, err):
@@ -482,6 +484,10 @@ class Member(Entity):
     def set_first_group(self):
         """Print the members primary group."""
         cfg_groups = self.scm.config(C_GROUPS)
+        if cfg_groups is None:
+            if self.groups:
+                return self.groups[0]
+            return None
         group_priority = cfg_groups[C_PRIORITY]
         if self.groups and group_priority:
             for group in self.groups:

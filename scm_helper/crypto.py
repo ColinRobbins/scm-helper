@@ -4,13 +4,14 @@ import getpass
 import json
 import os.path
 from datetime import date
-
 from cryptography.fernet import Fernet, InvalidToken
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
-
 from notify import notify, interact
+from config import CONFIG_DIR, BACKUP_DIR
+from pathlib import Path
+
 
 WRITE_BINARY = "wb"
 READ_BINARY = "rb"
@@ -35,16 +36,18 @@ class Crypto:
             fernet = Fernet(self.__key)
 
             today = date.today()
+            home = str(Path.home())
 
-            directory = os.path.join("backups", f"{today}")
+            backup = os.path.join(home, CONFIG_DIR, BACKUP_DIR)
+            directory = os.path.join(home, CONFIG_DIR, BACKUP_DIR, f"{today}")
 
-            if not os.path.exists("backups"):
-                os.mkdir("backups")
+            if os.path.exists(backup) is False:
+                os.mkdir(backup)
                 
-            if not os.path.exists(directory):
+            if os.path.exists(directory) is False:
                 os.mkdir(directory)
 
-            filename = os.path.join("backups", f"{today}", f"{name}.enc")
+            filename = os.path.join(directory, f"{name}.enc")
 
             encrypted_data = fernet.encrypt(data.encode("utf-8"))
             with open(filename, WRITE_BINARY) as file:
@@ -64,7 +67,11 @@ class Crypto:
         """Decrypt file."""
         try:
             fernet = Fernet(self.__key)
-            filename = os.path.join("backups", xdate, f"{name}.enc")
+
+            home = str(Path.home())
+            backup = os.path.join(home, CONFIG_DIR, BACKUP_DIR)
+
+            filename = os.path.join(backup, xdate, f"{name}.enc")
 
             with open(filename, READ_BINARY) as file:
                 data = file.read()
@@ -96,6 +103,9 @@ class Crypto:
 
     def read_key(self, filename):
         """Read API key."""
+
+        home = str(Path.home())
+        filename = os.path.join(home, CONFIG_DIR, filename)
 
         if not os.path.exists(filename):
             return self.get_key(filename)
@@ -138,6 +148,9 @@ class Crypto:
 
     def read_email_password(self, filename):
         """Read email password."""
+
+        home = str(Path.home())
+        filename = os.path.join(home, CONFIG_DIR, filename)
 
         if not os.path.exists(filename):
             return self.get_email_password(filename)

@@ -17,11 +17,12 @@ setuptools.setup(
     },
     project_urls={
         "Bug Tracker": "https://github.com/ColinRobbins/scm-helper/issues",
-        "Documentation": "https://github.com/ColinRobbins/scm-helper/wiki/Swim-Club-Manager-Helper",
+        "Documentation": "https://github.com/ColinRobbins/scm-helper/wiki",
         "Source Code": "https://github.com/ColinRobbins/scm-helper",
     },
     packages=setuptools.find_packages(),
     install_requires=[
+      'tkinter',
       'schema',
       'requests'
     ],
