@@ -10,9 +10,6 @@
 # Your swimming club name.
 club: "Nottingham Leander Swimming Club"
 
-# Keyfile
-keyfile: "config/key.enc"
-
 allow_update:  True   # Set to true if this tool is allowed to edit SCM
                       # Set to false if you don't trust the software to be reliable.
 
@@ -132,7 +129,7 @@ coaches:
 # Configure Roles
 #############################################
 roles:
-  voluanteer:
+  volunteer:
       mandatory: True
   login:
       unused: 180     # Error if not used in 180 days
@@ -157,16 +154,20 @@ groups:
     'Membership Only':
         no_sessions: true
     'Senior Development':
-        session: 'Senior Development'
+        sessions:
+          - 'Senior Development'
         type: swimmer
     'Development':
-        session: 'Club Session'
+        sessions:
+          - 'Club Session'
         type: swimmer
     'Junior Squad':
-        session: 'Junior'
+        sessions:
+          - 'Junior'
         type: swimmer
     'Masters':
-        session: 'Masters'
+        sessions:
+          - 'Masters'
         no_session_allowed:
           - 'Life Members and Past Presidents'
           - 'Membership Only'
@@ -176,12 +177,14 @@ groups:
         min_age: 17
         type: swimmer
     'SNR Youth':
-        session: 'Senior'
+        sessions:
+          - 'Senior'
         type: swimmer
         no_session_allowed:
           - 'Nova'
     'Water Polo':
-        session: 'Water Polo'
+        sessions:
+          - 'Water Polo'
         unique: false
         no_session_allowed:
           - 'Life Members and Past Presidents'
@@ -287,6 +290,7 @@ sessions:
         groups:
           - 'Tadpoles'
           - 'Development'
+          - 'Transition'
         ignore_attendance: True
     'Senior Development/Club Session':
         groups:
@@ -313,6 +317,9 @@ sessions:
         groups:
           - 'SNR Youth'
           - 'Junior Squad'
+    'Starts and Turns':
+        ignore_attendance: True
+
 
 #############################################
 # Codes of Conduct
@@ -417,6 +424,7 @@ types:
         groups:
           - "Tadpoles"
           - "Transition"
+        parents: False  # Don't check parents, overrides Mandatory above.
     waterpolo:
         name: "Water Polo"
         pseudo:
@@ -424,7 +432,7 @@ types:
         groups:
           - "Water Polo"
     volunteer:
-        ignore_coach: True    # If coach, do not need to be a volunteer
+        ignore_coach: True        # If coach, do not need to be a volunteer
         ignore_committee: True    # If committee, do not need to be a volunteer
         groups:
           - "Team Manager"
