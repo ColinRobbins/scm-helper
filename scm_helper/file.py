@@ -1,12 +1,24 @@
 """Read and process CSV Files."""
 import csv
 import datetime
+import ntpath
 import re
 
-from config import (A_ASA_CATEGORY, A_ASA_NUMBER, A_DOB, A_FIRSTNAME,
-                    A_KNOWNAS, A_LASTNAME, C_CHECK_SE_NUMBER, C_DOB_FORMAT,
-                    C_FILES, C_IGNORE_GROUP, C_MAPPING, SCM_DATE_FORMAT,
-                    get_config)
+from config import (
+    A_ASA_CATEGORY,
+    A_ASA_NUMBER,
+    A_DOB,
+    A_FIRSTNAME,
+    A_KNOWNAS,
+    A_LASTNAME,
+    C_CHECK_SE_NUMBER,
+    C_DOB_FORMAT,
+    C_FILES,
+    C_IGNORE_GROUP,
+    C_MAPPING,
+    SCM_DATE_FORMAT,
+    get_config,
+)
 from files import Files
 from notify import notify
 
@@ -28,19 +40,19 @@ class Csv(Files):
         self._filename = file
         self._scm = scm
 
+        cfg_filename = ntpath.basename(file)
+
         notify(f"Reading {file}...\n")
 
-        cfg_dob_format = get_config(
-            scm, C_FILES, self._filename, C_MAPPING, C_DOB_FORMAT
-        )
+        cfg_dob_format = get_config(scm, C_FILES, cfg_filename, C_MAPPING, C_DOB_FORMAT)
         if cfg_dob_format is None:
             cfg_dob_format = SCM_DATE_FORMAT
 
-        cfg_dob = get_config(scm, C_FILES, self._filename, C_MAPPING, A_DOB)
+        cfg_dob = get_config(scm, C_FILES, cfg_filename, C_MAPPING, A_DOB)
         if cfg_dob is None:
             cfg_dob = A_DOB
 
-        cfg_cat = get_config(scm, C_FILES, self._filename, C_MAPPING, A_ASA_CATEGORY)
+        cfg_cat = get_config(scm, C_FILES, cfg_filename, C_MAPPING, A_ASA_CATEGORY)
         if cfg_cat is None:
             cfg_cat = A_ASA_CATEGORY
 

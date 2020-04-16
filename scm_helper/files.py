@@ -25,6 +25,6 @@ class Files:
         for error in self._error:
             output += f"{error}:"
             for name in sorted(self._error[error]):
-               output += f"   {name}"
-               
+                output += f"   {name}"
+
         return output

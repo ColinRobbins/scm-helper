@@ -1,7 +1,17 @@
 """SCM Conduct."""
-from config import (A_GUID, A_MEMBERS, C_CONDUCT, C_IGNORE_GROUP, C_TYPES,
-                    CTYPE_COACH, CTYPE_COMMITTEE, CTYPE_PARENT, CTYPE_SWIMMER,
-                    CTYPE_VOLUNTEER, get_config)
+from config import (
+    A_GUID,
+    A_MEMBERS,
+    C_CONDUCT,
+    C_IGNORE_GROUP,
+    C_TYPES,
+    CTYPE_COACH,
+    CTYPE_COMMITTEE,
+    CTYPE_PARENT,
+    CTYPE_SWIMMER,
+    CTYPE_VOLUNTEER,
+    get_config,
+)
 from entity import Entities, Entity
 from issue import E_NO_CONDUCT, E_NO_CONDUCT_DATE, issue
 from notify import notify
@@ -86,7 +96,7 @@ class Conduct(Entity):
                 continue
 
             person = self.scm.members.by_guid[member[A_GUID]]
-            if person.confirmed_date:     # Will get a not confirmed error later in not set
+            if person.confirmed_date:  # Will get a not confirmed error later in not set
                 issue(person, E_NO_CONDUCT_DATE, self.name)
 
     @property

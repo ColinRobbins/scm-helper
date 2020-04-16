@@ -1,12 +1,32 @@
 """SCM Session."""
 import datetime
 
-from config import (A_ARCHIVED, A_GUID, A_LAST_ATTENDED, A_MEMBERS, C_ABSENCE,
-                    C_GROUPS, C_IGNORE_ATTENDANCE, C_REGISTER, C_SESSION,
-                    C_SESSIONS, PRINT_DATE_FORMAT, SCM_DATE_FORMAT, get_config)
+from config import (
+    A_ARCHIVED,
+    A_GUID,
+    A_LAST_ATTENDED,
+    A_MEMBERS,
+    C_ABSENCE,
+    C_GROUPS,
+    C_IGNORE_ATTENDANCE,
+    C_REGISTER,
+    C_SESSION,
+    C_SESSIONS,
+    PRINT_DATE_FORMAT,
+    SCM_DATE_FORMAT,
+    get_config,
+)
 from entity import Entities, Entity
-from issue import (E_INACTIVE, E_NEVER_ATTENDED, E_NO_COACH, E_NO_REGISTER,
-                   E_NO_SWIMMERS, E_NOT_ATTENDED, E_NOT_IN_GROUP, issue)
+from issue import (
+    E_INACTIVE,
+    E_NEVER_ATTENDED,
+    E_NO_COACH,
+    E_NO_REGISTER,
+    E_NO_SWIMMERS,
+    E_NOT_ATTENDED,
+    E_NOT_IN_GROUP,
+    issue,
+)
 
 A_SESSION_NAME = "SessionName"
 A_COACHES = "Coaches"
@@ -28,11 +48,14 @@ class Sessions(Entities):
 
     def print_coaches(self):
         """Print coaches per session."""
+        res = ""
         for session in sorted(self.entities, key=lambda x: x.full_name):
             if session.is_active:
-                print(f"{session.full_name}:")
-                session.print_coaches()
-                
+                res += f"{session.full_name}:"
+                res += session.print_coaches()
+
+        return res
+
 
 class Session(Entity):
     """A session."""
@@ -85,7 +108,6 @@ class Session(Entity):
                     if lastseen:
                         guid.set_lastseen(lastseen)
 
-
     def print_coaches(self):
         """Print coaches."""
         res = ""
@@ -100,11 +122,11 @@ class Session(Entity):
                     if (self.scm.today - when).days > absence:
                         msg = f"(Lastseen: {lastseen})"
                 else:
-                        msg = "(Never seen)"
+                    msg = "(Never seen)"
                 res += f"   {guid.name} {msg}"
-                
+
         return res
-            
+
     def analyse(self):
         """Analise the session."""
         # pylint: disable=too-many-branches
@@ -122,7 +144,7 @@ class Session(Entity):
         groups = get_config(self.scm, C_SESSIONS, C_SESSION, self.name, C_GROUPS)
 
         seen = None
-        
+
         for swimmer in self.data[A_MEMBERS]:
             found = False
             lastseen = None
@@ -139,10 +161,14 @@ class Session(Entity):
 
                 if found is False:
                     issue(
-                        person, E_NOT_IN_GROUP, f"{self.full_name}", 0, person.print_groups,
+                        person,
+                        E_NOT_IN_GROUP,
+                        f"{self.full_name}",
+                        0,
+                        person.print_groups,
                     )
 
-            if (self.ignore_attendance is False):
+            if self.ignore_attendance is False:
                 attr = swimmer.get(A_LAST_ATTENDED, False)
                 if attr:
                     lastseen = datetime.datetime.strptime(attr, SCM_DATE_FORMAT)

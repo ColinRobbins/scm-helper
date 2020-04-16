@@ -1,35 +1,35 @@
 """Default config file."""
 
-from pathlib import Path
-from notify import interact, notify
-from config import FILE_WRITE, CONFIG_DIR, CONFIG_FILE
 import os
+from pathlib import Path
+
+from config import CONFIG_DIR, CONFIG_FILE, FILE_WRITE
+from notify import interact, notify
 
 
 def create_default_config():
     """Create a default config file."""
-
     home = str(Path.home())
 
     cfg = os.path.join(home, CONFIG_DIR)
     cfg_file = os.path.join(home, CONFIG_DIR, CONFIG_FILE)
-    
+
     msg = "Welcome to SCM Helper.\nPlease enter Swimming Club Name: "
     clubname = interact(msg)
-    
+
     msg = f"Create initial configuration file {cfg_file} for '{clubname}' (y/N)? "
     if interact(msg) != "y":
         return False
-        
+
     content = DEFAULT_CONFIG.replace("###CLUB_NAME###", clubname)
-        
+
     try:
         if os.path.exists(cfg) is False:
             os.mkdir(cfg)
-        
+
         with open(cfg_file, FILE_WRITE) as file:
             file.write(content)
-        
+
         notify("Done.\n")
         return True
 
@@ -38,32 +38,37 @@ def create_default_config():
         return False
 
 
-
 DEFAULT_CONFIG = f"""
-#############################################
+################################################################
 # Configuration of SCM-Helper
-# Colin Robbins
-# March 2020
+#
+# https://github.com/ColinRobbins/scm-helper/
 #
 # You will need to change these parameters
-# to reflect the situation at your cluv
-#############################################
+# to reflect the situation at your club.
+# See above link for documentation and a full example.
+#
+# Some lines are commented out with "# "
+# To reactivate, remove the '#' and one ' '.
+# I.e. YAML files are very sensitive to the exact spacing.
+# Errors will be created if you get the spacing wrong.
+# Use spaces not tabs.
+################################################################
 
 # Your swimming club name.
+# If you change this, you will not be able to access
+# backups taken before the change.
 club: "###CLUB_NAME###"
 
 
 allow_update:  False   # Set to true if this tool is allowed to edit SCM
                        # Set to false if you don't trust the software to be reliable.
 
-# Debug level, set to 0 for no debug info
-debug_level: 0
 
-
-#############################################
+################################################################
 # Email config.
 # Only needed if using --email from command line
-#############################################
+################################################################
 
 # email:
 #  smtp_server: smtp.server.address
@@ -71,12 +76,14 @@ debug_level: 0
 #    username:
 #   send_to:
 #   tls: False
-#   password: "email.enc"
+#   password: "email.enc"       # Created when needed.
 
-#############################################
-# File input, for correlation of
-# Swim England file
-#############################################
+################################################################
+# File input, for correlation of Swim England file
+#
+# File must have a header row.
+# The mapping maps this headers to the required fields.
+################################################################
 files:
     "swim_england.csv":
         check_se_number: true
@@ -92,9 +99,9 @@ files:
 #           - 'Resignations'
 
 
-#############################################
+################################################################
 # Configure Swimmer Checks
-#############################################
+################################################################
 swimmers:
     username:
         min_age: 17     # Min age to have a user name
@@ -102,24 +109,24 @@ swimmers:
         mandatory: True # Must have a parent
         max_age: 17     # Age a parent is mandatory until
     confirmation_difference:
-        verify: True    # if there is > 3 month difference in confirm date
+        verify: False    # if there is > 3 month difference in confirm date
                         # between parent and child, report an issue.
     absence:
         time:  182      # Warn if not seen at swimming for this period of time
 
-#############################################
+################################################################
 # Configure Parent Checks
-#############################################
+################################################################
 parents:
     age:
         min_age: 17   # min age to be a parent
         child: 21     # Age at which child should not longer have a parent
     login:
         mandatory: True         # must have a login to SCM
-        
-#############################################
+
+################################################################
 # Configure Member Checks
-#############################################
+################################################################
 members:
     confirmation:
         expiry: 365             # Warn if confirmation more than this many day old.
@@ -128,26 +135,27 @@ members:
     dbs:
         expiry: 60      # Days waring prior to expiry.
     newstarter:
-        grace:  90      # Don't give errors for 90 days, giving admin time to sort it all out
+        grace:  90      # Don't give errors for 90 days,
+                        # giving admin time to sort it all out
     inactive:
         time: 365       # Warn if member in inactive state for this many days
 
-#############################################
+################################################################
 # Configure Coaches
-#############################################
+################################################################
 coaches:
     role:
         mandatory: False # All coaches, must be in a coach role
-   
-#############################################
+
+################################################################
 # Configure Roles
-#############################################
+################################################################
 roles:
-  volunteer:
-      mandatory: True       # if user in a role, the volunteer flag must be set
-  login:
-      unused: 180           # Error if not used in 180 days
-      
+    volunteer:
+        mandatory: True       # if user in a role, the volunteer flag must be set
+    login:
+        unused: 180           # Error if not used in 180 days
+
 # Examples...
 #   role:
 #     "Coaches":
@@ -156,43 +164,43 @@ roles:
 #     "Register Taker":
 #         check_restrictions: True        # Check they have session restrictions
 
-#############################################
+jobtitle:
+    ignore:
+        - "Vice President"      # If VP, dont need to be a committee member.
+
+################################################################
 # Configure Groups
-#############################################
+#
+# Check this members of the group are in a relevent swimming session
+################################################################
 # groups:
-#  priority:   # If a user is in multiple groups - these take priority (in this order)
+#  priority:    # If a user is in multiple groups
+                # these take priority (in this order) when printing
 #    - 'Water Polo'
 #    - 'Masters'
-    
-# Examples...
+
 #   group:
 #     'Membership Only':
 #         no_sessions: true
 #     'Senior Development':
-#         session: 'Senior Development'
+#         session:
+#           - Senior Development'
 #         type: swimmer
 #     'Masters':
-#         session: 'Masters'
+#         sessions:
+#           - 'Masters'
 #         no_session_allowed:
 #           - 'Life Members and Past Presidents'
 #           - 'Membership Only'
 #         unique: false
 #         min_age: 17
 #         type: swimmer
-#     'Water Polo':
-#         session: 'Water Polo'
-#         unique: false
-#         no_session_allowed:
-#           - 'Life Members and Past Presidents'
-#           - 'Membership Only'
-#           - 'Student'
-#         type: "waterpolo"
 #     'Life Members and Past Presidents':
-#         ignore_unknown: true    # Don't raise error if not a swimmer, parent or coach.
+#         ignore_unknown: true    # Don't raise issue if not a swimmer, parent or coach.
 #         unique: false
 #     'Team Manager':
 #         check_dbs: true
-#         type: volunteer
+#         type: volunteer       # Must be of this type
 #         unique: false
 #     'Club Timekeeper':
 #         unique: false
@@ -200,11 +208,12 @@ roles:
 #     'Resignations':
 #         ignore_swimmer: true
 #
-#############################################
+################################################################
 # Configure Sessions
 #
-# Sessions not listed will not be checked
-#############################################
+# Check for attendance and correlation with group memberhip.
+# Sessions not listed will not be checked for group correlation.
+################################################################
 sessions:
   absence:  120  # Number of days allowed to miss a sesssion
   register: 60   # Alert if register not taken for this many days
@@ -238,24 +247,24 @@ sessions:
 #       ignore_group:
 #         - "Tadpoles"
 
-#############################################
+################################################################
 # Facebook Correlations
-#############################################
+################################################################
 
 # facebook:
-#     - "files/Nottingham Leander Swimmers.html"
-#
+#     - "Nottingham Leander Swimmers.html"
 
-#############################################
+################################################################
 # Lists
 #
 # Configure the criteria for auto-generated lists
 #
-#############################################
+################################################################
 lists:
     suffix: " (Generated)"  # Use to identity generated lists
     edit: False             # Allow script to modify generated lists
-    confirmation: False     # Generate lists of non-confirmed and expired confirmation members
+    confirmation: False     # Generate lists of non-confirmed and
+                            # expired confirmation members
 #     list:
 #        "Swimmer: Development Only":
 #             group: "Development"
@@ -269,20 +278,22 @@ lists:
 #            min_age: 16
 #            gender: "male"
 
-
-#############################################
+################################################################
 # Entity Types
-#############################################
+#
+# These are reflected by the "Is a Coach"  etc
+# Boxes in a members details page
+################################################################
 
 types:
     synchro:
         name: "Synchro"
-        check_se_number: false
-        parents: False  # Don't check parents, overrides Mandatory above.
+        check_se_number: False
+        parents: False              # Don't check parents, overrides Mandatory above.
     waterpolo:
         name: "Water Polo"
-#         groups:
-#           - "Water Polo"
+#         groups:                   # Specify if they must be members
+#           - "Water Polo"          # of a specific group
     volunteer:
         ignore_coach: True          # If coach, do not need to be a volunteer
         ignore_committee: True      # If committee, do not need to be a volunteer
@@ -291,24 +302,28 @@ types:
 #           - "Club Timekeeper"
 #           - "Licensed Officals"
     committee:
-        jobtitle: True      # must have a job title
+        jobtitle: True              # must have a job title
 
-jobtitle:
-  ignore:
-    - "Vice President"      # If VP, dont need to be a committee member.
-    
-#############################################
+################################################################
 # Issue handling
 #
-# Override the default message for an error.
-# Set ignore: true to ignore the message
-# See issue.py for a list of issues.
-#############################################
-
-# issues:
-#     E_CONFIRMATION_EXPIRED:
-#         ignore_error: true
+# Override the default message for an issue.
+# Set ignore: true to ignore the message.
 #
+# For a list of issue codes see:
+# https://github.com/ColinRobbins/scm-helper/wiki/Configuration:-Issues
+#
+################################################################
+
+issues:
+    E_CONFIRMATION_EXPIRED:
+        ignore_error: true
+        message: "Confirmation expired"
+
+################################################################
+
+# Debug level, set to 0 for no debug info
+debug_level: 0
 
 
 """

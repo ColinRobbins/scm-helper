@@ -4,23 +4,79 @@ import re
 
 from coach import analyse_coach
 from conduct import check_conduct
-from config import (A_ACTIVE, A_ASA_CATEGORY, A_ISCOACH,A_ASA_NUMBER, A_USERNAME, A_DOB, A_FIRSTNAME,
-                    A_GUID, A_KNOWNAS, A_LASTNAME, C_ALIGN_QUARTER, A_ISPARENT, A_ISVOLUNTEER, A_ISCOACH,
-                    C_CONFIRMATION, C_DBS, C_EXPIRY, C_GRACE, C_GROUP, C_LISTS, C_TYPE,
-                    C_GROUPS, C_IGNORE, C_IGNORE_COACH, C_IGNORE_COMMITTEE,
-                    C_IGNORE_UNKNOWN, C_INACTIVE, C_JOBTITLE, C_MEMBERS,
-                    C_NAME, C_NEWSTARTER, C_PRIORITY, C_PSEUDO, C_TIME,
-                    C_TYPES, CTYPE_COACH, CTYPE_COMMITTEE, CTYPE_PARENT,
-                    CTYPE_POLO, CTYPE_SWIMMER, CTYPE_SYNCHRO, CTYPE_VOLUNTEER,
-                    EXCEPTION_NODBS, EXCEPTION_NOEMAIL, EXCEPTION_NOSAFEGUARD, A_PARENTS,
-                    PRINT_DATE_FORMAT, SCM_DATE_FORMAT, get_config)
+from config import (
+    A_ACTIVE,
+    A_ASA_CATEGORY,
+    A_ASA_NUMBER,
+    A_DOB,
+    A_FIRSTNAME,
+    A_GUID,
+    A_ISCOACH,
+    A_ISPARENT,
+    A_ISVOLUNTEER,
+    A_KNOWNAS,
+    A_LASTNAME,
+    A_PARENTS,
+    A_USERNAME,
+    C_ALIGN_QUARTER,
+    C_CONFIRMATION,
+    C_DBS,
+    C_EXPIRY,
+    C_GRACE,
+    C_GROUP,
+    C_GROUPS,
+    C_IGNORE,
+    C_IGNORE_COACH,
+    C_IGNORE_COMMITTEE,
+    C_IGNORE_UNKNOWN,
+    C_INACTIVE,
+    C_JOBTITLE,
+    C_LISTS,
+    C_MEMBERS,
+    C_NAME,
+    C_NEWSTARTER,
+    C_PRIORITY,
+    C_PSEUDO,
+    C_TIME,
+    C_TYPES,
+    CTYPE_COACH,
+    CTYPE_COMMITTEE,
+    CTYPE_PARENT,
+    CTYPE_POLO,
+    CTYPE_SWIMMER,
+    CTYPE_SYNCHRO,
+    CTYPE_VOLUNTEER,
+    EXCEPTION_NODBS,
+    EXCEPTION_NOEMAIL,
+    EXCEPTION_NOSAFEGUARD,
+    PRINT_DATE_FORMAT,
+    SCM_DATE_FORMAT,
+    get_config,
+)
 from entity import Entity, get_date, print_all
-from issue import (E_CONFIRMATION_EXPIRED, E_DATE, E_DBS_EXPIRED,
-                   E_EMAIL_SPACE, E_INACTIVE_TOOLONG, E_NAME_CAPITAL, E_NO_DBS,
-                   E_NO_EMAIL, E_NO_JOB, E_JOB, E_NO_LEAVE_DATE, E_NO_SAFEGUARD,
-                   E_NOT_CONFIRMED, E_OWNPARENT, E_SAFEGUARD_EXPIRED,
-                   E_TOO_OLD, E_TOO_YOUNG, E_TYPE_GROUP, E_UNKNOWN,
-                   E_VOLUNTEER, debug, issue)
+from issue import (
+    E_CONFIRMATION_EXPIRED,
+    E_DATE,
+    E_DBS_EXPIRED,
+    E_EMAIL_SPACE,
+    E_INACTIVE_TOOLONG,
+    E_JOB,
+    E_NAME_CAPITAL,
+    E_NO_DBS,
+    E_NO_EMAIL,
+    E_NO_JOB,
+    E_NO_LEAVE_DATE,
+    E_NO_SAFEGUARD,
+    E_NOT_CONFIRMED,
+    E_OWNPARENT,
+    E_SAFEGUARD_EXPIRED,
+    E_TOO_OLD,
+    E_TOO_YOUNG,
+    E_TYPE_GROUP,
+    E_UNKNOWN,
+    debug,
+    issue,
+)
 from parent import analyse_parent
 from swimmer import analyse_swimmer
 
@@ -127,6 +183,7 @@ class Member(Entity):
             msg += f"   {note}\n"
         if found:
             return msg
+        return ""
 
     def linkage_parent(self, members):
         """Link parents."""
@@ -270,10 +327,10 @@ class Member(Entity):
         if self.check_attribute(A_DATELEFT):
             return
 
-        issue(self, E_NO_LEAVE_DATE, None, -1)
+        issue(self, E_NO_LEAVE_DATE, "(fixable)", -1)
         fix = {}
         fix[A_DATELEFT] = lastmod.strftime(SCM_DATE_FORMAT)
-        self.fixit(fix)
+        self.fixit(fix, f"Add dataleft = {fix[A_DATELEFT]}")
         return
 
     def _list_add(self, err):
@@ -281,34 +338,34 @@ class Member(Entity):
         msg = "Not confirmed"
         if err == E_CONFIRMATION_EXPIRED:
             msg = "Confirmation expired"
-            
+
         xtype = " (Other)"
         if self.is_parent:
             xtype = " (Parent)"
         if self.is_polo:
             xtype = " (Water Polo)"
-            cfg = get_config (self.scm, C_TYPES, CTYPE_POLO, C_NAME)
+            cfg = get_config(self.scm, C_TYPES, CTYPE_POLO, C_NAME)
             if cfg:
                 xtype = f" ({cfg})"
         if self.is_synchro:
             xtype = " (Synchro)"
-            cfg = get_config (self.scm, C_TYPES, CTYPE_SYNCHRO, C_NAME)
+            cfg = get_config(self.scm, C_TYPES, CTYPE_SYNCHRO, C_NAME)
             if cfg:
                 xtype = f" ({cfg})"
         if self.is_swimmer:
             xtype = " (Swimmer)"
-            
+
         msg += xtype
-            
+
         self.scm.lists.add(msg, self)
 
     def check_confirmation(self):
         """Check confimation status."""
         expiry = get_config(self.scm, C_MEMBERS, C_CONFIRMATION, C_EXPIRY)
         align = get_config(self.scm, C_MEMBERS, C_CONFIRMATION, C_ALIGN_QUARTER)
-        list = get_config(self.scm, C_LISTS, C_CONFIRMATION)
+        xlist = get_config(self.scm, C_LISTS, C_CONFIRMATION)
         q_offset = 0
-        
+
         if align:
             q_offset = self.scm.q_offset
 
@@ -317,7 +374,7 @@ class Member(Entity):
             if gap > (expiry + q_offset):
                 issue(self, E_CONFIRMATION_EXPIRED, f"{self.first_group}")
                 self.scm.members.count_not_confirmed += 1
-                if list:
+                if xlist:
                     self._list_add(E_CONFIRMATION_EXPIRED)
         else:
             issue(self, E_NOT_CONFIRMED, f"{self.first_group}")
@@ -333,16 +390,16 @@ class Member(Entity):
 
         if knownas:
             ka_upper = knownas[0].isupper()
-            
+
         fn_upper = firstname[0].isupper()
         ln_upper = lastname[0].isupper()
-        
+
         if fn_upper and ln_upper and ka_upper:
             return
 
         if (fn_upper is False) or (ln_upper is False):
-            issue(self, E_NAME_CAPITAL, None, -1)
-            
+            issue(self, E_NAME_CAPITAL, "(fixable)", -1)
+
             fix = {}
             if fn_upper is False:
                 fix[A_FIRSTNAME] = firstname.title()
@@ -350,14 +407,14 @@ class Member(Entity):
                 fix[A_LASTNAME] = lastname.title()
             if ka_upper is False:
                 fix[A_KNOWNAS] = knownas.title()
-                
-            self.fixit(fix)
+
+            self.fixit(fix, "Capitalisation of name")
             return
 
-        issue(self, E_NAME_CAPITAL, f"Knownas = {knownas}", -1)
+        issue(self, E_NAME_CAPITAL, f"Knownas = {knownas} (fixable)", -1)
         fix = {}
         fix[A_KNOWNAS] = knownas.title()
-        self.fixit(fix)
+        self.fixit(fix, f"Capitalisation of {knownas}")
 
     def check_type(self, xtype):
         """Check the member type check box config."""
@@ -371,15 +428,15 @@ class Member(Entity):
                     found = True
                     break
             if found is False:
-                issue(self, E_TYPE_GROUP, xtype)
+                issue(self, E_TYPE_GROUP, name)
 
         if jobtitle:
             if self.jobtitle:
                 return
-            issue(self, E_NO_JOB, xtype)
+            issue(self, E_NO_JOB, f"{name} (fixable)")
             fix = {}
             fix["JobTitle"] = xtype.title()
-            self.fixit(fix)
+            self.fixit(fix, f"Add jobtitle: {name}")
 
     def analyse(self):
         """Analise the member."""
@@ -436,20 +493,24 @@ class Member(Entity):
             self.check_type(CTYPE_COMMITTEE)
 
         if self.jobtitle:
-            if (self.is_volunteer is not True) and (self.is_committee_member is not True) and (self.is_coach is not True):
+            # pylint: disable=bad-continuation
+            # black insists
+            if (
+                (self.is_volunteer is not True)
+                and (self.is_committee_member is not True)
+                and (self.is_coach is not True)
+            ):
                 cfg = get_config(self.scm, C_JOBTITLE, C_IGNORE)
                 if self.jobtitle not in cfg:
                     issue(self, E_JOB, self.jobtitle)
-                    
+
         if found:
             if self.in_ignore_swimmer:
                 return
             self.check_email()
-            self.check_confirmation()   # Must come after analyse_swimmer
+            self.check_confirmation()  # Must come after analyse_swimmer
             check_conduct(self, self._conduct)
             return
-
-
 
         for group in self.groups:
             if get_config(self.scm, C_GROUPS, C_GROUP, group.name, C_IGNORE_UNKNOWN):

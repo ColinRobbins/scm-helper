@@ -1,6 +1,13 @@
 """SCM Members."""
-from config import (A_ACTIVE, A_FIRSTNAME, A_LASTNAME, C_NAME, C_TYPES,
-                    CTYPE_SYNCHRO, get_config)
+from config import (
+    A_ACTIVE,
+    A_FIRSTNAME,
+    A_LASTNAME,
+    C_NAME,
+    C_TYPES,
+    CTYPE_SYNCHRO,
+    get_config,
+)
 from entity import Entities
 from issue import E_DUPLICATE, debug, issue
 from member import Member
@@ -117,13 +124,15 @@ class Members(Entities):
 
     def print_notes(self):
         """Print the notes."""
+        res = ""
         for member in self.entities:
-            member.print_notes()
+            res += member.print_notes()
+        return res
 
     def print_summary(self):
         """Print a summary."""
         name = get_config(self.scm, C_TYPES, CTYPE_SYNCHRO, C_NAME)
-        
+
         opt = ""
 
         opt += f"Members: {self.count}\n"
@@ -134,7 +143,7 @@ class Members(Entities):
         opt += f"   Coaches: {self.count_coaches}\n"
         opt += f"   Parents: {self.count_parents}\n"
         opt += f"   Inactive: {self.count_inactive}\n"
-        
+
         return opt
 
     @property

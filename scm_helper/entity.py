@@ -2,14 +2,25 @@
 import csv
 import datetime
 import json
-import sys
 import pprint
+import sys
 
-from config import (A_ACTIVE, A_ARCHIVED, A_GUID, A_MEMBERS, CTYPE_COACH,
-                    CTYPE_COMMITTEE, CTYPE_OPENWATER, CTYPE_PARENT, CTYPE_POLO,
-                    CTYPE_SWIMMER, CTYPE_SYNCHRO, CTYPE_VOLUNTEER,
-                    SCM_DATE_FORMAT)
-from issue import E_INACTIVE, issue
+from config import (
+    A_ACTIVE,
+    A_ARCHIVED,
+    A_GUID,
+    A_MEMBERS,
+    CTYPE_COACH,
+    CTYPE_COMMITTEE,
+    CTYPE_OPENWATER,
+    CTYPE_PARENT,
+    CTYPE_POLO,
+    CTYPE_SWIMMER,
+    CTYPE_SYNCHRO,
+    CTYPE_VOLUNTEER,
+    SCM_DATE_FORMAT,
+)
+from issue import E_INACTIVE, debug, issue
 from notify import interact, notify
 
 
@@ -132,6 +143,11 @@ class Entities:
         """Return name."""
         return self._name
 
+    @property
+    def knownas(self):
+        """Will be overridden - stops lint errors."""
+        return self._name
+
 
 class Entity:
     """A entity."""
@@ -140,6 +156,7 @@ class Entity:
         """Initialize."""
         self.data = entity
         self.newdata = None  # used if updating
+        self.fixmsg = ""
         self.url = f"{url}/{self.guid}"
         self.members = []
         self._scm = scm
@@ -182,7 +199,7 @@ class Entity:
         # pylint: disable=no-self-use
         # override if anything needs doing
         return
-    
+
     def print_links(self):
         """Print links."""
         # pylint: disable=no-self-use
@@ -191,19 +208,19 @@ class Entity:
 
     def restore(self):
         """Update a record from backup."""
-        # pylint: disable: too-many-return-statements
+        # pylint: disable=too-many-return-statements
         self.newdata = self.data
-        
+
         old = self.scm.api_read(self.url, 1)
         if old is None:
             notify("Error: Something went wrong connecting to SCM!\n")
             return False
 
         # API inconsistent in use ot Archive or Active - chech both.
-        if A_ACTIVE in self._newdata:
+        if A_ACTIVE in self.newdata:
             self.newdata[A_ACTIVE] = "1"  # Make sure active
 
-        if A_ARCHIVED in self._newdata:
+        if A_ARCHIVED in self.newdata:
             self.newdata[A_ARCHIVED] = "1"  # Make sure active
 
         if old is False:
@@ -231,37 +248,39 @@ class Entity:
 
         return self.scm.api_write(self, False)
 
-    def fixit(self, fix):
+    def fixit(self, fix, message):
         """Prepare to fix an entity."""
-        if self.newdata == None:
+        if self.newdata is None:
             self.newdata = fix
+            self.fixmsg = message
         else:
             self.newdata.update(fix)
-            
+            self.fixmsg += f", {message}"
+
         if self in self.scm.fixable:
             return
         self.scm.fixable.append(self)
-        
+
     def apply_fix(self):
         """Fix an entity."""
-        
         printer = pprint.PrettyPrinter(indent=4)
         data = printer.pformat(self.newdata)
-        msg = f"fix {self.name} with:\n{data}\nConfirm (N/y)?"
-        resp = interact (msg)
-        if resp != 'y':
+        err = f"fix {self.name} with: {self.fixmsg}.  Confirm (N/y)?"
+        debug(data, 1)
+        resp = interact(err)
+        if resp != "y":
             return False
-            
+
         self.newdata[A_GUID] = self.guid
-        
+
         notify(f"Fixing: {self.name}...")
 
         res = self.scm.api_write(self, False)
-        
+
         if res:
             notify("Success.\n")
         return res
-        
+
     @property
     def guid(self):
         """Guid."""

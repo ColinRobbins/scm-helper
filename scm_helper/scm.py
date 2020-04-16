@@ -8,7 +8,7 @@ from api import API
 from facebook import Facebook
 from file import Csv
 from issue import REPORTS, IssueHandler
-from notify import notify
+from notify import notify, set_notify
 from sendmail import send_email
 
 USAGE = """
@@ -120,7 +120,7 @@ def main(argv=None):
 
     if scm.initialise(scm.option("--password")) is False:
         sys.exit()
-        
+
     output = ""
 
     reports = scm.option("--report")
@@ -163,6 +163,8 @@ def main(argv=None):
         output = scm.members.print_notes()
         if scm.option("--email"):
             send_email(scm, output, "SCM: Notes")
+        else:
+            print(output)
         sys.exit()
 
     if scm.option("--dump"):
@@ -171,7 +173,7 @@ def main(argv=None):
         if scm.option("--email"):
             send_email(scm, output, f"SCM: Dump of {what}")
         else:
-            print (output)
+            print(output)
         sys.exit()
 
     quiet = False
@@ -185,9 +187,9 @@ def main(argv=None):
     if scm.option("--coaches"):
         output = scm.sessions.print_coaches()
         if scm.option("--email"):
-            send_email(scm,output, "SCM: Coaches Report")
+            send_email(scm, output, "SCM: Coaches Report")
         else:
-            print (output)
+            print(output)
         sys.exit()
 
     if scm.option("--csv"):
@@ -196,7 +198,7 @@ def main(argv=None):
         if scm.option("--email"):
             send_email(scm, output, "SCM: CSV Analysis")
         else:
-            print (output)
+            print(output)
         sys.exit()
 
     if scm.option("--facebook"):
@@ -205,14 +207,14 @@ def main(argv=None):
         if scm.option("--email"):
             send_email(scm, output, "SCM: Facebook Report")
         else:
-            print (output)
+            print(output)
         sys.exit()
 
     scm.analyse()
-    
+
     if scm.option("--lists"):
         if scm.option("--verify"):
-            print ("--lists can only be used with live data")
+            print("--lists can only be used with live data")
         else:
             scm.update()
         sys.exit()
@@ -222,12 +224,12 @@ def main(argv=None):
         if scm.option("--email"):
             send_email(scm, output, "SCM: Confirmation email addresses")
         else:
-            print (output)
+            print(output)
         sys.exit()
 
     if scm.option("--fix"):
         if scm.option("--verify"):
-            print ("--fix can only be used with live data")
+            print("--fix can only be used with live data")
         else:
             scm.apply_fixes()
         sys.exit()
@@ -245,7 +247,7 @@ def main(argv=None):
         else:
             send_email(scm, output, "SCM: Report")
     else:
-        print (output)
+        print(output)
 
     if quiet is False:
         print("Summary...")
@@ -260,25 +262,27 @@ def main(argv=None):
     del scm
     del issues
 
+
 def gui(argv=None):
     """Start GUI."""
+    # pylint: disable=import-outside-toplevel
     if argv is None:
         argv = sys.argv[1:]
-    
+
     if len(argv) > 0:
         main()  # Command line options = run command line version
     else:
         from gui import ScmGui
-        from tkinter import Tk   # only import tkiner if needed.
+        from tkinter import Tk  # only import tkiner if needed.
+
         root = Tk()
-        my_gui = ScmGui(root)
+        ScmGui(root)
         root.mainloop()
 
+
 if __name__ == "__main__":
-    platform = platform.system()
-    if platform == "Windows":
+    PLATFORM = platform.system()
+    if PLATFORM == "Windows":
         gui()
     else:
         main()
-    
-

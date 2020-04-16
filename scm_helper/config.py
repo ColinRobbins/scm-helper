@@ -164,16 +164,16 @@ C_PSEUDO = "pseudo"
 C_REGISTER = "register"
 C_ROLE = "role"
 C_ROLES = "roles"
-C_SEND_TO="send_to"
+C_SEND_TO = "send_to"
 C_SESSION = "session"
 C_SESSIONS = "sessions"
-C_SMTP_PORT="smtp_port"
-C_SMTP_SERVER ="smtp_server"
+C_SMTP_PORT = "smtp_port"
+C_SMTP_SERVER = "smtp_server"
 C_SUFFIX = "suffix"
 C_SWIMMER = "swimmer"
 C_SWIMMERS = "swimmers"
 C_TIME = "time"
-C_TLS="tls"
+C_TLS = "tls"
 C_TYPE = "type"
 C_TYPES = "types"
 C_UNIQUE = "unique"
@@ -264,7 +264,7 @@ SCHEMA = Schema(
             C_SMTP_PORT: int,
             C_SEND_TO: str,
             C_TLS: bool,
-            C_PASSWORD: str
+            C_PASSWORD: str,
         },
         C_SWIMMERS: {
             C_USERNAME: {C_MIN_AGE: int},
@@ -307,7 +307,7 @@ SCHEMA = Schema(
                     Optional(C_NO_CLUB_SESSIONS): bool,
                     Optional(C_NO_SESSION_ALLOWED): [group],
                     Optional(C_NO_SESSIONS): bool,
-                    Optional(C_SESSION): session,
+                    Optional(C_SESSIONS): [session],
                     Optional(C_TYPE): member_type,
                     Optional(C_UNIQUE): bool,
                 }
@@ -317,7 +317,10 @@ SCHEMA = Schema(
             Optional(C_ABSENCE): int,
             Optional(C_REGISTER): int,
             Optional(C_SESSION): {
-                session: {Optional(C_GROUPS): [group], Optional(C_IGNORE_ATTENDANCE): bool}
+                session: {
+                    Optional(C_GROUPS): [group],
+                    Optional(C_IGNORE_ATTENDANCE): bool,
+                }
             },
         },
         Optional(C_CONDUCT): {
@@ -351,7 +354,7 @@ SCHEMA = Schema(
                 Optional(C_PSEUDO): [group],
                 Optional(C_JOBTITLE): bool,
                 Optional(C_GROUPS): [group],
-                Optional(C_PARENTS): bool
+                Optional(C_PARENTS): bool,
             }
         },
         Optional(C_LISTS): {

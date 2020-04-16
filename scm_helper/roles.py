@@ -1,11 +1,30 @@
 """SCM Role."""
 from coach import check_coach_permissions
-from config import (C_CHECK_PERMISSIONS, C_CHECK_RESTRICTIONS, C_IS_COACH,
-                    C_LOGIN, C_MANDATORY, A_ISVOLUNTEER, C_ROLE, C_ROLES, C_UNUSED,
-                    C_VOLUNTEER, get_config)
+from config import (
+    A_ISVOLUNTEER,
+    A_MEMBERS,
+    C_CHECK_PERMISSIONS,
+    C_CHECK_RESTRICTIONS,
+    C_IS_COACH,
+    C_LOGIN,
+    C_MANDATORY,
+    C_ROLE,
+    C_ROLES,
+    C_UNUSED,
+    C_VOLUNTEER,
+    get_config,
+)
 from entity import Entities, Entity
-from issue import (E_COACH_ROLE, E_INACTIVE, E_NO_LOGIN, E_NO_RESTRICTIONS,
-                   E_NO_SWIMMERS, E_UNUSED_LOGIN, E_VOLUNTEER, issue)
+from issue import (
+    E_COACH_ROLE,
+    E_INACTIVE,
+    E_NO_LOGIN,
+    E_NO_RESTRICTIONS,
+    E_NO_SWIMMERS,
+    E_UNUSED_LOGIN,
+    E_VOLUNTEER,
+    issue,
+)
 
 
 class Roles(Entities):
@@ -37,14 +56,14 @@ class Role(Entity):
     def check_role_member(self, member, unused):
         """Check out a role member."""
         if member.is_active is False:
-            issue(member, E_INACTIVE, "Member of role {self.name}")
+            issue(member, E_INACTIVE, "Member of role {self.name} (fixable)")
             if self.newdata & A_MEMBERS in self.newdata:
                 fix = self.newdata
             else:
                 fix = {}
                 fix[A_MEMBERS] = self.data[A_MEMBERS]
             fix[A_MEMBERS].delete(member.guid)
-            self.fixit(fix)
+            self.fixit(fix, f"Delete from role {self.name}")
 
         if member.username is None:
             issue(member, E_NO_LOGIN, "Member of role {self.name}, so cannot login")
@@ -55,10 +74,10 @@ class Role(Entity):
 
         if get_config(self.scm, C_ROLES, C_VOLUNTEER, C_MANDATORY):
             if member.is_volunteer is False:
-                issue(member, E_VOLUNTEER, f"Role: {self.name}")
+                issue(member, E_VOLUNTEER, f"Role: {self.name} (fixable)")
                 fix = {}
                 fix[A_ISVOLUNTEER] = "1"
-                member.fixit(fix)
+                member.fixit(fix, "Mark as volunteer")
 
         if member.last_login:
             if (self.scm.today - member.last_login).days > unused:

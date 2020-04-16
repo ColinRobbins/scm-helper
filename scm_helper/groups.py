@@ -1,12 +1,25 @@
 """SCM Group."""
-from config import (C_CHECK_DBS, C_GROUP, C_GROUPS, C_IGNORE_GROUP,
-                    C_IGNORE_SWIMMER, C_MAX_AGE, C_MIN_AGE, C_NO_CLUB_SESSIONS,
-                    C_NO_SESSION_ALLOWED, C_NO_SESSIONS, C_SESSION, C_TYPE,
-                    CTYPE_COACH, CTYPE_SWIMMER, EXCEPTION_GROUPNOSESSION,
-                    EXCEPTION_NONSWIMMINGMASTER, get_config)
+from config import (
+    C_CHECK_DBS,
+    C_GROUP,
+    C_GROUPS,
+    C_IGNORE_GROUP,
+    C_IGNORE_SWIMMER,
+    C_MAX_AGE,
+    C_MIN_AGE,
+    C_NO_CLUB_SESSIONS,
+    C_NO_SESSION_ALLOWED,
+    C_NO_SESSIONS,
+    C_SESSIONS,
+    C_TYPE,
+    CTYPE_COACH,
+    CTYPE_SWIMMER,
+    EXCEPTION_GROUPNOSESSION,
+    EXCEPTION_NONSWIMMINGMASTER,
+    get_config,
+)
 from entity import Entities, Entity, check_type
-from issue import (E_NO_SWIMMERS, E_NOT_IN_SESSION, E_SESSIONS, E_TYPE, debug,
-                   issue)
+from issue import E_NO_SWIMMERS, E_NOT_IN_SESSION, E_SESSIONS, E_TYPE, debug, issue
 
 A_GROUP_NAME = "GroupName"
 
@@ -54,7 +67,7 @@ class Group(Entity):
             ignore = self.config_item(C_IGNORE_GROUP)
             no_session = self.config_item(C_NO_SESSIONS)
             check_dbs = self.config_item(C_CHECK_DBS)
-            wanted_session = self.config_item(C_SESSION)
+            wanted_sessions = self.config_item(C_SESSIONS)
             allowed = self.config_item(C_NO_SESSION_ALLOWED)
             xtype = self.config_item(C_TYPE)
 
@@ -81,7 +94,13 @@ class Group(Entity):
                 continue
 
             if wanted_session:
-                self.check_in_session(member, wanted_session, allowed)
+                for session in wanted_sessions:
+                    if check_in_session(member, session, allowed) is False:
+                        res1 = self.print_exception(EXCEPTION_NONSWIMMINGMASTER)
+                        res2 = self.print_exception(EXCEPTION_GROUPNOSESSION)
+                        if res1 or res2:
+                            issue(member, E_NOT_IN_SESSION, f"Group: {self.name}")
+                    break
 
             if xtype:
                 if check_type(member, xtype):
@@ -90,27 +109,6 @@ class Group(Entity):
                     if check_type(member, CTYPE_COACH) is False:
                         msg = f"Group: {self.name}, Type required: {xtype}"
                         issue(member, E_TYPE, msg)
-
-    def check_in_session(self, swimmer, wanted_session, allowed):
-        """Check swimmer in session."""
-        in_session = False
-        if swimmer.find_session_substr(wanted_session):
-            in_session = True
-
-        if allowed and in_session is False:
-            for allow in allowed:
-                if swimmer.find_group(allow):
-                    in_session = True
-
-        if in_session is False:
-            if swimmer.no_session_ok:
-                return
-            if swimmer.is_coach:
-                return
-            res1 = self.print_exception(EXCEPTION_NONSWIMMINGMASTER)
-            res2 = self.print_exception(EXCEPTION_GROUPNOSESSION)
-            if res1 or res2:
-                issue(swimmer, E_NOT_IN_SESSION, f"Group: {self.name}")
 
     def check_age(self, swimmer):
         """Check in right age group."""
@@ -141,3 +139,24 @@ class Group(Entity):
     def config_item(self, item):
         """Own config parameters..."""
         return get_config(self.scm, C_GROUPS, C_GROUP, self.name, item)
+
+
+def check_in_session(swimmer, wanted_session, allowed):
+    """Check swimmer in session."""
+    in_session = False
+    if swimmer.find_session_substr(wanted_session):
+        in_session = True
+
+    if allowed and in_session is False:
+        for allow in allowed:
+            if swimmer.find_group(allow):
+                in_session = True
+
+    if in_session is False:
+        if swimmer.no_session_ok:
+            return True
+        if swimmer.is_coach:
+            return True
+        return False
+
+    return True

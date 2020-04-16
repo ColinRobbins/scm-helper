@@ -1,11 +1,28 @@
 """SCM List."""
-from config import (A_GUID, A_MEMBERS, C_ALLOW_GROUP, C_EDIT, C_GENDER,
-                    C_GROUP, C_LIST, C_LISTS, C_MAX_AGE, C_MAX_AGE_EOY,
-                    C_MAX_YEAR, C_MIN_AGE, C_MIN_AGE_EOY, C_MIN_YEAR, C_SUFFIX,
-                    C_TYPE, C_UNIQUE, EXCEPTION_NOEMAIL, get_config)
+from config import (
+    A_GUID,
+    A_MEMBERS,
+    C_ALLOW_GROUP,
+    C_EDIT,
+    C_GENDER,
+    C_GROUP,
+    C_LIST,
+    C_LISTS,
+    C_MAX_AGE,
+    C_MAX_AGE_EOY,
+    C_MAX_YEAR,
+    C_MIN_AGE,
+    C_MIN_AGE_EOY,
+    C_MIN_YEAR,
+    C_SUFFIX,
+    C_TYPE,
+    C_UNIQUE,
+    EXCEPTION_NOEMAIL,
+    get_config,
+)
 from entity import Entities, Entity, check_type
-from issue import E_LIST_ERROR, E_NO_SWIMMERS, R_LIST, issue
-from notify import notify, interact
+from issue import E_LIST_ERROR, E_NO_SWIMMERS, issue
+from notify import interact, notify
 
 A_LISTNAME = "ListName"
 
@@ -44,13 +61,13 @@ class Lists(Entities):
             newlist = NewList(self.scm, xlist, self._url)
             self.newlists.append(newlist)
             newlist.populate()
-            
+
         # Seperate for loop, as add_to_list may have reates some too
         for xlist in self.newlists:
             xlist.generate_data(self._suffix)
-            if interact (f"Upload {xlist.name}? ") != "y":
+            if interact(f"Upload {xlist.name}? ") != "y":
                 continue
-                
+
             if xlist.upload() is None:
                 pass  # not sure what to do, just carry on!
 
@@ -60,14 +77,14 @@ class Lists(Entities):
         for entity in self.newlists:
             entity.delete()
             del entity
-        
+
     def add(self, name, person):
         """Add a person to a new list."""
-        for list in self.newlists:
-            if list.name == name:
-                list.add_member(person)
+        for xlist in self.newlists:
+            if xlist.name == name:
+                xlist.add_member(person)
                 return
-        
+
         newlist = NewList(self.scm, name, self._url)
         self.newlists.append(newlist)
         newlist.add_member(person)
@@ -84,15 +101,19 @@ class List(Entity):
 
         for member in self.members:
             if member.is_active is False:
-                issue(member, E_LIST_ERROR, f"Inactive but on email list {self.name}")
+                issue(
+                    member,
+                    E_LIST_ERROR,
+                    f"Inactive but on email list {self.name} (fixable)",
+                )
                 if self.newdata & A_MEMBERS in self.newdata:
                     fix = self.newdata
                 else:
                     fix = {}
                     fix[A_MEMBERS] = self.data[A_MEMBERS]
                 fix[A_MEMBERS].delete(member.guid)
-                self.fixit(fix)
-            
+                self.fixit(fix, f"Delete {member.name}")
+
             if member.email is None:
                 issue(member, E_LIST_ERROR, f"No email, but on email list {self.name}")
 
@@ -104,6 +125,7 @@ class List(Entity):
 
 class NewList(Entity):
     """A list."""
+
     # pylint: disable=too-many-instance-attributes
 
     def __init__(self, scm, xlist, url):
@@ -205,7 +227,7 @@ class NewList(Entity):
                 continue
 
             self.add_member(member)
-    
+
     def generate_data(self, suffix):
         """Create data to upload."""
         listname = f"{self.name}{suffix}"

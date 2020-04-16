@@ -1,8 +1,23 @@
 """Parent routines."""
-from config import (C_AGE, C_CHILD, A_ISPARENT, A_USERNAME, C_LOGIN, C_MANDATORY, C_MIN_AGE, C_PARENTS,
-                    get_config)
-from issue import (E_INACTIVE, E_NO_CHILD, E_NO_LOGIN, E_PARENT_AGE,
-                   E_PARENT_AGE_TOO_OLD, issue)
+from config import (
+    A_ISPARENT,
+    A_USERNAME,
+    C_AGE,
+    C_CHILD,
+    C_LOGIN,
+    C_MANDATORY,
+    C_MIN_AGE,
+    C_PARENTS,
+    get_config,
+)
+from issue import (
+    E_INACTIVE,
+    E_NO_CHILD,
+    E_NO_LOGIN,
+    E_PARENT_AGE,
+    E_PARENT_AGE_TOO_OLD,
+    issue,
+)
 
 
 def analyse_parent(parent):
@@ -18,14 +33,14 @@ def analyse_parent(parent):
 
     if active is False:
         if inactive is None:
-            issue(parent, E_NO_CHILD)
+            issue(parent, E_NO_CHILD, "(fixable)")
             fix = {}
             fix[A_ISPARENT] = "0"
-            parent.fixit(fix)    
+            parent.fixit(fix, "Remove 'is parent'")
         else:
             issue(parent, E_INACTIVE, f"child {inactive}")
 
-    # TODO.  Iterate through children, and see if all new started.
+    # TODO.  Iterate through children, and see if all new starter.
     # It they are, set parent to new starter.
     # Not seeing the error, so ignore for now!
 
@@ -40,7 +55,7 @@ def analyse_parent(parent):
 
     login = get_config(parent.scm, C_PARENTS, C_LOGIN, C_MANDATORY)
     if login and (parent.username is None):
-        issue(parent, E_NO_LOGIN, "Parent")
+        issue(parent, E_NO_LOGIN, "Parent (fixable)")
         fix = {}
         fix[A_USERNAME] = parent.email
-        parent.fixit(fix) 
+        parent.fixit(fix, "Create login")

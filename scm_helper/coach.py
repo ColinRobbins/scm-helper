@@ -1,9 +1,23 @@
 """Coach routines."""
-from config import (C_COACHES, C_MANDATORY, C_ROLE, EXCEPTION_NOSESSIONS,
-                    EXCEPTION_PERMISSIONS, get_config)
-from issue import (E_COACH_WITH_SESSIONS, E_NO_ROLE_COACH, E_NO_SESSIONS,
-                   E_NOT_A_COACH, E_PERMISSION_EXTRA, E_PERMISSION_MISSING,
-                   debug, issue)
+from config import (
+    A_ISCOACH,
+    C_COACHES,
+    C_MANDATORY,
+    C_ROLE,
+    EXCEPTION_NOSESSIONS,
+    EXCEPTION_PERMISSIONS,
+    get_config,
+)
+from issue import (
+    E_COACH_WITH_SESSIONS,
+    E_NO_ROLE_COACH,
+    E_NO_SESSIONS,
+    E_NOT_A_COACH,
+    E_PERMISSION_EXTRA,
+    E_PERMISSION_MISSING,
+    debug,
+    issue,
+)
 
 
 def analyse_coach(coach):
@@ -23,10 +37,10 @@ def check_coach_permissions(coach, role):
     """Check a coaches permissions."""
     debug(f"Permission check: {coach.name}, {role.name}", 9)
     if coach.is_coach is None:
-        issue(coach, E_NOT_A_COACH, f"Role: {role.name}")
+        issue(coach, E_NOT_A_COACH, f"Role: {role.name} (fixable)")
         fix = {}
         fix[A_ISCOACH] = "1"
-        coach.fixit(fix)
+        coach.fixit(fix, "Add 'Is a coach'")
 
     coach.set_in_coach_role()
 
@@ -46,9 +60,10 @@ def check_coach_permissions(coach, role):
         if match is False:
             issue(coach, E_PERMISSION_MISSING, session.full_name)
             fix = {}
-            fix["SessionRestrictions"] = coach.data["SessionRestrictions"]
+            data = coach.data["SessionRestrictions"]
+            fix["SessionRestrictions"] = data
             fix["SessionRestrictions"].append(session.guid)
-            coach.fixit(fix)
+            coach.fixit(fix, f"Add permission for {data}")
 
     for permission in coach.restricted:
         match = False
@@ -59,6 +74,7 @@ def check_coach_permissions(coach, role):
         if match is False:
             issue(coach, E_PERMISSION_EXTRA, permission.full_name)
             fix = {}
-            fix["SessionRestrictions"] = coach.data["SessionRestrictions"]
+            data = coach.data["SessionRestrictions"]
+            fix["SessionRestrictions"] = data
             fix["SessionRestrictions"].remove(session.guid)
-            coach.fixit(fix)
+            coach.fixit(fix, f"Remove permission for {data}")

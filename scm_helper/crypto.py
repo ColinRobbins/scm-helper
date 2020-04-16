@@ -4,14 +4,15 @@ import getpass
 import json
 import os.path
 from datetime import date
+from pathlib import Path
+
 from cryptography.fernet import Fernet, InvalidToken
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
-from notify import notify, interact
-from config import CONFIG_DIR, BACKUP_DIR
-from pathlib import Path
 
+from config import BACKUP_DIR, CONFIG_DIR
+from notify import interact, notify
 
 WRITE_BINARY = "wb"
 READ_BINARY = "rb"
@@ -27,7 +28,7 @@ class Crypto:
             self.__password = getpass.getpass("Enter SCM helper password: ")
         else:
             self.__password = password
-            
+
         self.__key = self.get_encryption_key(self.__password)
 
     def encrypt_file(self, name, data):
@@ -43,7 +44,7 @@ class Crypto:
 
             if os.path.exists(backup) is False:
                 os.mkdir(backup)
-                
+
             if os.path.exists(directory) is False:
                 os.mkdir(directory)
 
@@ -100,10 +101,8 @@ class Crypto:
         )
         return base64.urlsafe_b64encode(kdf.derive(password))
 
-
     def read_key(self, filename):
         """Read API key."""
-
         home = str(Path.home())
         filename = os.path.join(home, CONFIG_DIR, filename)
 
@@ -128,7 +127,7 @@ class Crypto:
     def get_key(self, filename):
         """Encrypt file."""
         apikey = interact("No keyfile, creating one\nEnter API key: ")
-        
+
         try:
             fernet = Fernet(self.__key)
 
@@ -148,7 +147,6 @@ class Crypto:
 
     def read_email_password(self, filename):
         """Read email password."""
-
         home = str(Path.home())
         filename = os.path.join(home, CONFIG_DIR, filename)
 
@@ -173,7 +171,7 @@ class Crypto:
     def get_email_password(self, filename):
         """Encrypt Password file."""
         apikey = getpass.getpass("Enter email password: ")
-        
+
         try:
             fernet = Fernet(self.__key)
 

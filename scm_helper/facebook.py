@@ -43,8 +43,10 @@ class Facebook:
 
     def print_errors(self):
         """Print errors."""
+        res = ""
         for facebook in self.facebook:
-            facebook.print_errors()
+            res += facebook.print_errors()
+        return res
 
     def delete(self):
         """Delete."""

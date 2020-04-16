@@ -1,16 +1,45 @@
 """Interface to SCM API."""
+import os.path
 from datetime import date, datetime
+from pathlib import Path
+from shutil import copyfile
+
 import requests
 import yaml
 
 from conduct import CodesOfConduct
-from config import (BACKUP_URLS, C_ALLOW_UPDATE, C_CLUB, CODES_OF_CONDUCT,
-                    CONFIG_FILE, DEBUG_LEVEL, FILE_READ, GROUPS, KEYFILE,
-                    LISTS, MEMBERS, ROLES, SESSIONS, URL_CONDUCT, URL_GROUPS, CONFIG_DIR,
-                    URL_LISTS, URL_MEMBERS, URL_ROLES, URL_SESSIONS, BACKUP_DIR,
-                    O_VERIFY,  O_BACKUP, O_FORMAT, O_FIX,
-                    USER_AGENT, get_config, verify_schema, verify_schema_data)
+from config import (
+    BACKUP_DIR,
+    BACKUP_URLS,
+    C_ALLOW_UPDATE,
+    C_CLUB,
+    CODES_OF_CONDUCT,
+    CONFIG_DIR,
+    CONFIG_FILE,
+    DEBUG_LEVEL,
+    GROUPS,
+    KEYFILE,
+    LISTS,
+    MEMBERS,
+    O_BACKUP,
+    O_FIX,
+    O_FORMAT,
+    O_VERIFY,
+    ROLES,
+    SESSIONS,
+    URL_CONDUCT,
+    URL_GROUPS,
+    URL_LISTS,
+    URL_MEMBERS,
+    URL_ROLES,
+    URL_SESSIONS,
+    USER_AGENT,
+    get_config,
+    verify_schema,
+    verify_schema_data,
+)
 from crypto import Crypto
+from default import create_default_config
 from entity import Entities
 from groups import Groups
 from issue import debug, set_debug_level
@@ -19,11 +48,6 @@ from members import Members
 from notify import notify
 from roles import Roles
 from sessions import Sessions
-from shutil import copyfile
-import os.path
-from default import create_default_config
-from pathlib import Path
-
 
 
 class API:
@@ -61,14 +85,13 @@ class API:
 
     def get_config(self, password):
         """Read configuration file."""
-        
         home = str(Path.home())
         cfg = os.path.join(home, CONFIG_DIR, CONFIG_FILE)
 
         if os.path.isfile(cfg) is False:
             if create_default_config() is False:
                 return False
-                
+
         try:
             with open(cfg) as file:
                 self._config = yaml.safe_load(file)
@@ -81,7 +104,7 @@ class API:
 
         if verify_schema(self._config) is False:
             return False
-        
+
         self.crypto = Crypto(self._config[C_CLUB], password)  # Salt
 
         keyfile = os.path.join(home, CONFIG_DIR, KEYFILE)
@@ -218,7 +241,8 @@ class API:
 
     def delete(self):
         """Delete all entities."""
-        for aclass in self.classes:
+        delete = self.classes + self.backup_classes
+        for aclass in delete:
             aclass.delete()
 
     def backup_data(self):
@@ -230,7 +254,7 @@ class API:
         for aclass in backup:
             if self.crypto.encrypt_file(aclass.name, aclass.json) is False:
                 return False
-        
+
         # Backup config file too.
         home = str(Path.home())
         today = date.today()
@@ -240,21 +264,21 @@ class API:
 
         src = os.path.join(cfg, CONFIG_FILE)
         dst = os.path.join(directory, CONFIG_FILE)
-        copyfile(src,dst)
+        copyfile(src, dst)
 
         # Backup keyfile file too.
         src = os.path.join(cfg, KEYFILE)
         dst = os.path.join(directory, KEYFILE)
-        copyfile(src,dst)
-        
+        copyfile(src, dst)
+
         return True
 
-    def decrypt(self, date):
+    def decrypt(self, xdate):
         """Decrypt file."""
         restore = self.classes + self.backup_classes
 
         for aclass in restore:
-            decrypted = self.crypto.decrypt_file(aclass.name, date)
+            decrypted = self.crypto.decrypt_file(aclass.name, xdate)
             if decrypted is None:
                 return False
             aclass.parse_data(decrypted)
@@ -267,22 +291,22 @@ class API:
         output = ""
         for aclass in self.classes:
             output += aclass.print_summary()
-        output += (f"   Not confirmed: {self.members.count_not_confirmed}\n")
+        output += f"   Not confirmed: {self.members.count_not_confirmed}\n"
 
         if self.backup_classes:
             for aclass in self.backup_classes:
                 output += aclass.print_summary()
-                
-        if self.option(O_FIX): # fixed them!
-            return
-        
+
+        if self.option(O_FIX):  # fixed them!
+            return output
+
         if self.option(O_VERIFY):
-            return  # fixable not available with backup data
-        
+            return output  # fixable not available with backup data
+
         length = len(self.fixable)
         if length > 0:
             output += f"\n{length} fixable errors."
-            
+
         return output
 
     def setopt(self, opt, args):
@@ -323,7 +347,7 @@ class API:
         if get_config(entity.scm, C_ALLOW_UPDATE) is False:
             notify("Update prohibited by config.\n")
             return None
-            
+
         data = entity.newdata
         if create:
             response = requests.post(entity.url, json=data, headers=headers)
@@ -339,12 +363,13 @@ class API:
         notify(response.reason)
         notify("\n")
         return None
-        
+
     def apply_fixes(self):
         """Apply any fixes."""
         for fix in self.fixable:
-           if fix.apply_fix() is None:
-               return False
+            if fix.apply_fix() is None:
+                return False
+        return True
 
     def option(self, option):
         """Options."""

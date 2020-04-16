@@ -1,20 +1,57 @@
 """Swimmer routines."""
 
-from config import (C_ABSENCE, C_CHECK_SE_NUMBER, C_CONF_DIFF, C_GROUP,
-                    C_GROUPS, C_IGNORE_ATTENDANCE, C_MANDATORY, C_MAX_AGE,
-                    C_MIN_AGE, C_PARENT, C_SESSION, C_SESSIONS, C_SWIMMERS,
-                    C_TIME, C_TYPES, C_UNIQUE, C_USERNAME, C_VERIFY, C_NO_CLUB_SESSIONS,
-                    CTYPE_POLO, CTYPE_SYNCHRO, EXCEPTION_EMAILDIFF, C_PARENTS,
-                    EXCEPTION_NOGROUPS, EXCEPTION_TWOGROUPS, PRINT_DATE_FORMAT,
-                    get_config)
-from issue import (E_ABSENT, E_ASA, E_CONFIRM_DIFF, E_DATE_JOINED, E_DOB,
-                   E_EMAIL_MATCH, E_GENDER, E_INACTIVE, E_LOGIN_TOO_YOUNG,
-                   E_NEVERSEEN, E_NO_GROUP, E_NO_PARENT, E_NUM_PARENTS,
-                   E_TWO_GROUPS, issue, debug)
+from config import (
+    C_ABSENCE,
+    C_CHECK_SE_NUMBER,
+    C_CONF_DIFF,
+    C_GROUP,
+    C_GROUPS,
+    C_IGNORE_ATTENDANCE,
+    C_MANDATORY,
+    C_MAX_AGE,
+    C_MIN_AGE,
+    C_NO_CLUB_SESSIONS,
+    C_PARENT,
+    C_PARENTS,
+    C_SESSION,
+    C_SESSIONS,
+    C_SWIMMERS,
+    C_TIME,
+    C_TYPES,
+    C_UNIQUE,
+    C_USERNAME,
+    C_VERIFY,
+    CTYPE_POLO,
+    CTYPE_SYNCHRO,
+    EXCEPTION_EMAILDIFF,
+    EXCEPTION_NOGROUPS,
+    EXCEPTION_TWOGROUPS,
+    PRINT_DATE_FORMAT,
+    get_config,
+)
+from issue import (
+    E_ABSENT,
+    E_ASA,
+    E_CONFIRM_DIFF,
+    E_DATE_JOINED,
+    E_DOB,
+    E_EMAIL_MATCH,
+    E_GENDER,
+    E_INACTIVE,
+    E_LOGIN_TOO_YOUNG,
+    E_NEVERSEEN,
+    E_NO_GROUP,
+    E_NO_PARENT,
+    E_NUM_PARENTS,
+    E_TWO_GROUPS,
+    debug,
+    issue,
+)
 
 
 def analyse_swimmer(swimmer):
     """Analyse a swimmer..."""
+    # pylint: disable=too-many-branches
     if swimmer.in_ignore_group:
         return
 
@@ -38,10 +75,10 @@ def analyse_swimmer(swimmer):
     check_lastseen(swimmer)
     check_two_groups(swimmer)
     check_login(swimmer)
-    
+
     if swimmer.is_swimmer:
         check_parents(swimmer)
-        
+
     if swimmer.is_synchro:
         if get_config(swimmer.scm, C_TYPES, CTYPE_SYNCHRO, C_PARENTS) is False:
             pass
@@ -77,13 +114,15 @@ def check_lastseen(swimmer):
             # if no session, dont have data about when they have been seen
             check = True
             for session in swimmer.sessions:
+                # pylint: disable=bad-continuation
+                # black insists
                 if get_config(
-                        swimmer.scm,
-                        C_SESSIONS,
-                        C_SESSION,
-                        session.name,
-                        C_IGNORE_ATTENDANCE,
-                    ):
+                    swimmer.scm,
+                    C_SESSIONS,
+                    C_SESSION,
+                    session.name,
+                    C_IGNORE_ATTENDANCE,
+                ):
                     check = False
                     continue
             if check:
@@ -108,16 +147,18 @@ def check_login(swimmer):
 def check_two_groups(swimmer):
     """Check if swimmer in two groups."""
     if get_config(swimmer.scm, C_GROUPS, C_GROUP) is None:
-        return   # No config, so ignore error.
-    
+        return  # No config, so ignore error.
+
     g_count = 0
     errmsg = ""
     for group in swimmer.groups:
-        
-        nosession = get_config(swimmer.scm, C_GROUPS, C_GROUP, group.name, C_NO_CLUB_SESSIONS)
+
+        nosession = get_config(
+            swimmer.scm, C_GROUPS, C_GROUP, group.name, C_NO_CLUB_SESSIONS
+        )
         if nosession is True:
             continue
-        
+
         unique = get_config(swimmer.scm, C_GROUPS, C_GROUP, group.name, C_UNIQUE)
         if unique is None:
             unique = True
@@ -128,7 +169,7 @@ def check_two_groups(swimmer):
                 errmsg += f", {group.name}"
             else:
                 errmsg += group.name
-                
+
     if g_count > 1:
         if swimmer.print_exception(EXCEPTION_TWOGROUPS):
             issue(swimmer, E_TWO_GROUPS, errmsg)
@@ -160,8 +201,14 @@ def check_parents(swimmer):
             confirm_error = check_confirmed_diff(swimmer, parent)
             if confirm_error:
                 issue(swimmer, E_CONFIRM_DIFF, f"Parent {parent.name}")
-
-    if swimmer.parents and swimmer.age and (match is False) and (swimmer.age <= max_age):
+    # pylint: disable=bad-continuation
+    # black insists
+    if (
+        swimmer.parents
+        and swimmer.age
+        and (match is False)
+        and (swimmer.age <= max_age)
+    ):
         if swimmer.print_exception(EXCEPTION_EMAILDIFF):
             err = f"{swimmer.email} - {swimmer.parents[0].email}"
             issue(swimmer, E_EMAIL_MATCH, err)
@@ -170,7 +217,9 @@ def check_parents(swimmer):
         mandatory = get_config(swimmer.scm, C_SWIMMERS, C_PARENT, C_MANDATORY)
         if mandatory and max_age:
             if swimmer.age and (swimmer.age <= max_age):
-                issue(swimmer, E_NO_PARENT, f"{swimmer.first_group}, Age: {swimmer.age}")
+                issue(
+                    swimmer, E_NO_PARENT, f"{swimmer.first_group}, Age: {swimmer.age}"
+                )
 
     if count > 2:
         issue(swimmer, E_NUM_PARENTS)
@@ -196,19 +245,21 @@ def check_confirmed_diff(swimmer, parent):
     # Need them all
     child_mon = 0
     parent_mon = 0
-    
+
     if swimmer.confirmed_date:
-        child_mon = int((swimmer.confirmed_date.month -1) / 3) * 3
+        child_mon = int((swimmer.confirmed_date.month - 1) / 3) * 3
     if parent.confirmed_date:
-        parent_mon = int((parent.confirmed_date.month -1) / 3) * 3
+        parent_mon = int((parent.confirmed_date.month - 1) / 3) * 3
 
     if swimmer.age > get_config(swimmer.scm, C_SWIMMERS, C_PARENT, C_MAX_AGE):
         return False
 
     if child_mon == parent_mon:
         return False
-        
-    debug(f"Different confirmed dates {swimmer.name}, {parent.name} - checking other details for consistency", 6)
+
+    prefix = "Different confirmed dates"
+    postfix = "- checking other details for consistency"
+    debug(f"{prefix} {swimmer.name}, {parent.name} {postfix}", 6)
 
     if swimmer.email != parent.email:
         return True

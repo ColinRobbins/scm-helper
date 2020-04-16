@@ -326,7 +326,7 @@ E_TYPE_GROUP = {
     REPORT: R_GROUP}
 E_UNKNOWN = {
     NAME: "E_UNKNOWN",
-    MESSAGE: "Not a swimmers/parent/coach/offical.  Who are they?",
+    MESSAGE: "Not a swimmers/parent/coach/official.  Who are they?",
     REVERSE: False,
     REPORT: R_MEMBER}
 E_UNUSED_LOGIN = {
@@ -483,9 +483,10 @@ class IssueHandler:
             self._config = xobject.scm.config(C_ISSUES)
         if self._config is None:
             self._config = []
-            
+
         if self.scm is None:
-            self.scm = xobject._scm   # Yuck, but otherise a loop
+            # pylint: disable=protected-access
+            self.scm = xobject._scm  # Yuck, but otherise a loop
 
         ignore = False
 
@@ -497,73 +498,20 @@ class IssueHandler:
 
         if ignore:
             return
-            
+
         err = error[MESSAGE]
         rpt = error[REPORT]
         rev = error[REVERSE]
         name = xobject.full_name
-        self.create_dict(self.by_name, name, err, msg, msg2, rpt, False)
+        create_dict(self.by_name, name, err, msg, msg2, rpt, False)
         if rev:
-            self.create_dict(self.by_error, err, msg, name, msg2, rpt, rev)
+            create_dict(self.by_error, err, msg, name, msg2, rpt, rev)
         else:
-            self.create_dict(self.by_error, err, name, msg, msg2, rpt, rev)
-            
-            
-    def create_dict(self, xdict, k1, k2, v1, v2, rpt, rev):
-        """Create 2 dimensiaonal dictionay."""
-        
-        if k1 not in xdict:
-            xdict[k1] = {}
-        if k2 not in xdict[k1]:
-            xdict[k1][k2] = []
-        xdict[k1][k2].append([v1, v2, rpt, rev])
-
-    def print_dict(self, xdict, reports):
-        """Print all issues."""
-        res = ""
-
-        for k1 in sorted(xdict.keys()):
-            match = False
-            to_print = f"{k1}:\n"
-            for k2 in sorted(xdict[k1]):
-                to_print += f"    {k2}"
-
-                inner_match = False
-                first = True
-                length = len(xdict[k1][k2])
-                for issue in sorted(xdict[k1][k2]):
-                    v1, v2, rpt, rev = issue
-                    if (first and rev) or (first and (length > 1)):
-                        to_print += "\n"
-                        first = False
-                    if (reports and (rpt in reports)) or (reports is None):
-                        match = True
-                    if v1:
-                        inner_match = True
-                        if rev:
-                            spacer = "        "
-                        else:
-                            v1 = f" ({v1})"
-                            if length > 1:
-                                spacer = "        "
-                            else:
-                                spacer = ""
-                        if v2:
-                            v2 = f" ({v2})"
-                        to_print += f"{spacer}{v1}{v2}\n"
-                if inner_match is False:
-                    to_print += "\n"
-                    
-            if match:
-                res += to_print
-                res += "\n"
-                
-
-        return res
+            create_dict(self.by_error, err, name, msg, msg2, rpt, rev)
 
     def print_by_name(self, reports):
         """Print all issues by name."""
-        return self.print_dict(self.by_name, reports)
+        return print_dict(self.by_name, reports)
 
     def print_by_error(self, reports):
         """Print all issues by error."""
@@ -571,11 +519,11 @@ class IssueHandler:
             res = ""
             for report in REPORTS:
                 res += f"========= {R_PRINT[report]} ========\n"
-                res += self.print_dict(self.by_error, report)
+                res += print_dict(self.by_error, report)
             res += "======================="
             return res
 
-        return self.print_dict(self.by_error, reports)
+        return print_dict(self.by_error, reports)
 
     def check_issue(self, xissue):
         """Check if this is a valid issue."""
@@ -585,7 +533,7 @@ class IssueHandler:
             if anissue[NAME] == xissue:
                 return True
         return False
-        
+
     def confirm_email(self):
         """Print email addresses for confirmation errors."""
         matrix = {}
@@ -608,7 +556,7 @@ class IssueHandler:
                         matrix[key].append(entity)
                     else:
                         matrix[key] = [entity]
-        
+
         res = ""
         for msg in matrix:
             res += f"{msg}: \n"
@@ -616,5 +564,59 @@ class IssueHandler:
                 res += f"{entity.email}, "
             res += "\n\n"
         return res
-                
 
+
+def create_dict(xdict, key1, key2, val1, val2, rpt, rev):
+    """Create 2 dimensiaonal dictionay."""
+    # pylint: disable=too-many-arguments
+    if key1 not in xdict:
+        xdict[key1] = {}
+    if key2 not in xdict[key1]:
+        xdict[key1][key2] = []
+    xdict[key1][key2].append([val1, val2, rpt, rev])
+
+
+def print_dict(xdict, reports):
+    """Print all issues."""
+    # pylint: disable=too-many-nested-blocks
+    # pylint: disable=too-many-branches
+    # pylint: disable=too-many-locals
+    res = ""
+
+    for key1 in sorted(xdict.keys()):
+        match = False
+        to_print = f"{key1}:\n"
+        for key2 in sorted(xdict[key1]):
+            to_print += f"    {key2}"
+
+            inner_match = False
+            first = True
+            length = len(xdict[key1][key2])
+            for xissue in sorted(xdict[key1][key2]):
+                val1, val2, rpt, rev = xissue
+                if (first and rev) or (first and (length > 1)):
+                    to_print += "\n"
+                    first = False
+                if (reports and (rpt in reports)) or (reports is None):
+                    match = True
+                if val1:
+                    inner_match = True
+                    if rev:
+                        spacer = "        "
+                    else:
+                        val1 = f" ({val1})"
+                        if length > 1:
+                            spacer = "        "
+                        else:
+                            spacer = ""
+                    if val2:
+                        val2 = f" ({val2})"
+                    to_print += f"{spacer}{val1}{val2}\n"
+            if inner_match is False:
+                to_print += "\n"
+
+        if match:
+            res += to_print
+            res += "\n"
+
+    return res
