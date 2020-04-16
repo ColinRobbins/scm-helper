@@ -1,4 +1,0 @@
-schema
-requests
-pyyaml
-cryptography
