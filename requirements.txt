@@ -1,3 +1,5 @@
 tkinter
 schema
 requests
+pyyaml
+cryptography

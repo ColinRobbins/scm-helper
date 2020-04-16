@@ -27,7 +27,6 @@ setuptools.setup(
       'requests',
       'pyyaml',
       'cryptography',
-      'tkinter'
     ],
 classifiers=[
         "Programming Language :: Python :: 3",
