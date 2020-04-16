@@ -119,7 +119,7 @@ class Members(Entities):
 
         for member in self.entities:
             # Fix API error. now all parent links are returned ,so reverse link
-            # TOOO remove when API fixed.
+            # TODO remove when API fixed.
             member.linkage2()
 
     def print_notes(self):

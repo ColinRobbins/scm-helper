@@ -12,7 +12,7 @@ FACEBOOK_RE = re.compile(
 
 
 class Facebook:
-    """Read and proces all facebook files."""
+    """Read and process all facebook files."""
 
     def __init__(self):
         """Initialise."""
@@ -119,7 +119,7 @@ class FacebookPage(Files):
                     continue
                 inactive = True
 
-            if user in facebook:  # NB this can overide inactive = True above
+            if user in facebook:  # NB this can override inactive = True above
                 # could be active in a different entry (eg parent)
                 if facebook[user].is_active:
                     continue

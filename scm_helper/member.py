@@ -322,7 +322,7 @@ class Member(Entity):
             inactive = get_config(self.scm, C_MEMBERS, C_INACTIVE, C_TIME)
             if inactive and (gap > inactive):
                 when = lastmod.strftime(PRINT_DATE_FORMAT)
-                issue(self, E_INACTIVE_TOOLONG, f"Last Modifed: {when}")
+                issue(self, E_INACTIVE_TOOLONG, f"Last Modified: {when}")
 
         if self.check_attribute(A_DATELEFT):
             return
@@ -671,7 +671,7 @@ class Member(Entity):
         return myage
 
     def check_age(self, xmin, xmax, group):
-        """Check swimmer withing age group."""
+        """Check swimmer within age group."""
         if self.age and (self.age < xmin):
             issue(self, E_TOO_YOUNG, f"{group}: {self.age}")
         if self.age and (self.age > xmax):
@@ -679,7 +679,7 @@ class Member(Entity):
                 issue(self, E_TOO_OLD, f"{group}: {self.age}")
 
     def set_dates(self):
-        """Calcualte dates."""
+        """Calculate dates."""
         self._dob = self.set_date(A_DOB)
         self._date_joined = self.set_date("DateJoinedClub")
         self._last_modified = self.set_date("LastModifiedDate")

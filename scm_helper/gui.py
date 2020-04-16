@@ -126,7 +126,7 @@ class ScmGui(Tk):
         set_notify(self.notify)
 
     def scm_init(self):
-        """Initalise SCM."""
+        """Initialise SCM."""
         password = self.__password.get()
         if password:
             self.issues = IssueHandler()
@@ -151,7 +151,7 @@ class ScmGui(Tk):
                 return
 
         if self.thread:
-            return  # already runnning
+            return  # already running
 
         self.thread = AnalysisThread(self).start()
 

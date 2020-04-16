@@ -95,7 +95,7 @@ files:
           ASACategory: 'Category'
           DOB: 'Date of Birth'
           dob_format: '%d/%m/%Y'
-#         ignore_group:  # Dont report errors if swimmer is in these groups
+#         ignore_group:  # Don't report errors if swimmer is in these groups
 #           - 'Resignations'
 
 
@@ -130,10 +130,10 @@ parents:
 members:
     confirmation:
         expiry: 365             # Warn if confirmation more than this many day old.
-        align_quarter: True     # Align expiry to calender quarter
+        align_quarter: True     # Align expiry to calendar quarter
                                 # So reminders go in batches.
     dbs:
-        expiry: 60      # Days waring prior to expiry.
+        expiry: 60      # Days warning prior to expiry.
     newstarter:
         grace:  90      # Don't give errors for 90 days,
                         # giving admin time to sort it all out
@@ -166,12 +166,12 @@ roles:
 
 jobtitle:
     ignore:
-        - "Vice President"      # If VP, dont need to be a committee member.
+        - "Vice President"      # If VP, don't need to be a committee member.
 
 ################################################################
 # Configure Groups
 #
-# Check this members of the group are in a relevent swimming session
+# Check this members of the group are in a relevant swimming session
 ################################################################
 # groups:
 #  priority:    # If a user is in multiple groups
@@ -215,7 +215,7 @@ jobtitle:
 # Sessions not listed will not be checked for group correlation.
 ################################################################
 sessions:
-  absence:  120  # Number of days allowed to miss a sesssion
+  absence:  120  # Number of days allowed to miss a session
   register: 60   # Alert if register not taken for this many days
 #   session:
 #     'Junior Squad':
@@ -300,7 +300,7 @@ types:
 #         groups:
 #           - "Team Manager"
 #           - "Club Timekeeper"
-#           - "Licensed Officals"
+#           - "Licensed Officials"
     committee:
         jobtitle: True              # must have a job title
 

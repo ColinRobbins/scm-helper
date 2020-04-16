@@ -216,7 +216,7 @@ class Entity:
             notify("Error: Something went wrong connecting to SCM!\n")
             return False
 
-        # API inconsistent in use ot Archive or Active - chech both.
+        # API inconsistent in use of Archive or Active - check both.
         if A_ACTIVE in self.newdata:
             self.newdata[A_ACTIVE] = "1"  # Make sure active
 
@@ -240,7 +240,7 @@ class Entity:
 
         if A_ARCHIVED in old:
             if old[A_ARCHIVED] == 0:
-                # API is inconstent here too - no quotes for this one.
+                # API is inconsistent here too - no quotes for this one.
                 return self.scm.api_write(self, False)
 
             notify("Error: Already exist, just archived.  Re-activate in SCM\n")

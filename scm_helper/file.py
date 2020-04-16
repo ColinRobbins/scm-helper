@@ -104,8 +104,8 @@ class Csv(Files):
 
         cfg = get_config(scm, C_FILES, self._filename)
         if cfg is None:
-            # ODD Structre to keep line length in black limit
-            prefix = "No configuraiton for "
+            # ODD structure to keep line length in black limit
+            prefix = "No configuration for "
             postfix = ", name matching only & default headers\n"
             notify(f"{prefix}{self._filename}{postfix}")
 

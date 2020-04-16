@@ -241,7 +241,7 @@ E_NOT_ATTENDED = {
     REPORT: R_SESSION}
 E_NOT_CONFIRMED = {
     NAME: "E_NOT_CONFIRMED",
-    MESSAGE: "Not confimred",
+    MESSAGE: "Not confirmed",
     REVERSE: True,
     REPORT: R_CONFIRMATION}
 E_NOT_IN_SESSION = {
@@ -486,7 +486,7 @@ class IssueHandler:
 
         if self.scm is None:
             # pylint: disable=protected-access
-            self.scm = xobject._scm  # Yuck, but otherise a loop
+            self.scm = xobject._scm  # Yuck, but otherwise a loop
 
         ignore = False
 
@@ -528,7 +528,7 @@ class IssueHandler:
     def check_issue(self, xissue):
         """Check if this is a valid issue."""
         # pylint: disable=no-self-use
-        # if it was a funciton, you end up with circualr imports
+        # if it was a function, you end up with circualr imports
         for anissue in ISSUE_LIST:
             if anissue[NAME] == xissue:
                 return True
@@ -567,7 +567,7 @@ class IssueHandler:
 
 
 def create_dict(xdict, key1, key2, val1, val2, rpt, rev):
-    """Create 2 dimensiaonal dictionay."""
+    """Create 2 dimensiaonal dictionary."""
     # pylint: disable=too-many-arguments
     if key1 not in xdict:
         xdict[key1] = {}

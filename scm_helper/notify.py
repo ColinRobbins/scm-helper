@@ -21,7 +21,7 @@ def notify(msg):
 
 
 def set_notify(where):
-    """Where to reprot errors."""
+    """Where to report errors."""
     # pylint: disable=global-statement
     global WHERE
     WHERE = where

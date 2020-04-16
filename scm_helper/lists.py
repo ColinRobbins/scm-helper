@@ -62,7 +62,7 @@ class Lists(Entities):
             self.newlists.append(newlist)
             newlist.populate()
 
-        # Seperate for loop, as add_to_list may have reates some too
+        # Separate for loop, as add_to_list may have created some too
         for xlist in self.newlists:
             xlist.generate_data(self._suffix)
             if interact(f"Upload {xlist.name}? ") != "y":

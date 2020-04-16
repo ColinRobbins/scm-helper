@@ -111,7 +111,7 @@ def check_lastseen(swimmer):
     """Check when swimemr was last seen."""
     if swimmer.lastseen is None:
         if len(swimmer.sessions) > 0:
-            # if no session, dont have data about when they have been seen
+            # if no session, don't have data about when they have been seen
             check = True
             for session in swimmer.sessions:
                 # pylint: disable=bad-continuation
@@ -226,11 +226,11 @@ def check_parents(swimmer):
 
 
 def check_parent_email_match(email, parent):
-    """Check swimmer and parent have email in commmon."""
+    """Check swimmer and parent have email in common."""
     if parent.email:
         pemail = parent.email.split(";")
     else:
-        return True  # can't match if non existant
+        return True  # can't match if non existent
     if email:
         for loop in email:
             for ploop in pemail:
@@ -240,7 +240,7 @@ def check_parent_email_match(email, parent):
 
 
 def check_confirmed_diff(swimmer, parent):
-    """Check for differnces in swimmer and parent."""
+    """Check for differences in swimmer and parent."""
     # pylint: disable=R0911
     # Need them all
     child_mon = 0
@@ -273,7 +273,7 @@ def check_confirmed_diff(swimmer, parent):
     if swimmer.address != parent.address:
         return True
 
-    # Dates are differnt, but core attributes same
+    # Dates are different, but core attributes same
     # So set the confirmed date - to inhibit a confirm notice to parent
 
     if parent.confirmed_date is None:
