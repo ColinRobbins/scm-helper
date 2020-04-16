@@ -6,8 +6,8 @@ import yaml
 from conduct import CodesOfConduct
 from config import (BACKUP_URLS, C_ALLOW_UPDATE, C_CLUB, CODES_OF_CONDUCT,
                     CONFIG_FILE, DEBUG_LEVEL, FILE_READ, GROUPS, KEYFILE,
-                    LISTS, MEMBERS, ROLES, SESSIONS, URL_CONDUCT, URL_GROUPS,
-                    URL_LISTS, URL_MEMBERS, URL_ROLES, URL_SESSIONS,
+                    LISTS, MEMBERS, ROLES, SESSIONS, URL_CONDUCT, URL_GROUPS, CONFIG_DIR,
+                    URL_LISTS, URL_MEMBERS, URL_ROLES, URL_SESSIONS, BACKUP_DIR,
                     O_VERIFY,  O_BACKUP, O_FORMAT, O_FIX,
                     USER_AGENT, get_config, verify_schema, verify_schema_data)
 from crypto import Crypto
@@ -21,6 +21,9 @@ from roles import Roles
 from sessions import Sessions
 from shutil import copyfile
 import os.path
+from default import create_default_config
+from pathlib import Path
+
 
 
 class API:
@@ -58,11 +61,19 @@ class API:
 
     def get_config(self, password):
         """Read configuration file."""
+        
+        home = str(Path.home())
+        cfg = os.path.join(home, CONFIG_DIR, CONFIG_FILE)
+
+        if os.path.isfile(cfg) is False:
+            if create_default_config() is False:
+                return False
+                
         try:
-            with open(CONFIG_FILE) as file:
+            with open(cfg) as file:
                 self._config = yaml.safe_load(file)
         except EnvironmentError:
-            notify(f"Cannot open configuration file: {'config.yaml'}\n")
+            notify(f"Cannot open configuration file: {cfg}\n")
             return False
         except yaml.scanner.ScannerError as error:
             notify(f"Error in configuration file: {error}\n")
@@ -73,9 +84,7 @@ class API:
         
         self.crypto = Crypto(self._config[C_CLUB], password)  # Salt
 
-        keyfile = self.config(KEYFILE)
-        if keyfile is None:
-            keyfile = "configuration/key.enc"
+        keyfile = os.path.join(home, CONFIG_DIR, KEYFILE)
         self._key = self.crypto.read_key(keyfile)
         if self._key is None:
             return False
@@ -144,7 +153,7 @@ class API:
             loop = self.classes + self.backup_classes
 
         for aclass in loop:
-            if aclass.get_data() is None:
+            if aclass.get_data() is False:
                 return False
 
         return True
@@ -223,11 +232,21 @@ class API:
                 return False
         
         # Backup config file too.
-        src = CONFIG_FILE
+        home = str(Path.home())
         today = date.today()
-        dst = os.path.join("backups", f"{today}", "config.yaml")
+        cfg = os.path.join(home, CONFIG_DIR)
+        backup = os.path.join(home, CONFIG_DIR, BACKUP_DIR)
+        directory = os.path.join(home, CONFIG_DIR, BACKUP_DIR, f"{today}")
+
+        src = os.path.join(cfg, CONFIG_FILE)
+        dst = os.path.join(directory, CONFIG_FILE)
         copyfile(src,dst)
 
+        # Backup keyfile file too.
+        src = os.path.join(cfg, KEYFILE)
+        dst = os.path.join(directory, KEYFILE)
+        copyfile(src,dst)
+        
         return True
 
     def decrypt(self, date):
@@ -248,7 +267,7 @@ class API:
         output = ""
         for aclass in self.classes:
             output += aclass.print_summary()
-        print (f"   Not confirmed: {self.members.count_not_confirmed}\n")
+        output += (f"   Not confirmed: {self.members.count_not_confirmed}\n")
 
         if self.backup_classes:
             for aclass in self.backup_classes:
@@ -262,7 +281,9 @@ class API:
         
         length = len(self.fixable)
         if length > 0:
-            output += f"{length} fixable errors, rerun with --fix to apply."
+            output += f"\n{length} fixable errors."
+            
+        return output
 
     def setopt(self, opt, args):
         """Set options."""

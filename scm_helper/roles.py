@@ -2,7 +2,7 @@
 from coach import check_coach_permissions
 from config import (C_CHECK_PERMISSIONS, C_CHECK_RESTRICTIONS, C_IS_COACH,
                     C_LOGIN, C_MANDATORY, A_ISVOLUNTEER, C_ROLE, C_ROLES, C_UNUSED,
-                    CTYPE_VOLUNTEER, get_config)
+                    C_VOLUNTEER, get_config)
 from entity import Entities, Entity
 from issue import (E_COACH_ROLE, E_INACTIVE, E_NO_LOGIN, E_NO_RESTRICTIONS,
                    E_NO_SWIMMERS, E_UNUSED_LOGIN, E_VOLUNTEER, issue)
@@ -31,7 +31,7 @@ class Role(Entity):
         for member in self.members:
             self.check_role_member(member, unused)
 
-            if self.name in cfg:
+            if cfg and (self.name in cfg):
                 self.check_role_permissions(member)
 
     def check_role_member(self, member, unused):
@@ -53,8 +53,8 @@ class Role(Entity):
             if member.is_coach is False:
                 issue(member, E_COACH_ROLE, f"Role: {self.name}")
 
-        if get_config(self.scm, C_ROLES, CTYPE_VOLUNTEER, C_MANDATORY):
-            if member.is_volunateer is False:
+        if get_config(self.scm, C_ROLES, C_VOLUNTEER, C_MANDATORY):
+            if member.is_volunteer is False:
                 issue(member, E_VOLUNTEER, f"Role: {self.name}")
                 fix = {}
                 fix[A_ISVOLUNTEER] = "1"

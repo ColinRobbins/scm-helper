@@ -162,12 +162,13 @@ class Session(Entity):
                         issue(person, E_NEVER_ATTENDED, f"{self.full_name}")
 
         if (self.ignore_attendance is False) and (register != 9999):
-            if (self.scm.today - seen).days > register:
-                if seen:
+            msg = "Never"
+            if seen:
+                if (self.scm.today - seen).days > register:
                     msg = seen.strftime(PRINT_DATE_FORMAT)
                 else:
-                    msg = "Never"
-                issue(self, E_NO_REGISTER, f"last taken: {msg} ({self.full_name})")
+                    return
+            issue(self, E_NO_REGISTER, f"last taken: {msg} ({self.full_name})")
 
     @property
     def name(self):

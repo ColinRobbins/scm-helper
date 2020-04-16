@@ -4,7 +4,7 @@ from config import (C_ABSENCE, C_CHECK_SE_NUMBER, C_CONF_DIFF, C_GROUP,
                     C_GROUPS, C_IGNORE_ATTENDANCE, C_MANDATORY, C_MAX_AGE,
                     C_MIN_AGE, C_PARENT, C_SESSION, C_SESSIONS, C_SWIMMERS,
                     C_TIME, C_TYPES, C_UNIQUE, C_USERNAME, C_VERIFY, C_NO_CLUB_SESSIONS,
-                    CTYPE_POLO, CTYPE_SYNCHRO, EXCEPTION_EMAILDIFF,
+                    CTYPE_POLO, CTYPE_SYNCHRO, EXCEPTION_EMAILDIFF, C_PARENTS,
                     EXCEPTION_NOGROUPS, EXCEPTION_TWOGROUPS, PRINT_DATE_FORMAT,
                     get_config)
 from issue import (E_ABSENT, E_ASA, E_CONFIRM_DIFF, E_DATE_JOINED, E_DOB,
@@ -37,8 +37,22 @@ def analyse_swimmer(swimmer):
     check_asa(swimmer)
     check_lastseen(swimmer)
     check_two_groups(swimmer)
-    check_parents(swimmer)
     check_login(swimmer)
+    
+    if swimmer.is_swimmer:
+        check_parents(swimmer)
+        
+    if swimmer.is_synchro:
+        if get_config(swimmer.scm, C_TYPES, CTYPE_SYNCHRO, C_PARENTS) is False:
+            pass
+        else:
+            check_parents(swimmer)
+
+    if swimmer.is_polo:
+        if get_config(swimmer.scm, C_TYPES, CTYPE_POLO, C_PARENTS) is False:
+            pass
+        else:
+            check_parents(swimmer)
 
 
 def check_asa(swimmer):
@@ -93,6 +107,9 @@ def check_login(swimmer):
 
 def check_two_groups(swimmer):
     """Check if swimmer in two groups."""
+    if get_config(swimmer.scm, C_GROUPS, C_GROUP) is None:
+        return   # No config, so ignore error.
+    
     g_count = 0
     errmsg = ""
     for group in swimmer.groups:
@@ -134,7 +151,7 @@ def check_parents(swimmer):
     for parent in swimmer.parents:
         count += 1
         if parent.is_active is False:
-            issue(swimmer, E_INACTIVE, f"Parent {parent.name}")
+            issue(parent, E_INACTIVE, f"Swimmer {swimmer.name}")
 
         if match is False:
             match = check_parent_email_match(email, parent)
@@ -144,7 +161,7 @@ def check_parents(swimmer):
             if confirm_error:
                 issue(swimmer, E_CONFIRM_DIFF, f"Parent {parent.name}")
 
-    if swimmer.parents and (match is False) and (swimmer.age <= max_age):
+    if swimmer.parents and swimmer.age and (match is False) and (swimmer.age <= max_age):
         if swimmer.print_exception(EXCEPTION_EMAILDIFF):
             err = f"{swimmer.email} - {swimmer.parents[0].email}"
             issue(swimmer, E_EMAIL_MATCH, err)
