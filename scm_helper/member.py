@@ -212,7 +212,6 @@ class Member(Entity):
         # Hack - work around API issue.
         # if a parent, make sure swimmers are linked back
         # pylint: disable=protected-access
-        # TODO: remove when SCM bug fixed.
         for swimmer in self._swimmers:
             if len(swimmer._parents) == 0:
                 debug(f"Found swimmer - API error - recovered {swimmer.name}", 7)
@@ -234,6 +233,7 @@ class Member(Entity):
         # HACK - use a group to artificially set is_synchro
         # as this is not returned via API
         # Same needed for open water, but don't care right now.
+        # TODO.
         cfg = get_config(self.scm, C_TYPES, CTYPE_SYNCHRO, C_PSEUDO)
         if cfg:
             for grp in cfg:

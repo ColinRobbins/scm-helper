@@ -28,11 +28,11 @@ class Members(Entities):
         self.entities = []
         self.by_guid = {}
         self.by_name = {}
+        self.knownas = {}
         self._name = name
         self._url = url
         self._raw_data = []
         
-        self.knownas = {}
         self.facebook = {}
         self.count_coaches = 0
         self.count_parents = 0
@@ -118,7 +118,7 @@ class Members(Entities):
             member.linkage(self.scm.members)
 
         for member in self.entities:
-            # Fix API error. now all parent links are returned ,so reverse link
+            # Fix API error. not all parent links are returned ,so reverse link
             # TODO remove when API fixed.
             member.linkage2()
 

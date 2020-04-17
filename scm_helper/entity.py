@@ -35,6 +35,7 @@ class Entities:
         self.entities = []
         self.by_guid = {}
         self.by_name = {}
+        self.knownas = {}
         self.scm = scm
         self._name = name
         self._url = url
@@ -142,6 +143,7 @@ class Entities:
     def name(self):
         """Return name."""
         return self._name
+
 
 
 class Entity:

@@ -39,10 +39,15 @@ def analyse_parent(parent):
             parent.fixit(fix, "Remove 'is parent'")
         else:
             issue(parent, E_INACTIVE, f"child {inactive}")
-
-    # TODO.  Iterate through children, and see if all new starter.
-    # It they are, set parent to new starter.
-    # Not seeing the error, so ignore for now!
+    
+    newmember = True
+    for swimmer in parent.swimmers:
+        if swimmer.newstarter is False:
+            newmember = False
+            break
+    
+    if newmember is True:
+        parent.newstarter = True
 
     age = get_config(parent.scm, C_PARENTS, C_AGE, C_MIN_AGE)
     if parent.age and (parent.age < age):

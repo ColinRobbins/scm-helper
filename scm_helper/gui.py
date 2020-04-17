@@ -42,8 +42,6 @@ class ScmGui(Tk):
 
         master.title("SCM Helper")
 
-        self.label = Label(master, text="This is our first GUI!")
-
         # Row 1
         myrow = 1
         label = Label(master, text="Password: ")
@@ -159,14 +157,10 @@ class ScmGui(Tk):
             if self.scm_init() is False:
                 return
 
-        self.notify.txt.delete("1.0", END)
+        if self.thread:
+            return  # already running
 
-        if self.scm.backup_data():
-            output = self.scm.print_summary()
-            self.notify.insert(END, output)
-            return
-
-        messagebox.showerror("Backup", "Backup failed")
+        self.thread = BackupThread(self).start()
 
     def clear_data(self):
         """Prepare to rerun."""
@@ -190,7 +184,6 @@ class AnalysisThread(threading.Thread):
         self.gui.button_backup.config(state=DISABLED)
 
         self.gui.notify.txt.delete("1.0", END)
-
         self.gui.clear_data()
 
         archive = self.gui.src_option.get()
@@ -232,6 +225,33 @@ class AnalysisThread(threading.Thread):
             output = self.gui.issues.print_by_name(reports)
 
         self.gui.result_text.insert(END, output)
+
+        self.gui.button_analyse.config(state=NORMAL)
+        self.gui.button_backup.config(state=NORMAL)
+        self.gui.thread = None
+
+        return
+
+class BackupThread(threading.Thread):
+    """Thread to run Backuo."""
+
+    def __init__(self, gui):
+        """Initialise."""
+        threading.Thread.__init__(self)
+        self.gui = gui
+        self.scm = gui.scm
+
+    def run(self):
+        """Run analyser."""
+        self.gui.button_analyse.config(state=DISABLED)
+        self.gui.button_backup.config(state=DISABLED)
+
+        self.gui.notify.txt.delete("1.0", END)
+        self.gui.clear_data()
+
+        if self.scm.backup_data():
+            output = self.scm.print_summary()
+            self.notify.txt.insert(END, output)
 
         self.gui.button_analyse.config(state=NORMAL)
         self.gui.button_backup.config(state=NORMAL)
