@@ -107,7 +107,7 @@ class API:
             return False
             
     def get_config(self, password):
-        
+        """Get API key."""
         if self._config is None:
             if self.get_config_file() is False:
                 return False
