@@ -12,11 +12,13 @@ scm_helper/coach.py
 scm_helper/conduct.py
 scm_helper/config.py
 scm_helper/crypto.py
+scm_helper/default.py
 scm_helper/entity.py
 scm_helper/facebook.py
 scm_helper/file.py
 scm_helper/files.py
 scm_helper/groups.py
+scm_helper/gui.py
 scm_helper/issue.py
 scm_helper/lists.py
 scm_helper/member.py
