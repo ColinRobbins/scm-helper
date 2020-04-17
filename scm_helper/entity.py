@@ -21,7 +21,7 @@ from config import (
     SCM_DATE_FORMAT,
 )
 from issue import E_INACTIVE, debug, issue
-from notify import interact, notify
+from notify import interact, interact_yesno, notify
 
 
 class Entities:
@@ -262,10 +262,10 @@ class Entity:
         """Fix an entity."""
         printer = pprint.PrettyPrinter(indent=4)
         data = printer.pformat(self.newdata)
-        err = f"fix {self.name} with: {self.fixmsg}.  Confirm (N/y)?"
+        err = f"fix {self.name} with: {self.fixmsg}.\nConfirm"
         debug(data, 1)
-        resp = interact(err)
-        if resp != "y":
+        resp = interact_yesno(err):
+        if resp == False
             return False
 
         self.newdata[A_GUID] = self.guid

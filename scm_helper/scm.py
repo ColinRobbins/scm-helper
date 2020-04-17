@@ -3,10 +3,12 @@
 import getopt
 import platform
 import sys
+from tkinter import Tk  # only import tkiner if needed.
 
 from api import API
 from facebook import Facebook
 from file import Csv
+from gui import ScmGui
 from issue import REPORTS, IssueHandler
 from notify import notify, set_notify
 from sendmail import send_email
@@ -265,16 +267,12 @@ def main(argv=None):
 
 def gui(argv=None):
     """Start GUI."""
-    # pylint: disable=import-outside-toplevel
     if argv is None:
         argv = sys.argv[1:]
 
     if len(argv) > 0:
         main()  # Command line options = run command line version
     else:
-        from gui import ScmGui
-        from tkinter import Tk  # only import tkiner if needed.
-
         root = Tk()
         ScmGui(root)
         root.mainloop()
