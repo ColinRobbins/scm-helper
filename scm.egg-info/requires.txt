@@ -1,2 +1,4 @@
-requests
 schema
+requests
+pyyaml
+cryptography

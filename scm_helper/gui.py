@@ -124,29 +124,27 @@ class ScmGui(Tk):
         self.notify.config(width=500, height=200)
         self.notify.grid(row=myrow, column=1, columnspan=4, pady=2)
         set_notify(self.notify)
+        self.issues = IssueHandler()
+        self.scm = API(self.issues)
+        self.scm.get_config_file()
+        self.api_init = False
 
     def scm_init(self):
         """Initialise SCM."""
         password = self.__password.get()
         if password:
-            self.issues = IssueHandler()
-            self.scm = API(self.issues)
             if self.scm.initialise(password) is False:
-                del self.scm
-                del self.issues
-                self.scm = None
-                self.issues = None
                 messagebox.showerror("Error", "Cannot initialise SCM (wrong password?)")
                 return False
-
+            self.api_init = True
             return True
-
+            
         messagebox.showerror("Password", "Please give a password!")
         return False
 
     def report_window(self):
         """Window for reports."""
-        if self.scm is None:
+        if self.api_init is False:
             if self.scm_init() is False:
                 return
 
@@ -157,11 +155,11 @@ class ScmGui(Tk):
 
     def backup_window(self):
         """Window for reports."""
-        if self.scm is None:
+        if self.api_init is False:
             if self.scm_init() is False:
                 return
 
-        self.gui.notify.delete("1.0", END)
+        self.notify.txt.delete("1.0", END)
 
         if self.scm.backup_data():
             output = self.scm.print_summary()
@@ -188,29 +186,28 @@ class AnalysisThread(threading.Thread):
 
     def run(self):
         """Run analyser."""
-        self.gui.button_analyser.config(state=DISABLED)
+        self.gui.button_analyse.config(state=DISABLED)
         self.gui.button_backup.config(state=DISABLED)
 
-        self.gui.notify.delete("1.0", END)
+        self.gui.notify.txt.delete("1.0", END)
 
         self.gui.clear_data()
 
         archive = self.gui.src_option.get()
-        print(archive)
         if archive == "--archive":
             if self.scm.decrypt(self.gui.archive.get()) is False:
                 messagebox.showerror("Error", f"Cannot read from archive: {archive}")
         else:
             if self.scm.get_data(False) is False:
                 messagebox.showerror("Analsyis", "Failed to read data")
-                self.gui.button_analyser.config(state=NORMAL)
+                self.gui.button_analyse.config(state=NORMAL)
                 self.gui.button_backup.config(state=NORMAL)
                 self.gui.thread = None
                 return
 
         if self.scm.linkage() is False:
             messagebox.showerror("Analsyis", "Error processing data")
-            self.gui.button_analyser.config(state=NORMAL)
+            self.gui.button_analyse.config(state=NORMAL)
             self.gui.button_backup.config(state=NORMAL)
             self.gui.thread = None
             return
@@ -236,12 +233,11 @@ class AnalysisThread(threading.Thread):
 
         self.gui.result_text.insert(END, output)
 
-        self.gui.button_analyser.config(state=NORMAL)
+        self.gui.button_analyse.config(state=NORMAL)
         self.gui.button_backup.config(state=NORMAL)
         self.gui.thread = None
 
         return
-
 
 class TextScrollCombo(Frame):
     """Text scrolling combo."""

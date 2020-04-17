@@ -1,5 +1,6 @@
 """Notify."""
 import sys
+from tkinter import simpledialog, messagebox
 
 WHERE = None
 
@@ -29,6 +30,21 @@ def set_notify(where):
 
 def interact(msg):
     """Get user input."""
-    # Simple, but ready to add GUI!
-    print(msg, end="")
-    return input()
+    # pylint: disable=global-statement
+    global WHERE
+    if WHERE:
+        return simpledialog.askstring("SCM-Helper: input needed", msg, parent=WHERE.master)
+    else:
+        print(msg, end="")
+        return input()
+
+def interact_yesno(msg):
+    """Get user input."""
+    global WHERE
+    if WHERE:
+        msg += "?"
+        return messagebox.askyesno("SCM-Helper: Yes / No?", msg, parent=WHERE.master)
+    else:
+        msg += " (y/n)?"
+        print(msg, end="")
+        return input()

@@ -4,7 +4,7 @@ import os
 from pathlib import Path
 
 from config import CONFIG_DIR, CONFIG_FILE, FILE_WRITE
-from notify import interact, notify
+from notify import interact, interact_yesno, notify
 
 
 def create_default_config():
@@ -13,13 +13,17 @@ def create_default_config():
 
     cfg = os.path.join(home, CONFIG_DIR)
     cfg_file = os.path.join(home, CONFIG_DIR, CONFIG_FILE)
+    
+    notify("Welcome to SCM Helper.\nStarting configuration for first time use..\n")
 
-    msg = "Welcome to SCM Helper.\nPlease enter Swimming Club Name: "
+    msg = "Please enter Swimming Club Name: "
     clubname = interact(msg)
 
-    msg = f"Create initial configuration file {cfg_file} for '{clubname}' (y/N)? "
-    if interact(msg) != "y":
+    msg = f"Create initial configuration file:\n   {cfg_file}\nfor '{clubname}'"
+    if interact_yesno(msg) is False:
         return False
+        
+    notify("You will now need to provide a new password - this is used to protect the API key.\n")
 
     content = DEFAULT_CONFIG.replace("###CLUB_NAME###", clubname)
 

@@ -143,11 +143,6 @@ class Entities:
         """Return name."""
         return self._name
 
-    @property
-    def knownas(self):
-        """Will be overridden - stops lint errors."""
-        return self._name
-
 
 class Entity:
     """A entity."""

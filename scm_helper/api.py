@@ -82,8 +82,9 @@ class API:
         self.eoy = datetime(int(q_year), 12, 31)
         offset = datetime(int(q_year), int(q_month), 1)
         self.q_offset = (self.today - offset).days
+        
 
-    def get_config(self, password):
+    def get_config_file(self):
         """Read configuration file."""
         home = str(Path.home())
         cfg = os.path.join(home, CONFIG_DIR, CONFIG_FILE)
@@ -104,8 +105,16 @@ class API:
 
         if verify_schema(self._config) is False:
             return False
+            
+    def get_config(self, password):
+        
+        if self._config is None:
+            if self.get_config_file() is False:
+                return False
 
         self.crypto = Crypto(self._config[C_CLUB], password)  # Salt
+
+        home = str(Path.home())
 
         keyfile = os.path.join(home, CONFIG_DIR, KEYFILE)
         self._key = self.crypto.read_key(keyfile)

@@ -31,7 +31,7 @@ class Members(Entities):
         self._name = name
         self._url = url
         self._raw_data = []
-
+        
         self.knownas = {}
         self.facebook = {}
         self.count_coaches = 0
