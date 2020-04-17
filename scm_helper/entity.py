@@ -264,8 +264,8 @@ class Entity:
         data = printer.pformat(self.newdata)
         err = f"fix {self.name} with: {self.fixmsg}.\nConfirm"
         debug(data, 1)
-        resp = interact_yesno(err):
-        if resp == False
+        resp = interact_yesno(err)
+        if resp is False:
             return False
 
         self.newdata[A_GUID] = self.guid
