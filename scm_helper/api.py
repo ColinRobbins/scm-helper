@@ -165,14 +165,13 @@ class API:
             name = name.lower()
             self.class_byname[name] = res
 
-        if self.option(O_VERIFY) or self.option(O_BACKUP):
-            for xclass in BACKUP_URLS:
-                name, url = xclass
-                entity = Entities(self, name, url)
-                self.backup_classes.append(entity)
-                name = name.rstrip("s")  # remove any plural!
-                name = name.lower()
-                self.class_byname[name] = entity
+        for xclass in BACKUP_URLS:
+            name, url = xclass
+            entity = Entities(self, name, url)
+            self.backup_classes.append(entity)
+            name = name.rstrip("s")  # remove any plural!
+            name = name.lower()
+            self.class_byname[name] = entity
 
         return True
 
@@ -295,7 +294,7 @@ class API:
         notify("\n")
         return True
 
-    def print_summary(self):
+    def print_summary(self, backup=False):
         """Print summary."""
         output = ""
         for aclass in self.classes:

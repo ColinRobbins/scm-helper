@@ -12,8 +12,9 @@ from gui import ScmGui
 from issue import REPORTS, IssueHandler
 from notify import notify, set_notify
 from sendmail import send_email
+from config import VERSION
 
-USAGE = """
+USAGE = f"""
    --analyse = run analysis on archive date
    --archive <date> = which archive to use in restore
    --backup = backup
@@ -37,6 +38,8 @@ USAGE = """
    --restore <type> = restore an entity of <type> (need -archive as well)
    --to <email> = Who to send the emial to (used with --email)
    --verify <date> = use archive backup
+   
+   SCM Helper Version: {VERSION}
 """
 
 SHORT_OPTS = "hlmfq"
@@ -135,7 +138,7 @@ def main(argv=None):
 
     if scm.option("--backup"):
         if scm.backup_data():
-            scm.print_summary()
+            scm.print_summary(backup=True)
         sys.exit()
 
     if scm.option("--csv"):

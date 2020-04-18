@@ -2,6 +2,8 @@
 from notify import notify
 from schema import And, Optional, Schema, SchemaError
 
+VERSION = 1.0
+
 # SCM access URLs etc
 URL_BASE = "https://api.swimclubmanager.co.uk"
 USER_AGENT = "SCM Access Script (Python)"
@@ -19,6 +21,8 @@ URL_TRIALS = f"{URL_BASE}/TrialRequests"
 URL_WAITINGLIST = f"{URL_BASE}/WaitingList"
 URL_WHO = f"{URL_BASE}/WhosWho"
 URL_NOTICE = f"{URL_BASE}/NoticeBoard"
+
+HELPURL = "https://github.com/ColinRobbins/scm-helper/wiki"
 
 # Do not change below here...
 

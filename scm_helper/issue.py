@@ -619,4 +619,6 @@ def print_dict(xdict, reports):
             res += to_print
             res += "\n"
 
-    return res
+    if res:
+        return res
+    return "Nothing to report."
