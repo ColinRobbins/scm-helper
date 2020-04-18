@@ -1,4 +1,4 @@
-"""SCM Windows wrapper."""
+"""SCM wrapper."""
 import sys
 sys.path.append("scm_helper/")
 
