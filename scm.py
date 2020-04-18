@@ -1,8 +1,8 @@
 """SCM Windows wrapper."""
 import sys
-sys.path.append("/home/pi/scm-python/scm_helper/")
+sys.path.append("scm_helper/")
 
-from scm import main
+from main import main
 
 if __name__ == "__main__":
     main()
