@@ -13,7 +13,7 @@ setuptools.setup(
     long_description=DESCRIPTION,
     long_description_content_type="text/markdown",
     url="https://github.com/ColinRobbins/scm-helper",
-    entry_points={"console_scripts": ["scm=scm_helper.scm:main"]},
+    entry_points={"console_scripts": ["scm=scm_helper.main:main"]},
     project_urls={
         "Bug Tracker": "https://github.com/ColinRobbins/scm-helper/issues",
         "Documentation": "https://github.com/ColinRobbins/scm-helper/wiki",
