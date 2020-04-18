@@ -1,6 +1,6 @@
 """Notify."""
 import sys
-from tkinter import simpledialog, messagebox
+from tkinter import messagebox, simpledialog
 
 WHERE = None
 
@@ -33,18 +33,19 @@ def interact(msg):
     # pylint: disable=global-statement
     global WHERE
     if WHERE:
-        return simpledialog.askstring("SCM-Helper: input needed", msg, parent=WHERE.master)
-    else:
-        print(msg, end="")
-        return input()
+        prefix = "SCM-Helper: input needed"
+        return simpledialog.askstring(prefix, msg, parent=WHERE.master)
+    print(msg, end="")
+    return input()
+
 
 def interact_yesno(msg):
     """Get user input."""
+    # pylint: disable=global-statement
     global WHERE
     if WHERE:
         msg += "?"
         return messagebox.askyesno("SCM-Helper: Yes / No?", msg, parent=WHERE.master)
-    else:
-        msg += " (y/n)?"
-        print(msg, end="")
-        return input()
+    msg += " (y/n)?"
+    print(msg, end="")
+    return input()

@@ -1,37 +1,43 @@
 """Windows GUI."""
+import os.path
 import threading
 import webbrowser
-import os.path
-
+from pathlib import Path
 from tkinter import (
     DISABLED,
     END,
     NORMAL,
     Button,
     Entry,
-    filedialog,
     Frame,
     Label,
     Menu,
     OptionMenu,
-    Radiobutton,
     Scrollbar,
     StringVar,
     Text,
     Tk,
     Toplevel,
     W,
+    filedialog,
     messagebox,
+    scrolledtext,
 )
 
 from api import API
+from config import (
+    BACKUP_DIR,
+    CONFIG_DIR,
+    CONFIG_FILE,
+    FILE_READ,
+    FILE_WRITE,
+    HELPURL,
+    VERSION,
+)
+from facebook import Facebook
+from file import Csv
 from issue import REPORTS, IssueHandler
 from notify import set_notify
-from config import VERSION, CONFIG_DIR, BACKUP_DIR, HELPURL, CONFIG_FILE, FILE_WRITE
-
-
-from pathlib import Path
-
 
 
 class ScmGui(Tk):
@@ -42,6 +48,7 @@ class ScmGui(Tk):
     def __init__(self, master):
         """Initialise."""
         # pylint: disable=too-many-statements
+        super().__init__()
         self.master = master
         self.result_window = None
         self.result_text = None
@@ -55,17 +62,17 @@ class ScmGui(Tk):
         self.reports = None
 
         master.title("SCM Helper")
-        
+
         self.create_main_window()
         self.create_menu()
-        
+
         set_notify(self.notify)
         self.issues = IssueHandler()
         self.scm = API(self.issues)
         self.scm.get_config_file()
         self.api_init = False
-        
-        msg = ("Welcome to SCM Helper by Colin Robbins.\nPlease enter your password.\n")
+
+        msg = "Welcome to SCM Helper by Colin Robbins.\nPlease enter your password.\n"
         self.notify.txt.insert(END, msg)
 
     def create_main_window(self):
@@ -79,13 +86,17 @@ class ScmGui(Tk):
         password = Entry(self.master, show="*", textvariable=self.__password, width=20)
         password.grid(row=myrow, column=2, sticky=W)
 
-        self.button_analyse = Button(self.master, text="Analyse", command=self.analyse_window)
+        self.button_analyse = Button(
+            self.master, text="Analyse", command=self.analyse_window
+        )
         self.button_analyse.grid(row=myrow, column=3, pady=2, sticky=W)
 
         self.button_backup = Button(self.master, text="Backup", command=self.backup)
         self.button_backup.grid(row=myrow, column=4, sticky=W)
 
-        self.button_fixit = Button(self.master, text="Fixit", command=self.fixit, state=DISABLED)
+        self.button_fixit = Button(
+            self.master, text="Fixit", command=self.fixit, state=DISABLED
+        )
         self.button_fixit.grid(row=myrow, column=5, sticky=W)
 
         # Row 2
@@ -93,39 +104,37 @@ class ScmGui(Tk):
         self.notify = ScrollingText(self.master)
         self.notify.config(width=600, height=250)
         self.notify.grid(row=myrow, column=1, columnspan=5, pady=2)
-        
 
     def create_menu(self):
         """Create Menus."""
-
         menubar = Menu(self.master)
         file = Menu(menubar, tearoff=0)
         file.add_command(label="Open Archive", command=self.open_archive)
         file.add_separator()
         file.add_command(label="Exit", command=self.master.quit)
         menubar.add_cascade(label="File", menu=file)
-        
+
         cmd = Menu(menubar, tearoff=0)
         cmd.add_command(label="Edit Config", command=self.edit_config)
         file.add_separator()
         cmd.add_command(label="Create Lists", command=self.create_lists)
         cmd.add_command(label="Fix Errors", command=self.fixit)
         menubar.add_cascade(label="Edit", menu=cmd)
-        
+
         cmd = Menu(menubar, tearoff=0)
         cmd.add_command(label="Analyse Swim England File", command=self.swim_england)
         cmd.add_command(label="Analyse Facebook", command=self.facebook)
         cmd.add_command(label="List Coaches", command=self.coaches)
         cmd.add_command(label="Show Not-confirmed Emails", command=self.confirm)
         menubar.add_cascade(label="Reports", menu=cmd)
-        
+
         about = Menu(menubar, tearoff=0)
-        about.add_command(label="About...", command=self.about)
-        about.add_command(label="Help.", command=self.help)
+        about.add_command(label="About...", command=xabout)
+        about.add_command(label="Help.", command=xhelp)
         menubar.add_cascade(label="About", menu=about)
-        
+
         self.master.config(menu=menubar)
-        
+
     def scm_init(self):
         """Initialise SCM."""
         password = self.__password.get()
@@ -136,25 +145,24 @@ class ScmGui(Tk):
                 return False
             self.api_init = True
             return True
-            
+
         messagebox.showerror("Password", "Please give a password!")
         return False
-        
+
     def prep_report(self):
         """Prepare for a report."""
         if self.gotdata is False:
             messagebox.showerror("Error", "Run analyse first to colect data")
             return False
-    
+
         if self.report_window is None:
             self.create_report_window()
         self.report_text.txt.delete("1.0", END)
-        
+
         return True
-        
+
     def open_archive(self):
         """Open Archive file."""
-
         if self.api_init is False:
             if self.scm_init() is False:
                 return
@@ -166,21 +174,26 @@ class ScmGui(Tk):
 
     def swim_england(self):
         """Process Swim England File."""
-
         if self.prep_report() is False:
             return
+
+        csv = Csv()
 
         home = str(Path.home())
         cfg = os.path.join(home, CONFIG_DIR)
 
         dir_opt = {}
-        dir_opt['initialdir'] = cfg
-        dir_opt['mustexist'] = True
-        dir_opt['parent'] = self.gui.master
-        dir_opt['defaultextension'] = ".csv"
+        dir_opt["initialdir"] = cfg
+        dir_opt["mustexist"] = True
+        dir_opt["parent"] = self.gui.master
+        dir_opt["defaultextension"] = ".csv"
 
-        where = filedialog.askfilename(**dir_opt)
-        
+        where = filedialog.askopenfilename(**dir_opt)
+        if csv.readfile(where, self.scm) is False:
+            messagebox.showerror("Error", "Could not read CSV file")
+            return
+
+        csv.analyse(self.scm)
         output = csv.print_errors()
         self.report_text.insert(END, output)
 
@@ -188,22 +201,21 @@ class ScmGui(Tk):
         """Process a Facebook report."""
         if self.prep_report() is False:
             return
-        
+
         fbook = Facebook()
-        if fbook.readfiles(scm) is False:
+        if fbook.readfiles(self.scm) is False:
             messagebox.showerror("Error", "Could not read facebook files")
             return
-        
+
         fbook.analyse()
         output = fbook.print_errors()
         self.report_text.insert(END, output)
 
-
     def confirm(self):
-        """Confirmation Report."""
+        """Confirm email Report."""
         if self.prep_report() is False:
             return
-        
+
         output = self.issues.confirm_email()
         self.report_text.insert(END, output)
 
@@ -211,51 +223,35 @@ class ScmGui(Tk):
         """Coaches Report."""
         if self.prep_report() is False:
             return
-        
-        output = scm.sessions.print_coaches()
+
+        output = self.scm.sessions.print_coaches()
         self.report_text.insert(END, output)
-        
+
     def edit_config(self):
         """Edit Config."""
-
         home = str(Path.home())
         cfg = os.path.join(home, CONFIG_DIR, CONFIG_FILE)
 
         dir_opt = {}
-        dir_opt['initialdir'] = cfg
-        dir_opt['mustexist'] = True
-        dir_opt['parent'] = self.gui.master
-        dir_opt['defaultextension'] = ".yaml"
+        dir_opt["initialdir"] = cfg
+        dir_opt["mustexist"] = True
+        dir_opt["parent"] = self.gui.master
+        dir_opt["defaultextension"] = ".yaml"
 
-        where = filedialog.askfilename(**dir_opt)
-        
-        edit(self.master, where)
-        
+        where = filedialog.askopenfilename(**dir_opt)
+
+        Edit(self.master, where)
+
     def create_lists(self):
         """Create Lists."""
         if self.gotdata is False:
             messagebox.showerror("Error", "Run analyse first to collect data")
-            return False
+            return
 
         if self.thread:
             return  # already running
-        
+
         self.thread = UpdateThread(self).start()
-
-    def about(self):
-        """About message."""
-        home = str(Path.home())
-        cfg = os.path.join(home, CONFIG_DIR)
-        
-        msg = "SCM Helper by Colin Robbins.\n"
-        msg += f"Version: {VERSION}.\n"
-        msg += f"Config directory: {cfg}"
-        
-        messagebox.showinfo("About", msg)
-
-    def help(self):
-        """help message."""
-        webbrowser.open_new(HELPURL)
 
     def analyse_window(self):
         """Window for analysis result."""
@@ -276,8 +272,8 @@ class ScmGui(Tk):
 
         if self.thread:
             return  # already running
-        
-        if self.gotdata == False:
+
+        if self.gotdata is False:
             messagebox.showerror("Error", "Analyse data first, before fixing")
             return
 
@@ -290,7 +286,7 @@ class ScmGui(Tk):
             return
 
         self.scm.apply_fixes()
-        
+
         self.buttons(NORMAL)
 
     def backup(self):
@@ -308,7 +304,7 @@ class ScmGui(Tk):
         """Prepare to rerun."""
         self.scm.delete()
         self.gotdata = False
-        
+
     def buttons(self, status):
         """Change button state."""
         self.button_analyse.config(state=status)
@@ -320,13 +316,13 @@ class ScmGui(Tk):
                 return
         self.button_fixit.config(state=status)
 
-    def process_option(self, dummy):
+    def process_option(self, _):
         """Process an option selection."""
         report = self.reports.get()
         mode = self.grouping.get()
-        
+
         self.result_text.txt.delete("1.0", END)
-        
+
         if report == "all reports":
             report = None
 
@@ -334,17 +330,18 @@ class ScmGui(Tk):
             output = self.issues.print_by_error(report)
         else:
             output = self.issues.print_by_name(report)
-            
+
         self.result_text.insert(END, output)
-        
+
     def create_report_window(self):
         """Create the reports window."""
         self.report_window = Toplevel(self.gui.master)
         self.report_window.title("SCM Helper - Reports")
-        
+
         self.report_text = ScrollingText(self.gui.result_window)
         self.report_text.config(width=800, height=800)
         self.report_text.grid(row=1, column=1)
+
 
 class AnalysisThread(threading.Thread):
     """Thread to run analysis."""
@@ -367,16 +364,15 @@ class AnalysisThread(threading.Thread):
             return
 
         if self.archive:
-            
+
             home = str(Path.home())
-            cfg = os.path.join(home, CONFIG_DIR)
             backup = os.path.join(home, CONFIG_DIR, BACKUP_DIR)
 
             dir_opt = {}
-            dir_opt['initialdir'] = backup
-            dir_opt['mustexist'] = True
-            dir_opt['parent'] = self.gui.master
-    
+            dir_opt["initialdir"] = backup
+            dir_opt["mustexist"] = True
+            dir_opt["parent"] = self.gui.master
+
             where = filedialog.askdirectory(**dir_opt)
             if self.scm.decrypt(where) is False:
                 messagebox.showerror("Error", f"Cannot read from archive: {where}")
@@ -418,7 +414,7 @@ class AnalysisThread(threading.Thread):
         """Create the results window."""
         self.gui.result_window = Toplevel(self.gui.master)
         self.gui.result_window.title("SCM Helper - Results")
-        
+
         # Row 1
         myrow = 1
 
@@ -430,25 +426,36 @@ class AnalysisThread(threading.Thread):
 
         all_reports = ["all reports"] + REPORTS
 
-        menu = OptionMenu(self.gui.result_window, self.gui.reports, *all_reports, command=self.gui.process_option)
+        menu = OptionMenu(
+            self.gui.result_window,
+            self.gui.reports,
+            *all_reports,
+            command=self.gui.process_option,
+        )
         menu.grid(row=myrow, column=2, sticky=W)
-        
+
         self.gui.grouping = StringVar()
         self.gui.grouping.set("Error")
 
         label = Label(self.gui.result_window, text="Group Report by: ")
         label.grid(row=myrow, column=3, sticky=W, pady=2)
 
-        menu = OptionMenu(self.gui.result_window, self.gui.grouping, "Error", "Member", command=self.gui.process_option)
+        menu = OptionMenu(
+            self.gui.result_window,
+            self.gui.grouping,
+            "Error",
+            "Member",
+            command=self.gui.process_option,
+        )
         menu.grid(row=myrow, column=4, sticky=W)
 
         # Row 2
         myrow = 2
-        
+
         self.gui.result_text = ScrollingText(self.gui.result_window)
         self.gui.result_text.config(width=800, height=800)
         self.gui.result_text.grid(row=myrow, column=1, columnspan=6)
-        
+
 
 class BackupThread(threading.Thread):
     """Thread to run Backuo."""
@@ -473,12 +480,10 @@ class BackupThread(threading.Thread):
         else:
             messagebox.showerror("Error", "Backup failure")
 
-
         self.gui.buttons(NORMAL)
         self.gui.thread = None
 
-        return
-    
+
 class UpdateThread(threading.Thread):
     """Thread to run Backuo."""
 
@@ -496,15 +501,14 @@ class UpdateThread(threading.Thread):
         self.gui.clear_data()
 
         self.scm.update()
-        
+
         self.gui.notify.txt.insert(END, "Lists Created.")
 
         self.gui.buttons(NORMAL)
         self.gui.thread = None
 
-        return
 
-class ScrollingText(Frame):
+class ScrollingText(Frame):  # pylint: disable=too-many-ancestors
     """Text scrolling combo."""
 
     # Credit: https://stackoverflow.com/questions/13832720/
@@ -528,7 +532,7 @@ class ScrollingText(Frame):
         scrollb = Scrollbar(self, command=self.txt.yview)
         scrollb.grid(row=2, column=4, sticky="nsew")
         self.txt["yscrollcommand"] = scrollb.set
-        
+
     def insert(self, where, what):
         """Insert text."""
         self.txt.insert(where, what)
@@ -538,34 +542,58 @@ class ScrollingText(Frame):
         self.txt.insert(END, what)
 
 
-class Edit(Frame):
+class Edit(Frame):  # pylint: disable=too-many-ancestors
+    """Class to edit a frame."""
 
-    def __init__(self, parent, file):
+    def __init__(self, parent, filename):
+        """Initialise."""
         Frame.__init__(self, parent)
         self.parent = parent
-        self.file = file
-        self.initUI()
+        self.file = filename
 
-    def initUI(self):
+        self.text_pad = scrolledtext.ScrolledText(parent)
+        self.text_pad.grid(row=1, column=1)
 
-        self.textPad = ScrolledText(self)
-        self.textPad.grid(row=1, column=1, columnspan=2, rowspan=4, padx=5, sticky=E+W+S+N)
+        with open(self.file, FILE_READ) as file:
+            contents = file.read()
+            self.text_pad.insert("1.0", contents)
+            file.close()
 
-        abtn = Button(self, text="Save",command=self.save_command)
+        abtn = Button(self, text="Save", command=self.save_command)
         abtn.grid(row=2, column=1)
 
-        cbtn = Button(self, text="Close", command=self.onExit)
-        cbtn.grid(row=2, column=2, pady=4)
+        cbtn = Button(self, text="Close", command=self.on_exit)
+        cbtn.grid(row=2, column=2)
 
-    def onExit(self):
-        resp = messagebox.askyesno("SCM-Helper: Yes / No?", "Save Config?", parent=self.parent)
+    def on_exit(self):
+        """Close."""
+        msg = "SCM-Helper: Yes / No?", "Save Config"
+        resp = messagebox.askyesno(msg, parent=self.parent)
         if resp:
-            save_command()
+            self.save_command()
         self.parent.destroy()
 
     def save_command(self):
+        """Save."""
         with open(self.file, FILE_WRITE) as file:
-        # slice off the last character from get, as an extra return is added
-            data = self.textPad.get('1.0', 'end-1c')
+            # slice off the last character from get, as an extra return is added
+            data = self.text_pad.get("1.0", END)
             file.write(data)
             file.close()
+
+
+def xabout():
+    """About message."""
+    home = str(Path.home())
+    cfg = os.path.join(home, CONFIG_DIR)
+
+    msg = "SCM Helper by Colin Robbins.\n"
+    msg += f"Version: {VERSION}.\n"
+    msg += f"Config directory: {cfg}"
+
+    messagebox.showinfo("About", msg)
+
+
+def xhelp():
+    """|Help message."""
+    webbrowser.open_new(HELPURL)

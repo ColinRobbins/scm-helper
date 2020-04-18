@@ -151,7 +151,6 @@ class Entities:
         return self._name
 
 
-
 class Entity:
     """A entity."""
 

@@ -22,7 +22,7 @@ from config import (
 )
 from entity import Entities, Entity, check_type
 from issue import E_LIST_ERROR, E_NO_SWIMMERS, issue
-from notify import interact_yesno, notify
+from notify import notify
 
 A_LISTNAME = "ListName"
 
@@ -65,8 +65,6 @@ class Lists(Entities):
         # Separate for loop, as add_to_list may have created some too
         for xlist in self.newlists:
             xlist.generate_data(self._suffix)
-            if interact(f"Upload {xlist.name}") is False:
-                continue
 
             if xlist.upload() is None:
                 pass  # not sure what to do, just carry on!

@@ -6,13 +6,13 @@ import sys
 from tkinter import Tk  # only import tkiner if needed.
 
 from api import API
+from config import VERSION
 from facebook import Facebook
 from file import Csv
 from gui import ScmGui
 from issue import REPORTS, IssueHandler
 from notify import notify, set_notify
 from sendmail import send_email
-from config import VERSION
 
 USAGE = f"""
    --analyse = run analysis on archive date
@@ -38,7 +38,7 @@ USAGE = f"""
    --restore <type> = restore an entity of <type> (need -archive as well)
    --to <email> = Who to send the emial to (used with --email)
    --verify <date> = use archive backup
-   
+
    SCM Helper Version: {VERSION}
 """
 

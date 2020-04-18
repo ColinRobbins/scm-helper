@@ -32,7 +32,7 @@ class Members(Entities):
         self._name = name
         self._url = url
         self._raw_data = []
-        
+
         self.facebook = {}
         self.count_coaches = 0
         self.count_parents = 0

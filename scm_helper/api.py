@@ -21,7 +21,6 @@ from config import (
     KEYFILE,
     LISTS,
     MEMBERS,
-    O_BACKUP,
     O_FIX,
     O_FORMAT,
     O_VERIFY,
@@ -82,7 +81,6 @@ class API:
         self.eoy = datetime(int(q_year), 12, 31)
         offset = datetime(int(q_year), int(q_month), 1)
         self.q_offset = (self.today - offset).days
-        
 
     def get_config_file(self):
         """Read configuration file."""
@@ -105,7 +103,11 @@ class API:
 
         if verify_schema(self._config) is False:
             return False
-            
+
+        file.close()
+
+        return True
+
     def get_config(self, password):
         """Get API key."""
         if self._config is None:
@@ -252,7 +254,7 @@ class API:
         delete = self.classes + self.backup_classes
         for aclass in delete:
             aclass.delete()
-            
+
         self.groups = None
         self.lists = None
         self.roles = None
@@ -263,7 +265,6 @@ class API:
         self.backup_classes = []
         self.class_byname = {}
         self.fixable = []
-
 
     def backup_data(self):
         """Backup."""
@@ -313,7 +314,7 @@ class API:
             output += aclass.print_summary()
         output += f"   Not confirmed: {self.members.count_not_confirmed}\n"
 
-        if self.backup_classes:
+        if backup and self.backup_classes:
             for aclass in self.backup_classes:
                 output += aclass.print_summary()
 

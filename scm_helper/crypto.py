@@ -55,6 +55,7 @@ class Crypto:
                 file.write(encrypted_data)
 
             notify(f"Encrypted {filename}\n")
+            file.close()
             return True
 
         except OSError as error:
@@ -76,6 +77,7 @@ class Crypto:
 
             with open(filename, READ_BINARY) as file:
                 data = file.read()
+            file.close()
 
             decrypted = fernet.decrypt(data)
             return json.loads(decrypted.decode())
@@ -113,6 +115,7 @@ class Crypto:
 
             with open(filename, READ_BINARY) as file:
                 data = file.read()
+            file.close()
 
             decrypted = fernet.decrypt(data)
             return decrypted.decode()
@@ -134,6 +137,7 @@ class Crypto:
             encrypted_data = fernet.encrypt(apikey.encode("utf-8"))
             with open(filename, WRITE_BINARY) as file:
                 file.write(encrypted_data)
+            file.close()
 
             notify(f"Generate encrypted keyfille {filename}\n")
             return apikey
@@ -157,6 +161,7 @@ class Crypto:
 
             with open(filename, READ_BINARY) as file:
                 data = file.read()
+            file.close()
 
             decrypted = fernet.decrypt(data)
             return decrypted.decode()
@@ -178,6 +183,7 @@ class Crypto:
             encrypted_data = fernet.encrypt(apikey.encode("utf-8"))
             with open(filename, WRITE_BINARY) as file:
                 file.write(encrypted_data)
+            file.close()
 
             notify(f"Generate password keyfile {filename}\n")
             return apikey

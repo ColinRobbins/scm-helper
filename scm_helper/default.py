@@ -13,7 +13,7 @@ def create_default_config():
 
     cfg = os.path.join(home, CONFIG_DIR)
     cfg_file = os.path.join(home, CONFIG_DIR, CONFIG_FILE)
-    
+
     notify("Welcome to SCM Helper.\nStarting configuration for first time use..\n")
 
     msg = "Please enter Swimming Club Name: "
@@ -22,8 +22,10 @@ def create_default_config():
     msg = f"Create initial configuration file:\n   {cfg_file}\nfor '{clubname}'"
     if interact_yesno(msg) is False:
         return False
-        
-    notify("You will now need to provide a new password - this is used to protect the API key.\n")
+
+    nmsg = "You will now need to provide a new password.\n"
+    nmsg += "This is used to protect the API key.\n"
+    notify(nmsg)
 
     content = DEFAULT_CONFIG.replace("###CLUB_NAME###", clubname)
 

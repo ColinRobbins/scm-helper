@@ -22,6 +22,7 @@ from issue import (
 
 def analyse_parent(parent):
     """Analyse a parent..."""
+    # pylint: disable=too-many-branches
     active = False
     inactive = None
 
@@ -39,13 +40,13 @@ def analyse_parent(parent):
             parent.fixit(fix, "Remove 'is parent'")
         else:
             issue(parent, E_INACTIVE, f"child {inactive}")
-    
+
     newmember = True
     for swimmer in parent.swimmers:
         if swimmer.newstarter is False:
             newmember = False
             break
-    
+
     if newmember is True:
         parent.newstarter = True
 

@@ -75,6 +75,7 @@ class FacebookPage(Files):
         try:
             with open(filename, FILE_READ) as file:
                 self.data = file.read().replace("\n", "")
+            file.close()
             return True
 
         except EnvironmentError:
