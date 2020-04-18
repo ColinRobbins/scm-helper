@@ -252,6 +252,18 @@ class API:
         delete = self.classes + self.backup_classes
         for aclass in delete:
             aclass.delete()
+            
+        self.groups = None
+        self.lists = None
+        self.roles = None
+        self.sessions = None
+        self.members = None
+        self.conduct = None
+        self.classes = []
+        self.backup_classes = []
+        self.class_byname = {}
+        self.fixable = []
+
 
     def backup_data(self):
         """Backup."""

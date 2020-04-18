@@ -77,6 +77,7 @@ class Lists(Entities):
         for entity in self.newlists:
             entity.delete()
             del entity
+        self.newlists = []
 
     def add(self, name, person):
         """Add a person to a new list."""

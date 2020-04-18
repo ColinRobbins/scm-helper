@@ -106,6 +106,12 @@ class Entities:
         for entity in self.entities:
             entity.delete()
             del entity
+        self.entities = []
+        self.by_guid = {}
+        self.by_name = {}
+        self.knownas = {}
+        self.count = 0
+        self._raw_data = []
 
     def restore(self, xtype):
         """Restore a record."""
