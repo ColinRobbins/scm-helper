@@ -139,7 +139,7 @@ class Members(Entities):
         opt += f"   Swimmers: {self.count_swimmers}\n"
         opt += f"   {name}: {self.count_synchro}\n"
         opt += f"   Water Polo: {self.count_waterpolo}\n"
-        opt += f"   Voluntes: {self.count_volunteer}\n"
+        opt += f"   Volunteers: {self.count_volunteer}\n"
         opt += f"   Coaches: {self.count_coaches}\n"
         opt += f"   Parents: {self.count_parents}\n"
         opt += f"   Inactive: {self.count_inactive}\n"
