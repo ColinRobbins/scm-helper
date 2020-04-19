@@ -5,7 +5,7 @@ import json
 import pprint
 import sys
 
-from config import (
+from scm_helper.config import (
     A_ACTIVE,
     A_ARCHIVED,
     A_GUID,
@@ -20,8 +20,8 @@ from config import (
     CTYPE_VOLUNTEER,
     SCM_DATE_FORMAT,
 )
-from issue import E_INACTIVE, debug, issue
-from notify import interact, interact_yesno, notify
+from scm_helper.issue import E_INACTIVE, debug, issue
+from scm_helper.notify import interact, interact_yesno, notify
 
 
 class Entities:

@@ -2,9 +2,9 @@
 import datetime
 import re
 
-from coach import analyse_coach
-from conduct import check_conduct
-from config import (
+from scm_helper.coach import analyse_coach
+from scm_helper.conduct import check_conduct
+from scm_helper.config import (
     A_ACTIVE,
     A_ASA_CATEGORY,
     A_ASA_NUMBER,
@@ -53,8 +53,8 @@ from config import (
     SCM_DATE_FORMAT,
     get_config,
 )
-from entity import Entity, get_date, print_all
-from issue import (
+from scm_helper.entity import Entity, get_date, print_all
+from scm_helper.issue import (
     E_CONFIRMATION_EXPIRED,
     E_DATE,
     E_DBS_EXPIRED,
@@ -77,8 +77,8 @@ from issue import (
     debug,
     issue,
 )
-from parent import analyse_parent
-from swimmer import analyse_swimmer
+from scm_helper.parent import analyse_parent
+from scm_helper.swimmer import analyse_swimmer
 
 FACEBOOK_RE = re.compile(r"Facebook: *([a-zA-Z\- ]+)")
 API_RE = re.compile(r"API:.+")  # The whole line

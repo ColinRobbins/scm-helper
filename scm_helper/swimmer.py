@@ -1,6 +1,6 @@
 """Swimmer routines."""
 
-from config import (
+from scm_helper.config import (
     C_ABSENCE,
     C_CHECK_SE_NUMBER,
     C_CONF_DIFF,
@@ -29,7 +29,7 @@ from config import (
     PRINT_DATE_FORMAT,
     get_config,
 )
-from issue import (
+from scm_helper.issue import (
     E_ABSENT,
     E_ASA,
     E_CONFIRM_DIFF,

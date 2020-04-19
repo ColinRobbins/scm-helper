@@ -1,5 +1,5 @@
 """SCM Group."""
-from config import (
+from scm_helper.config import (
     C_CHECK_DBS,
     C_GROUP,
     C_GROUPS,
@@ -18,8 +18,8 @@ from config import (
     EXCEPTION_NONSWIMMINGMASTER,
     get_config,
 )
-from entity import Entities, Entity, check_type
-from issue import E_NO_SWIMMERS, E_NOT_IN_SESSION, E_SESSIONS, E_TYPE, debug, issue
+from scm_helper.entity import Entities, Entity, check_type
+from scm_helper.issue import E_NO_SWIMMERS, E_NOT_IN_SESSION, E_SESSIONS, E_TYPE, debug, issue
 
 A_GROUP_NAME = "GroupName"
 

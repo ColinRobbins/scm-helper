@@ -1,7 +1,7 @@
 """SCM Session."""
 import datetime
 
-from config import (
+from scm_helper.config import (
     A_ARCHIVED,
     A_GUID,
     A_LAST_ATTENDED,
@@ -16,8 +16,8 @@ from config import (
     SCM_DATE_FORMAT,
     get_config,
 )
-from entity import Entities, Entity
-from issue import (
+from scm_helper.entity import Entities, Entity
+from scm_helper.issue import (
     E_INACTIVE,
     E_NEVER_ATTENDED,
     E_NO_COACH,

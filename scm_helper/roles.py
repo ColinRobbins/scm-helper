@@ -1,6 +1,6 @@
 """SCM Role."""
-from coach import check_coach_permissions
-from config import (
+from scm_helper.coach import check_coach_permissions
+from scm_helper.config import (
     A_GUID,
     A_ISVOLUNTEER,
     A_MEMBERS,
@@ -15,8 +15,8 @@ from config import (
     C_VOLUNTEER,
     get_config,
 )
-from entity import Entities, Entity
-from issue import (
+from scm_helper.entity import Entities, Entity
+from scm_helper.issue import (
     E_COACH_ROLE,
     E_INACTIVE,
     E_NO_LOGIN,

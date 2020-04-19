@@ -3,9 +3,9 @@ import os
 import re
 from pathlib import Path
 
-from config import C_FACEBOOK, CONFIG_DIR, FILE_READ, get_config
-from files import Files
-from notify import notify
+from scm_helper.config import C_FACEBOOK, CONFIG_DIR, FILE_READ, get_config
+from scm_helper.files import Files
+from scm_helper.notify import notify
 
 # should probably parse the structure, but a simple regex seems to work...
 FACEBOOK_RE = re.compile(

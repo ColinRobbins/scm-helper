@@ -1,7 +1,7 @@
 """Send email."""
 import smtplib
 
-from config import (
+from scm_helper.config import (
     C_EMAIL,
     C_PASSWORD,
     C_SEND_TO,
@@ -12,7 +12,7 @@ from config import (
     O_TO,
     get_config,
 )
-from notify import notify
+from scm_helper.notify import notify
 
 
 def send_email(scm, text, subject):

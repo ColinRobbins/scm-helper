@@ -1,5 +1,5 @@
 """SCM List."""
-from config import (
+from scm_helper.config import (
     A_GUID,
     A_MEMBERS,
     C_ALLOW_GROUP,
@@ -20,9 +20,9 @@ from config import (
     EXCEPTION_NOEMAIL,
     get_config,
 )
-from entity import Entities, Entity, check_type
-from issue import E_LIST_ERROR, E_NO_SWIMMERS, issue
-from notify import notify
+from scm_helper.entity import Entities, Entity, check_type
+from scm_helper.issue import E_LIST_ERROR, E_NO_SWIMMERS, issue
+from scm_helper.notify import notify
 
 A_LISTNAME = "ListName"
 

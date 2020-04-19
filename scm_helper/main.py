@@ -5,15 +5,15 @@ import platform
 import sys
 from tkinter import Tk  # only import tkiner if needed.
 
-from api import API
-from config import HELPURL
-from facebook import Facebook
-from file import Csv
-from gui import ScmGui
-from issue import REPORTS, IssueHandler
-from notify import notify, set_notify
-from sendmail import send_email
-from version import VERSION
+from scm_helper.scm_api import API
+from scm_helper.config import HELPURL
+from scm_helper.facebook import Facebook
+from scm_helper.file import Csv
+from scm_helper.gui import ScmGui
+from scm_helper.issue import REPORTS, IssueHandler
+from scm_helper.notify import notify, set_notify
+from scm_helper.sendmail import send_email
+from scm_helper.version import VERSION
 
 USAGE = f"""
 scm <options>

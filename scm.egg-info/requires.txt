@@ -1,4 +1,4 @@
-schema
-requests
-pyyaml
 cryptography
+pyyaml
+requests
+schema

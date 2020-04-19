@@ -1,10 +1,9 @@
 """SCM wrapper."""
 import sys
-
-from main import main
-
 sys.path.append("scm_helper/")
+
+from scm_helper import main
 
 
 if __name__ == "__main__":
-    main()
+    main.main()

@@ -1,5 +1,5 @@
 """Parent routines."""
-from config import (
+from scm_helper.config import (
     A_ISPARENT,
     A_USERNAME,
     C_AGE,
@@ -10,7 +10,7 @@ from config import (
     C_PARENTS,
     get_config,
 )
-from issue import (
+from scm_helper.issue import (
     E_INACTIVE,
     E_NO_CHILD,
     E_NO_LOGIN,

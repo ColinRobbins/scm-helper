@@ -1,5 +1,5 @@
 """SCM Members."""
-from config import (
+from scm_helper.config import (
     A_ACTIVE,
     A_FIRSTNAME,
     A_LASTNAME,
@@ -8,9 +8,9 @@ from config import (
     CTYPE_SYNCHRO,
     get_config,
 )
-from entity import Entities
-from issue import E_DUPLICATE, debug, issue
-from member import Member
+from scm_helper.entity import Entities
+from scm_helper.issue import E_DUPLICATE, debug, issue
+from scm_helper.member import Member
 
 
 class Members(Entities):

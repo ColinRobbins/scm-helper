@@ -1,7 +1,7 @@
 """Configuration stuff."""
 from schema import And, Optional, Schema, SchemaError
 
-from notify import notify
+from scm_helper.notify import notify
 
 VERSION = 1.0
 

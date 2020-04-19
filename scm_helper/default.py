@@ -3,8 +3,8 @@
 import os
 from pathlib import Path
 
-from config import CONFIG_DIR, CONFIG_FILE, FILE_WRITE
-from notify import interact, interact_yesno, notify
+from scm_helper.config import CONFIG_DIR, CONFIG_FILE, FILE_WRITE
+from scm_helper.notify import interact, interact_yesno, notify
 
 
 def create_default_config():

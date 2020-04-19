@@ -4,7 +4,7 @@ import datetime
 import ntpath
 import re
 
-from config import (
+from scm_helper.config import (
     A_ASA_CATEGORY,
     A_ASA_NUMBER,
     A_DOB,
@@ -19,8 +19,8 @@ from config import (
     SCM_DATE_FORMAT,
     get_config,
 )
-from files import Files
-from notify import notify
+from scm_helper.files import Files
+from scm_helper.notify import notify
 
 CAT_RE = re.compile(r"\d")
 

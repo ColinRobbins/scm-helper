@@ -7,8 +7,8 @@ from shutil import copyfile
 import requests
 import yaml
 
-from conduct import CodesOfConduct
-from config import (
+from scm_helper.conduct import CodesOfConduct
+from scm_helper.config import (
     BACKUP_DIR,
     BACKUP_URLS,
     C_ALLOW_UPDATE,
@@ -37,16 +37,16 @@ from config import (
     verify_schema,
     verify_schema_data,
 )
-from crypto import Crypto
-from default import create_default_config
-from entity import Entities
-from groups import Groups
-from issue import debug, set_debug_level
-from lists import Lists
-from members import Members
-from notify import notify
-from roles import Roles
-from sessions import Sessions
+from scm_helper.crypto import Crypto
+from scm_helper.default import create_default_config
+from scm_helper.entity import Entities
+from scm_helper.groups import Groups
+from scm_helper.issue import debug, set_debug_level
+from scm_helper.lists import Lists
+from scm_helper.members import Members
+from scm_helper.notify import notify
+from scm_helper.roles import Roles
+from scm_helper.sessions import Sessions
 
 
 class API:

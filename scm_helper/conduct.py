@@ -1,5 +1,5 @@
 """SCM Conduct."""
-from config import (
+from scm_helper.config import (
     A_GUID,
     A_MEMBERS,
     C_CONDUCT,
@@ -12,9 +12,9 @@ from config import (
     CTYPE_VOLUNTEER,
     get_config,
 )
-from entity import Entities, Entity
-from issue import E_NO_CONDUCT, E_NO_CONDUCT_DATE, issue
-from notify import notify
+from scm_helper.entity import Entities, Entity
+from scm_helper.issue import E_NO_CONDUCT, E_NO_CONDUCT_DATE, issue
+from scm_helper.notify import notify
 
 
 class CodesOfConduct(Entities):

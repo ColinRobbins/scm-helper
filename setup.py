@@ -21,10 +21,10 @@ setuptools.setup(
     project_urls={
         "Bug Tracker": "https://github.com/ColinRobbins/scm-helper/issues",
         "Documentation": "https://github.com/ColinRobbins/scm-helper/wiki",
-        "Source Code": "https://github.com/ColinRobbins/scm-helper",
+        "Source Code": "https://github.com/ColinRobbins/scm-helper"
     },
     packages=setuptools.find_packages(),
-    install_requires=["schema", "requests", "pyyaml", "cryptography",],
+    install_requires=["schema", "requests", "pyyaml", "cryptography"],
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
