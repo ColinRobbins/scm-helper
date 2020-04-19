@@ -1,8 +1,8 @@
 """SCM Role."""
 from coach import check_coach_permissions
 from config import (
-    A_ISVOLUNTEER,
     A_GUID,
+    A_ISVOLUNTEER,
     A_MEMBERS,
     C_CHECK_PERMISSIONS,
     C_CHECK_RESTRICTIONS,

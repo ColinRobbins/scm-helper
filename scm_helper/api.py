@@ -256,7 +256,7 @@ class API:
             aclass.delete()
 
         self.issue_handler.delete()
-        
+
         self.groups = None
         self.lists = None
         self.roles = None
@@ -267,7 +267,6 @@ class API:
         self.backup_classes = []
         self.class_byname = {}
         self.fixable = []
-        
 
     def backup_data(self):
         """Backup."""
@@ -300,7 +299,7 @@ class API:
     def decrypt(self, xdate):
         """Decrypt file."""
         restore = self.classes + self.backup_classes
-        
+
         for aclass in restore:
             decrypted = self.crypto.decrypt_file(aclass.name, xdate)
             if decrypted is None:

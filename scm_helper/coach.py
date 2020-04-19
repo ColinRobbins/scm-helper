@@ -1,7 +1,7 @@
 """Coach routines."""
 from config import (
-    A_ISCOACH,
     A_GUID,
+    A_ISCOACH,
     C_COACHES,
     C_MANDATORY,
     C_ROLE,

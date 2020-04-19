@@ -44,7 +44,9 @@ class Csv(Files):
 
         notify(f"Reading {file}...\n")
 
-        cfg_dob_format = get_config(scm, C_FILES, self.cfg_file, C_MAPPING, C_DOB_FORMAT)
+        cfg_dob_format = get_config(
+            scm, C_FILES, self.cfg_file, C_MAPPING, C_DOB_FORMAT
+        )
         if cfg_dob_format is None:
             cfg_dob_format = SCM_DATE_FORMAT
 
@@ -126,7 +128,7 @@ class Csv(Files):
         cfg_check_se = get_config(scm, C_FILES, self.cfg_file, C_CHECK_SE_NUMBER)
 
         members = self._scm.members
-        
+
         for row in self._csv:
             name = f"{row[cfg_first]} {row[cfg_last]}"
             self.by_name[name] = row

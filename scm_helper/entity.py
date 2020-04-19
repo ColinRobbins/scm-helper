@@ -267,7 +267,7 @@ class Entity:
         printer = pprint.PrettyPrinter(indent=4)
         data = printer.pformat(self.newdata)
         err = f"Fix '{self.name}' with: '{self.fixmsg}'.\nConfirm"
-        debug ("fixit:", 5)
+        debug("fixit:", 5)
         debug(data, 5)
         resp = interact_yesno(err)
         if resp is False:

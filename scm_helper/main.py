@@ -286,6 +286,7 @@ def gui(argv=None):
         ScmGui(root)
         root.mainloop()
 
+
 def main():
     """Main."""
     PLATFORM = platform.system()
@@ -293,6 +294,7 @@ def main():
         gui()
     else:
         cmd()
+
 
 if __name__ == "__main__":
     main()

@@ -1,6 +1,6 @@
 """Notify."""
 import sys
-from tkinter import messagebox, simpledialog, END
+from tkinter import END, messagebox, simpledialog
 
 WHERE = None
 

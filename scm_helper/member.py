@@ -686,7 +686,7 @@ class Member(Entity):
         self._last_modified = self.set_date("LastModifiedDate")
         self._confirmed_date = self.set_date("DetailsConfirmedCorrect")
         self._last_login = self.set_date("LastLoggedIn")
-        
+
     def set_joined_today(self):
         """Set joined date."""
         self._date_joined = self.scm.today

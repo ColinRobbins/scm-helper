@@ -1,9 +1,9 @@
 """Read and process a file of Facebook date."""
-import re
 import os
+import re
 from pathlib import Path
 
-from config import C_FACEBOOK, FILE_READ, get_config, CONFIG_DIR
+from config import C_FACEBOOK, CONFIG_DIR, FILE_READ, get_config
 from files import Files
 from notify import notify
 
@@ -24,7 +24,7 @@ class Facebook:
     def readfiles(self, scm):
         """Read each file."""
         self.scm = scm
-        
+
         home = str(Path.home())
         dir = os.path.join(home, CONFIG_DIR)
 

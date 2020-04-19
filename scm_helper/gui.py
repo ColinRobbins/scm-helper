@@ -8,41 +8,37 @@ from tkinter import (
     END,
     NORMAL,
     Button,
+    E,
     Entry,
     Frame,
     Label,
     LabelFrame,
     Menu,
+    N,
     OptionMenu,
+    S,
     Scrollbar,
     StringVar,
     Text,
     Tk,
     Toplevel,
-    W,E,S,N,
+    W,
     filedialog,
     messagebox,
     scrolledtext,
 )
 
 from api import API
-from config import (
-    BACKUP_DIR,
-    CONFIG_DIR,
-    CONFIG_FILE,
-    FILE_READ,
-    FILE_WRITE,
-    HELPURL,
-)
+from config import BACKUP_DIR, CONFIG_DIR, CONFIG_FILE, FILE_READ, FILE_WRITE, HELPURL
 from facebook import Facebook
 from file import Csv
 from issue import REPORTS, IssueHandler
-from notify import set_notify
 from license import LICENSE
+from notify import set_notify
 from version import VERSION
 
 
-class ScmGui():
+class ScmGui:
     """Tkinter based GUI (for Windows)."""
 
     # pylint: disable=too-many-instance-attributes
@@ -86,10 +82,12 @@ class ScmGui():
         myrow = 1
 
         top_frame = Frame(self.master)
-        top_frame.grid(row=0, column=0, sticky=W+E)
-        
+        top_frame.grid(row=0, column=0, sticky=W + E)
+
         label = Label(top_frame, text="Password: ")
-        label.grid(row=0, column=0, pady=10, padx=10, )
+        label.grid(
+            row=0, column=0, pady=10, padx=10,
+        )
 
         self.__password = StringVar()
         self.__password.set("")
@@ -103,21 +101,23 @@ class ScmGui():
         self.button_backup = Button(top_frame, text="Backup", command=self.backup)
         self.button_backup.grid(row=0, column=3, pady=10, padx=10)
 
-        self.button_fixit = Button( top_frame, text="Fixit", command=self.fixit)
+        self.button_fixit = Button(top_frame, text="Fixit", command=self.fixit)
         self.button_fixit.config(state=DISABLED)
         self.button_fixit.grid(row=0, column=4, pady=10, padx=10)
 
         top_group = LabelFrame(self.master, text="Notifications...", pady=5, padx=5)
-        top_group.grid(row=1, column=0, columnspan=5, pady=10, padx=10, sticky=E+W+N+S)
-        
+        top_group.grid(
+            row=1, column=0, columnspan=5, pady=10, padx=10, sticky=E + W + N + S
+        )
+
         self.master.columnconfigure(0, weight=1)
         self.master.rowconfigure(1, weight=1)
-        
+
         top_group.columnconfigure(0, weight=1)
         top_group.rowconfigure(0, weight=1)
 
         self.notify = scrolledtext.ScrolledText(top_group, width=60, height=20)
-        self.notify.grid(row=0, column=0, sticky=E+W+N+S)
+        self.notify.grid(row=0, column=0, sticky=E + W + N + S)
 
     def create_menu(self):
         """Create Menus."""
@@ -153,10 +153,10 @@ class ScmGui():
     def scm_init(self):
         """Initialise SCM."""
         password = self.__password.get()
-        
+
         self.clear_data()
         self.api_init = False
-        
+
         if password:
             if self.scm.initialise(password) is False:
                 messagebox.showerror("Error", "Cannot initialise SCM (wrong password?)")
@@ -185,7 +185,7 @@ class ScmGui():
         """Open Archive file."""
         if self.thread:
             return  # already running
-        
+
         if self.scm_init() is False:
             return
 
@@ -216,7 +216,6 @@ class ScmGui():
         output = csv.print_errors()
         self.report_text.insert(END, output)
         self.report_window.lift()
-
 
     def facebook(self):
         """Process a Facebook report."""
@@ -273,7 +272,7 @@ class ScmGui():
         """Window for analysis result."""
         if self.thread:
             return  # already running
-        
+
         if self.scm_init() is False:
             return
 
@@ -306,7 +305,7 @@ class ScmGui():
             return  # already running
 
         if self.scm_init() is False:
-               return
+            return
 
         self.thread = BackupThread(self).start()
 
@@ -351,16 +350,16 @@ class ScmGui():
         """Create the reports window."""
         self.report_window = Toplevel(self.master)
         self.report_window.title("SCM Helper - Reports")
-        
+
         top_frame = Frame(self.report_window)
-        top_frame.grid(row=0, column=0, sticky=W+E)
+        top_frame.grid(row=0, column=0, sticky=W + E)
 
         self.report_window.columnconfigure(0, weight=1)
         self.report_window.rowconfigure(0, weight=1)
 
         self.report_text = scrolledtext.ScrolledText(top_frame, width=80, height=40)
-        self.report_text.grid(row=0, column=0, sticky=E+W+N+S)
-        
+        self.report_text.grid(row=0, column=0, sticky=E + W + N + S)
+
         self.report_window.protocol("WM_DELETE_WINDOW", self.close_report)
 
     def close_report(self):
@@ -388,7 +387,7 @@ class AnalysisThread(threading.Thread):
             self.gui.result_text.delete("1.0", END)
 
         self.gui.notify.delete("1.0", END)
-            
+
         if self.scm.get_config_file() is False:
             messagebox.showerror("Error", f"Error in config file.")
             return
@@ -428,7 +427,7 @@ class AnalysisThread(threading.Thread):
             self.create_window()
 
         output = self.gui.issues.print_by_error(None)
-        
+
         self.gui.notify.insert(END, self.scm.print_summary())
         self.gui.notify.see(END)
         self.gui.result_text.insert(END, output)
@@ -438,7 +437,7 @@ class AnalysisThread(threading.Thread):
         self.gui.result_text.config(state=DISABLED)
 
         self.gui.thread = None
-        
+
         return
 
     def create_window(self):
@@ -448,21 +447,18 @@ class AnalysisThread(threading.Thread):
 
         self.gui.reports = StringVar()
         self.gui.reports.set("All Reports")
-        
+
         top_frame = Frame(self.gui.analysis_window)
-        top_frame.grid(row=0, column=0, sticky=W+E)
+        top_frame.grid(row=0, column=0, sticky=W + E)
 
         label = Label(top_frame, text="Select Report: ")
         label.grid(row=0, column=0, pady=10, padx=10)
-        
+
         rpts = [resp.title() for resp in REPORTS]
         all_reports = ["All Reports"] + rpts
 
         menu = OptionMenu(
-            top_frame,
-            self.gui.reports,
-            *all_reports,
-            command=self.gui.process_option,
+            top_frame, self.gui.reports, *all_reports, command=self.gui.process_option,
         )
         menu.grid(row=0, column=1, pady=10, padx=10)
 
@@ -481,17 +477,23 @@ class AnalysisThread(threading.Thread):
         )
         menu.grid(row=0, column=3, pady=10, padx=10)
 
-        top_group = LabelFrame(self.gui.analysis_window, text="Analysis...", pady=5, padx=5)
-        top_group.grid(row=1, column=0, columnspan=4, pady=10, padx=10, sticky=E+W+N+S)
-        
+        top_group = LabelFrame(
+            self.gui.analysis_window, text="Analysis...", pady=5, padx=5
+        )
+        top_group.grid(
+            row=1, column=0, columnspan=4, pady=10, padx=10, sticky=E + W + N + S
+        )
+
         self.gui.analysis_window.columnconfigure(0, weight=1)
         self.gui.analysis_window.rowconfigure(1, weight=1)
-        
+
         top_group.columnconfigure(0, weight=1)
         top_group.rowconfigure(0, weight=1)
 
-        self.gui.result_text = scrolledtext.ScrolledText(top_group, width=100, height=40)
-        self.gui.result_text.grid(row=0, column=0, sticky=E+W+N+S)
+        self.gui.result_text = scrolledtext.ScrolledText(
+            top_group, width=100, height=40
+        )
+        self.gui.result_text.grid(row=0, column=0, sticky=E + W + N + S)
 
         self.gui.analysis_window.protocol("WM_DELETE_WINDOW", self.close_report)
 
@@ -549,6 +551,7 @@ class UpdateThread(threading.Thread):
         self.gui.buttons(NORMAL)
         self.gui.thread = None
 
+
 class Edit(Frame):  # pylint: disable=too-many-ancestors
     """Class to edit a frame."""
 
@@ -558,43 +561,45 @@ class Edit(Frame):  # pylint: disable=too-many-ancestors
         self.parent = parent
         self.file = filename
         self.scm = scm
-        
+
         self.edit_win = Toplevel(self.master)
         self.edit_win.title("SCM Helper - Edit Config")
 
         top_frame = Frame(self.edit_win)
-        top_frame.grid(row=0, column=0, sticky=W+E)
+        top_frame.grid(row=0, column=0, sticky=W + E)
 
         abtn = Button(top_frame, text="Save", command=self.save_command)
         abtn.grid(row=0, column=0, pady=10, padx=10)
 
         cbtn = Button(top_frame, text="Close", command=self.on_exit)
         cbtn.grid(row=0, column=1, pady=10, padx=10)
-        
+
         top_group = LabelFrame(self.edit_win, text=filename, pady=5, padx=5)
-        top_group.grid(row=1, column=0, columnspan=2, pady=10, padx=10, sticky=E+W+N+S)
-        
+        top_group.grid(
+            row=1, column=0, columnspan=2, pady=10, padx=10, sticky=E + W + N + S
+        )
+
         self.edit_win.columnconfigure(0, weight=1)
         self.edit_win.rowconfigure(1, weight=1)
-        
+
         top_group.columnconfigure(0, weight=1)
         top_group.rowconfigure(0, weight=1)
 
         self.text_pad = scrolledtext.ScrolledText(top_group, width=80, height=40)
-        self.text_pad.grid(row=0, column=0, sticky=E+W+N+S)
+        self.text_pad.grid(row=0, column=0, sticky=E + W + N + S)
 
         with open(self.file, FILE_READ) as file:
             contents = file.read()
             self.text_pad.insert("1.0", contents)
             file.close()
-            
+
         self.text_pad.edit_modified(False)
-        
+
         self.edit_win.protocol("WM_DELETE_WINDOW", self.on_exit)
 
     def on_exit(self):
         """Close."""
-        if (self.text_pad.edit_modified()):
+        if self.text_pad.edit_modified():
             title = "SCM-Helper: Save Config"
             msg = "Save Config?"
             resp = messagebox.askyesno(title, msg, parent=self.edit_win)
@@ -610,19 +615,21 @@ class Edit(Frame):  # pylint: disable=too-many-ancestors
             data = self.text_pad.get("1.0", END)
             file.write(data)
             file.close()
-            
+
         if self.scm.get_config_file() is False:
             msg = "Error in config file - see status window for details."
             messagebox.showerror("Error", msg, parent=self.parent)
             return False
-            
+
         self.text_pad.edit_modified(False)
         return True
+
 
 def license():
     """Show License."""
 
     messagebox.showinfo("License", LICENSE)
+
 
 def xabout():
     """About message."""
