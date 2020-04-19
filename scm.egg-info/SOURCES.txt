@@ -7,6 +7,7 @@ scm.egg-info/entry_points.txt
 scm.egg-info/requires.txt
 scm.egg-info/top_level.txt
 scm_helper/__init__.py
+scm_helper/api.py
 scm_helper/coach.py
 scm_helper/conduct.py
 scm_helper/config.py
@@ -27,7 +28,6 @@ scm_helper/members.py
 scm_helper/notify.py
 scm_helper/parent.py
 scm_helper/roles.py
-scm_helper/scm_api.py
 scm_helper/sendmail.py
 scm_helper/sessions.py
 scm_helper/swimmer.py
