@@ -512,11 +512,11 @@ class IssueHandler:
         rpt = error[REPORT]
         rev = error[REVERSE]
         name = xobject.full_name
-        create_dict(self.by_name, name, err, msg, msg2, rpt, False)
+        create_dict(self.by_name, name, err, msg, msg2, rpt, False, xobject)
         if rev:
-            create_dict(self.by_error, err, msg, name, msg2, rpt, rev)
+            create_dict(self.by_error, err, msg, name, msg2, rpt, rev, xobject)
         else:
-            create_dict(self.by_error, err, name, msg, msg2, rpt, rev)
+            create_dict(self.by_error, err, name, msg, msg2, rpt, rev, xobject)
 
     def print_by_name(self, reports):
         """Print all issues by name."""
@@ -548,41 +548,41 @@ class IssueHandler:
         matrix = {}
         for anissue in self.by_error:
             for anerror in self.by_error[anissue]:
-                name, msg, report, dummy = anerror
-                if report == R_CONFIRMATION:
-                    scm = self.scm
-                    entity = scm.members.by_name.get(name, scm.members.knownas[name])
-                    key = "Other"
-                    if entity.is_parent:
-                        key = "parent"
-                    if entity.is_polo:
-                        key = "polo"
-                    if entity.is_synchro:
-                        key = "synchro"
-                    if entity.is_swimmer:
-                        key = "swimmer"
-                    if key in matrix:
-                        matrix[key].append(entity)
-                    else:
-                        matrix[key] = [entity]
+                pkg = self.by_error[anissue][anerror]
+                for line in pkg:
+                    _, _, report, _, entity = line
+                    if report == R_CONFIRMATION:
+                        key = "Other"
+                        if entity.is_parent:
+                            key = "parent"
+                        if entity.is_polo:
+                            key = "polo"
+                        if entity.is_synchro:
+                            key = "synchro"
+                        if entity.is_swimmer:
+                            key = "swimmer"
+                        if key in matrix:
+                            matrix[key].append(entity)
+                        else:
+                            matrix[key] = [entity]
 
         res = ""
         for msg in matrix:
             res += f"{msg}: \n"
             for entity in matrix[msg]:
-                res += f"{entity.email}, "
+                res += f"{entity.email}; "
             res += "\n\n"
         return res
 
 
-def create_dict(xdict, key1, key2, val1, val2, rpt, rev):
+def create_dict(xdict, key1, key2, val1, val2, rpt, rev, entity):
     """Create 2 dimensiaonal dictionary."""
     # pylint: disable=too-many-arguments
     if key1 not in xdict:
         xdict[key1] = {}
     if key2 not in xdict[key1]:
         xdict[key1][key2] = []
-    xdict[key1][key2].append([val1, val2, rpt, rev])
+    xdict[key1][key2].append([val1, val2, rpt, rev, entity])
 
 
 def print_dict(xdict, reports):
@@ -602,7 +602,7 @@ def print_dict(xdict, reports):
             first = True
             length = len(xdict[key1][key2])
             for xissue in sorted(xdict[key1][key2]):
-                val1, val2, rpt, rev = xissue
+                val1, val2, rpt, rev, _ = xissue
                 if (first and rev) or (first and (length > 1)):
                     to_print += "\n"
                     first = False
