@@ -240,6 +240,7 @@ class NewList(Entity):
 
     def upload(self):
         """Create data to upload."""
+        notify (f"Creating / Updating list: {self.name}\n")
         return self.scm.api_write(self, self.new_list)
 
     def add_member(self, member):

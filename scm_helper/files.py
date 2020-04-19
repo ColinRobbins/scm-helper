@@ -21,10 +21,10 @@ class Files:
     def print_errors(self):
         """Print errors."""
         output = ""
-        output += f"\nErrors in {self._filename}"
+        output += f"\nErrors in {self._filename}\n"
         for error in self._error:
-            output += f"{error}:"
+            output += f"{error}:\n"
             for name in sorted(self._error[error]):
-                output += f"   {name}"
+                output += f"   {name}\n"
 
         return output

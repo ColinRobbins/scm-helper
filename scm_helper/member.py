@@ -379,7 +379,8 @@ class Member(Entity):
         else:
             issue(self, E_NOT_CONFIRMED, f"{self.first_group}")
             self.scm.members.count_not_confirmed += 1
-            self._list_add(E_NOT_CONFIRMED)
+            if xlist:
+                self._list_add(E_NOT_CONFIRMED)
 
     def check_name(self):
         """Check capitilisation of name."""

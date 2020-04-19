@@ -52,7 +52,7 @@ class ScmGui():
         # pylint: disable=too-many-statements
         # super().__init__(None)
         self.master = master
-        self.result_window = None
+        self.analysis_window = None
         self.result_text = None
         self.report_window = None
         self.report_text = None
@@ -107,7 +107,7 @@ class ScmGui():
         self.button_fixit.config(state=DISABLED)
         self.button_fixit.grid(row=0, column=4, pady=10, padx=10)
 
-        top_group = LabelFrame(self.master, text="Notifications", pady=5, padx=5)
+        top_group = LabelFrame(self.master, text="Notifications...", pady=5, padx=5)
         top_group.grid(row=1, column=0, columnspan=5, pady=10, padx=10, sticky=E+W+N+S)
         
         self.master.columnconfigure(0, weight=1)
@@ -177,6 +177,7 @@ class ScmGui():
         if self.report_window is None:
             self.create_report_window()
         self.report_text.delete("1.0", END)
+        self.notify.delete("1.0", END)
 
         return True
 
@@ -203,8 +204,7 @@ class ScmGui():
         dir_opt = {}
         dir_opt["title"] = "Find Swim Enngland File"
         dir_opt["initialdir"] = cfg
-        dir_opt["mustexist"] = True
-        dir_opt["parent"] = self.master
+        dir_opt["parent"] = self.report_window
         dir_opt["defaultextension"] = ".csv"
 
         where = filedialog.askopenfilename(**dir_opt)
@@ -215,6 +215,8 @@ class ScmGui():
         csv.analyse(self.scm)
         output = csv.print_errors()
         self.report_text.insert(END, output)
+        self.report_window.lift()
+
 
     def facebook(self):
         """Process a Facebook report."""
@@ -229,6 +231,7 @@ class ScmGui():
         fbook.analyse()
         output = fbook.print_errors()
         self.report_text.insert(END, output)
+        self.report_window.lift()
 
     def confirm(self):
         """Confirm email Report."""
@@ -237,6 +240,7 @@ class ScmGui():
 
         output = self.issues.confirm_email()
         self.report_text.insert(END, output)
+        self.report_window.lift()
 
     def coaches(self):
         """Coaches Report."""
@@ -245,6 +249,7 @@ class ScmGui():
 
         output = self.scm.sessions.print_coaches()
         self.report_text.insert(END, output)
+        self.report_window.lift()
 
     def edit_config(self):
         """Edit Config."""
@@ -378,7 +383,7 @@ class AnalysisThread(threading.Thread):
         """Run analyser."""
         self.gui.buttons(DISABLED)
 
-        if self.gui.result_window:
+        if self.gui.analysis_window:
             self.gui.result_text.config(state=NORMAL)
             self.gui.result_text.delete("1.0", END)
 
@@ -419,7 +424,7 @@ class AnalysisThread(threading.Thread):
         self.scm.analyse()
         self.gui.gotdata = True
 
-        if self.gui.result_window is None:
+        if self.gui.analysis_window is None:
             self.create_window()
 
         output = self.gui.issues.print_by_error(None)
@@ -427,7 +432,7 @@ class AnalysisThread(threading.Thread):
         self.gui.notify.insert(END, self.scm.print_summary())
         self.gui.notify.see(END)
         self.gui.result_text.insert(END, output)
-        self.gui.result_window.lift()
+        self.gui.analysis_window.lift()
 
         self.gui.buttons(NORMAL)
         self.gui.result_text.config(state=DISABLED)
@@ -438,13 +443,13 @@ class AnalysisThread(threading.Thread):
 
     def create_window(self):
         """Create the results window."""
-        self.gui.result_window = Toplevel(self.gui.master)
-        self.gui.result_window.title("SCM Helper - Results")
+        self.gui.analysis_window = Toplevel(self.gui.master)
+        self.gui.analysis_window.title("SCM Helper - Analysis")
 
         self.gui.reports = StringVar()
         self.gui.reports.set("All Reports")
         
-        top_frame = Frame(self.gui.result_window)
+        top_frame = Frame(self.gui.analysis_window)
         top_frame.grid(row=0, column=0, sticky=W+E)
 
         label = Label(top_frame, text="Select Report: ")
@@ -476,11 +481,11 @@ class AnalysisThread(threading.Thread):
         )
         menu.grid(row=0, column=3, pady=10, padx=10)
 
-        top_group = LabelFrame(self.gui.result_window, text="Analysis...", pady=5, padx=5)
+        top_group = LabelFrame(self.gui.analysis_window, text="Analysis...", pady=5, padx=5)
         top_group.grid(row=1, column=0, columnspan=4, pady=10, padx=10, sticky=E+W+N+S)
         
-        self.gui.result_window.columnconfigure(0, weight=1)
-        self.gui.result_window.rowconfigure(1, weight=1)
+        self.gui.analysis_window.columnconfigure(0, weight=1)
+        self.gui.analysis_window.rowconfigure(1, weight=1)
         
         top_group.columnconfigure(0, weight=1)
         top_group.rowconfigure(0, weight=1)
@@ -488,12 +493,12 @@ class AnalysisThread(threading.Thread):
         self.gui.result_text = scrolledtext.ScrolledText(top_group, width=100, height=40)
         self.gui.result_text.grid(row=0, column=0, sticky=E+W+N+S)
 
-        self.gui.result_window.protocol("WM_DELETE_WINDOW", self.close_report)
+        self.gui.analysis_window.protocol("WM_DELETE_WINDOW", self.close_report)
 
     def close_report(self):
         """Action on close."""
-        self.gui.result_window.destroy()
-        self.gui.result_window = None
+        self.gui.analysis_window.destroy()
+        self.gui.analysis_window = None
 
 
 class BackupThread(threading.Thread):

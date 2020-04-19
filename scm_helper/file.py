@@ -40,19 +40,19 @@ class Csv(Files):
         self._filename = file
         self._scm = scm
 
-        cfg_filename = ntpath.basename(file)
+        self.cfg_file = ntpath.basename(file)
 
         notify(f"Reading {file}...\n")
 
-        cfg_dob_format = get_config(scm, C_FILES, cfg_filename, C_MAPPING, C_DOB_FORMAT)
+        cfg_dob_format = get_config(scm, C_FILES, self.cfg_file, C_MAPPING, C_DOB_FORMAT)
         if cfg_dob_format is None:
             cfg_dob_format = SCM_DATE_FORMAT
 
-        cfg_dob = get_config(scm, C_FILES, cfg_filename, C_MAPPING, A_DOB)
+        cfg_dob = get_config(scm, C_FILES, self.cfg_file, C_MAPPING, A_DOB)
         if cfg_dob is None:
             cfg_dob = A_DOB
 
-        cfg_cat = get_config(scm, C_FILES, cfg_filename, C_MAPPING, A_ASA_CATEGORY)
+        cfg_cat = get_config(scm, C_FILES, self.cfg_file, C_MAPPING, A_ASA_CATEGORY)
         if cfg_cat is None:
             cfg_cat = A_ASA_CATEGORY
 
@@ -102,7 +102,7 @@ class Csv(Files):
         # pylint: disable=too-many-branches
         # pylint: disable=too-many-statements
 
-        cfg = get_config(scm, C_FILES, self._filename)
+        cfg = get_config(scm, C_FILES, self.cfg_file)
         if cfg is None:
             # ODD structure to keep line length in black limit
             prefix = "No configuration for "
@@ -113,22 +113,20 @@ class Csv(Files):
             cfg_last = A_LASTNAME
             cfg_knownas = A_KNOWNAS
             cfg_asa = A_ASA_NUMBER
-            cfg_category = A_ASA_CATEGORY
+            cfg_cat = A_ASA_CATEGORY
             cfg_dob = A_DOB
         else:
-            cfg_first = get_config(scm, C_FILES, self._filename, C_MAPPING, A_FIRSTNAME)
-            cfg_last = get_config(scm, C_FILES, self._filename, C_MAPPING, A_LASTNAME)
-            cfg_knownas = get_config(scm, C_FILES, self._filename, C_MAPPING, A_KNOWNAS)
-            cfg_asa = get_config(scm, C_FILES, self._filename, C_MAPPING, A_ASA_NUMBER)
-            cfg_category = get_config(
-                scm, C_FILES, self._filename, C_MAPPING, A_ASA_CATEGORY
-            )
-            cfg_dob = get_config(scm, C_FILES, self._filename, C_MAPPING, A_DOB)
+            cfg_first = get_config(scm, C_FILES, self.cfg_file, C_MAPPING, A_FIRSTNAME)
+            cfg_last = get_config(scm, C_FILES, self.cfg_file, C_MAPPING, A_LASTNAME)
+            cfg_knownas = get_config(scm, C_FILES, self.cfg_file, C_MAPPING, A_KNOWNAS)
+            cfg_asa = get_config(scm, C_FILES, self.cfg_file, C_MAPPING, A_ASA_NUMBER)
+            cfg_cat = get_config(scm, C_FILES, self.cfg_file, C_MAPPING, A_ASA_CATEGORY)
+            cfg_dob = get_config(scm, C_FILES, self.cfg_file, C_MAPPING, A_DOB)
 
-        cfg_check_se = get_config(scm, C_FILES, self._filename, C_CHECK_SE_NUMBER)
+        cfg_check_se = get_config(scm, C_FILES, self.cfg_file, C_CHECK_SE_NUMBER)
 
         members = self._scm.members
-
+        
         for row in self._csv:
             name = f"{row[cfg_first]} {row[cfg_last]}"
             self.by_name[name] = row
@@ -186,7 +184,7 @@ class Csv(Files):
                     errmsg += "SE Missing in SCM"
 
                 if member.asa_category:
-                    if member.asa_category != row[cfg_category]:
+                    if member.asa_category != row[cfg_cat]:
                         if errmsg:
                             errmsg += ", "
                         errmsg += "Different SE Category"

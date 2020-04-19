@@ -1,7 +1,9 @@
 """Read and process a file of Facebook date."""
 import re
+import os
+from pathlib import Path
 
-from config import C_FACEBOOK, FILE_READ, get_config
+from config import C_FACEBOOK, FILE_READ, get_config, CONFIG_DIR
 from files import Files
 from notify import notify
 
@@ -22,12 +24,16 @@ class Facebook:
     def readfiles(self, scm):
         """Read each file."""
         self.scm = scm
+        
+        home = str(Path.home())
+        dir = os.path.join(home, CONFIG_DIR)
 
         cfg = get_config(scm, C_FACEBOOK)
         if cfg:
             for facebook in cfg:
                 face = FacebookPage()
-                res = face.readfile(facebook, scm)
+                filename = os.path.join(dir, facebook)
+                res = face.readfile(filename, scm)
                 if res:
                     self.facebook.append(face)
                     if face.parse() is False:
@@ -74,7 +80,7 @@ class FacebookPage(Files):
         notify(f"Reading {filename}...\n")
 
         try:
-            with open(filename, FILE_READ) as file:
+            with open(filename, FILE_READ, encoding="utf8") as file:
                 self.data = file.read().replace("\n", "")
             file.close()
             return True
