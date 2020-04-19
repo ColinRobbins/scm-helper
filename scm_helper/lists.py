@@ -97,20 +97,17 @@ class List(Entity):
         if len(self.members) == 0:
             issue(self, E_NO_SWIMMERS, "List")
             return
-
+        
         for member in self.members:
-            if member.is_active is False:
-                issue(
-                    member,
-                    E_LIST_ERROR,
-                    f"Inactive but on email list {self.name} (fixable)",
-                )
+            if member.is_active is False:  # Never get here as entity linkage prevents it.
+                msg = f"Inactive but on email list {self.name} (fixable)"
+                issue(member, E_LIST_ERROR, msg)
                 if self.newdata & A_MEMBERS in self.newdata:
                     fix = self.newdata
                 else:
                     fix = {}
                     fix[A_MEMBERS] = self.data[A_MEMBERS]
-                fix[A_MEMBERS].delete(member.guid)
+                fix[A_MEMBERS].delete({A_GUID: member.guid})
                 self.fixit(fix, f"Delete {member.name}")
 
             if member.email is None:

@@ -255,6 +255,8 @@ class API:
         for aclass in delete:
             aclass.delete()
 
+        self.issue_handler.delete()
+        
         self.groups = None
         self.lists = None
         self.roles = None
@@ -265,6 +267,7 @@ class API:
         self.backup_classes = []
         self.class_byname = {}
         self.fixable = []
+        
 
     def backup_data(self):
         """Backup."""

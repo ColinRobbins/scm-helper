@@ -425,6 +425,7 @@ class AnalysisThread(threading.Thread):
         output = self.gui.issues.print_by_error(None)
         
         self.gui.notify.insert(END, self.scm.print_summary())
+        self.gui.notify.see(END)
         self.gui.result_text.insert(END, output)
         self.gui.result_window.lift()
 
@@ -514,6 +515,7 @@ class BackupThread(threading.Thread):
             output = self.scm.print_summary(backup=True)
             self.gui.notify.insert(END, output)
             self.gui.notify.insert(END, "Backup Complete.")
+            self.gui.notify.see(END)
         else:
             messagebox.showerror("Error", "Backup failure")
 
@@ -537,6 +539,7 @@ class UpdateThread(threading.Thread):
         self.gui.notify.delete("1.0", END)
         self.scm.update()
         self.gui.notify.insert(END, "Lists Created.")
+        self.gui.notify.see(END)
 
         self.gui.buttons(NORMAL)
         self.gui.thread = None

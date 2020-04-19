@@ -2,6 +2,7 @@
 from coach import check_coach_permissions
 from config import (
     A_ISVOLUNTEER,
+    A_GUID,
     A_MEMBERS,
     C_CHECK_PERMISSIONS,
     C_CHECK_RESTRICTIONS,
@@ -62,7 +63,7 @@ class Role(Entity):
             else:
                 fix = {}
                 fix[A_MEMBERS] = self.data[A_MEMBERS]
-            fix[A_MEMBERS].delete(member.guid)
+            fix[A_MEMBERS].delete({A_GUID: member.guid})
             self.fixit(fix, f"Delete from role {self.name}")
 
         if member.username is None:

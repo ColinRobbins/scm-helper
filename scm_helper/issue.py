@@ -474,6 +474,12 @@ class IssueHandler:
         global HANDLER  # pylint: disable=global-statement
         HANDLER = self
 
+    def delete(self):
+        """Clear database, ready for rerun."""
+        self.issues = []
+        self.by_name = {}
+        self.by_error = {}
+
     def add_issue(self, xobject, error, msg, msg2):
         """Record an issue."""
         # Yes, its complicated...

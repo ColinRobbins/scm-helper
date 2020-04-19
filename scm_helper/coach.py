@@ -1,6 +1,7 @@
 """Coach routines."""
 from config import (
     A_ISCOACH,
+    A_GUID,
     C_COACHES,
     C_MANDATORY,
     C_ROLE,
@@ -36,7 +37,7 @@ def analyse_coach(coach):
 def check_coach_permissions(coach, role):
     """Check a coaches permissions."""
     debug(f"Permission check: {coach.name}, {role.name}", 9)
-    if coach.is_coach is None:
+    if coach.is_coach is False:
         issue(coach, E_NOT_A_COACH, f"Role: {role.name} (fixable)")
         fix = {}
         fix[A_ISCOACH] = "1"
@@ -58,12 +59,13 @@ def check_coach_permissions(coach, role):
                 match = True
                 break
         if match is False:
+            # SCM bug 6588
             issue(coach, E_PERMISSION_MISSING, session.full_name)
             fix = {}
             data = coach.data["SessionRestrictions"]
             fix["SessionRestrictions"] = data
-            fix["SessionRestrictions"].append(session.guid)
-            coach.fixit(fix, f"Add permission for {data}")
+            fix["SessionRestrictions"].append({A_GUID: session.guid})
+            coach.fixit(fix, f"Add permission for {session.name}")
 
     for permission in coach.restricted:
         match = False
@@ -72,9 +74,10 @@ def check_coach_permissions(coach, role):
                 match = True
                 break
         if match is False:
+            # SCM bug 6588
             issue(coach, E_PERMISSION_EXTRA, permission.full_name)
             fix = {}
             data = coach.data["SessionRestrictions"]
             fix["SessionRestrictions"] = data
-            fix["SessionRestrictions"].remove(session.guid)
-            coach.fixit(fix, f"Remove permission for {data}")
+            fix["SessionRestrictions"].remove({A_GUID: permission.guid})
+            coach.fixit(fix, f"Remove permission for {permission.name}")

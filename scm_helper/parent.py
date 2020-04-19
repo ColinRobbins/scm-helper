@@ -47,8 +47,8 @@ def analyse_parent(parent):
             newmember = False
             break
 
-    if newmember is True:
-        parent.newstarter = True
+    if (newmember is True) and parent.swimmers:
+        parent.set_joined_today()
 
     age = get_config(parent.scm, C_PARENTS, C_AGE, C_MIN_AGE)
     if parent.age and (parent.age < age):
@@ -64,4 +64,4 @@ def analyse_parent(parent):
         issue(parent, E_NO_LOGIN, "Parent (fixable)")
         fix = {}
         fix[A_USERNAME] = parent.email
-        parent.fixit(fix, "Create login")
+        parent.fixit(fix, f"Create login, username: {parent.email}")
