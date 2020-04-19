@@ -19,7 +19,14 @@ from scm_helper.config import (
     get_config,
 )
 from scm_helper.entity import Entities, Entity, check_type
-from scm_helper.issue import E_NO_SWIMMERS, E_NOT_IN_SESSION, E_SESSIONS, E_TYPE, debug, issue
+from scm_helper.issue import (
+    E_NO_SWIMMERS,
+    E_NOT_IN_SESSION,
+    E_SESSIONS,
+    E_TYPE,
+    debug,
+    issue,
+)
 
 A_GROUP_NAME = "GroupName"
 

@@ -25,13 +25,20 @@ from tkinter import (
     scrolledtext,
 )
 
-from scm_helper.scm_api import API
-from scm_helper.config import BACKUP_DIR, CONFIG_DIR, CONFIG_FILE, FILE_READ, FILE_WRITE, HELPURL
+from scm_helper.config import (
+    BACKUP_DIR,
+    CONFIG_DIR,
+    CONFIG_FILE,
+    FILE_READ,
+    FILE_WRITE,
+    HELPURL,
+)
 from scm_helper.facebook import Facebook
 from scm_helper.file import Csv
 from scm_helper.issue import REPORTS, IssueHandler
 from scm_helper.license import LICENSE
 from scm_helper.notify import set_notify
+from scm_helper.scm_api import API
 from scm_helper.version import VERSION
 
 
