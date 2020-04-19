@@ -55,7 +55,7 @@ class Members(Entities):
             if member[A_ACTIVE] == "1" and self.by_name[name].is_active:
                 act1 = member[A_ACTIVE]
                 act2 = self.by_name[name].is_active
-                debug(f"{name}: {act1}-{act2}", 1)
+                debug(f"{name}: {act1}-{act2}", 6)
                 issue(self.by_name[name], E_DUPLICATE, name)
             else:
                 active = self.by_name[name].is_active

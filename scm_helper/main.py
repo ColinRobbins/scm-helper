@@ -6,15 +6,19 @@ import sys
 from tkinter import Tk  # only import tkiner if needed.
 
 from api import API
-from config import VERSION
+from config import HELPURL
 from facebook import Facebook
 from file import Csv
 from gui import ScmGui
 from issue import REPORTS, IssueHandler
 from notify import notify, set_notify
 from sendmail import send_email
+from version import VERSION
 
 USAGE = f"""
+scm <options>
+
+Where <options> are:
    --analyse = run analysis on archive date
    --archive <date> = which archive to use in restore
    --backup = backup
@@ -39,7 +43,9 @@ USAGE = f"""
    --to <email> = Who to send the emial to (used with --email)
    --verify <date> = use archive backup
 
-   SCM Helper Version: {VERSION}
+SCM Helper Version: {VERSION}
+For more help see: {HELPURL}
+
 """
 
 SHORT_OPTS = "hlmfq"
@@ -103,7 +109,7 @@ def parse_opts(argv, scm):
         sys.exit()
 
 
-def main(argv=None):
+def cmd(argv=None):
     """Start everything."""
     # Yes, its complicated...
     # pylint: disable=too-many-locals
@@ -274,16 +280,19 @@ def gui(argv=None):
         argv = sys.argv[1:]
 
     if len(argv) > 0:
-        main()  # Command line options = run command line version
+        cmd()  # Command line options = run command line version
     else:
         root = Tk()
         ScmGui(root)
         root.mainloop()
 
-
-if __name__ == "__main__":
+def main():
+    """Main."""
     PLATFORM = platform.system()
     if PLATFORM == "Windows":
         gui()
     else:
-        main()
+        cmd()
+
+if __name__ == "__main__":
+    main()

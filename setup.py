@@ -3,10 +3,14 @@ import setuptools
 
 with open("README.md", "r") as fh:
     DESCRIPTION = fh.read()
+    
+version = {}
+with open ("scm_helper/version.py") as fh:
+    exec(fp.read(), version)
 
 setuptools.setup(
     name="scm",
-    version="1.0",
+    version=version['VERSION'],
     author="Colin Robbins",
     author_email="colin.john.robbins@gmail.com",
     description="Helper tool to manage data in Swim Club Manager",
@@ -26,5 +30,5 @@ setuptools.setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-    python_requires=">=3.6",
+    python_requires=">=3.7",
 )

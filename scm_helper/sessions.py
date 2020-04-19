@@ -51,7 +51,7 @@ class Sessions(Entities):
         res = ""
         for session in sorted(self.entities, key=lambda x: x.full_name):
             if session.is_active:
-                res += f"{session.full_name}:"
+                res += f"{session.full_name}:\n"
                 res += session.print_coaches()
 
         return res
@@ -120,10 +120,10 @@ class Session(Entity):
                 if lastseen:
                     when = datetime.datetime.strptime(lastseen, SCM_DATE_FORMAT)
                     if (self.scm.today - when).days > absence:
-                        msg = f"(Lastseen: {lastseen})"
+                        msg = f"(Lastseen: {lastseen})\n"
                 else:
-                    msg = "(Never seen)"
-                res += f"   {guid.name} {msg}"
+                    msg = "(Never seen)\n"
+                res += f"   {guid.name} {msg}\n"
 
         return res
 

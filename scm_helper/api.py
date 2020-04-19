@@ -297,7 +297,7 @@ class API:
     def decrypt(self, xdate):
         """Decrypt file."""
         restore = self.classes + self.backup_classes
-
+        
         for aclass in restore:
             decrypted = self.crypto.decrypt_file(aclass.name, xdate)
             if decrypted is None:
@@ -328,6 +328,7 @@ class API:
         if length > 0:
             output += f"\n{length} fixable errors."
 
+        output += "\n"
         return output
 
     def setopt(self, opt, args):

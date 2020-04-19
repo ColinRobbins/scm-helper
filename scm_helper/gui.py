@@ -32,15 +32,16 @@ from config import (
     FILE_READ,
     FILE_WRITE,
     HELPURL,
-    VERSION,
 )
 from facebook import Facebook
 from file import Csv
 from issue import REPORTS, IssueHandler
 from notify import set_notify
+from license import LICENSE
+from version import VERSION
 
 
-class ScmGui(Tk):
+class ScmGui():
     """Tkinter based GUI (for Windows)."""
 
     # pylint: disable=too-many-instance-attributes
@@ -48,7 +49,7 @@ class ScmGui(Tk):
     def __init__(self, master):
         """Initialise."""
         # pylint: disable=too-many-statements
-        super().__init__()
+        # super().__init__(None)
         self.master = master
         self.result_window = None
         self.result_text = None
@@ -69,7 +70,10 @@ class ScmGui(Tk):
         set_notify(self.notify)
         self.issues = IssueHandler()
         self.scm = API(self.issues)
-        self.scm.get_config_file()
+        if self.scm.get_config_file() is False:
+            msg = "Error in config file - see status window for details."
+            messagebox.showerror("Error", msg, parent=self.master)
+
         self.api_init = False
 
         msg = "Welcome to SCM Helper by Colin Robbins.\nPlease enter your password.\n"
@@ -86,9 +90,8 @@ class ScmGui(Tk):
         password = Entry(self.master, show="*", textvariable=self.__password, width=20)
         password.grid(row=myrow, column=2, sticky=W)
 
-        self.button_analyse = Button(
-            self.master, text="Analyse", command=self.analyse_window
-        )
+        msg = "Analyse"
+        self.button_analyse = Button(self.master, text=msg, command=self.analyse_window)
         self.button_analyse.grid(row=myrow, column=3, pady=2, sticky=W)
 
         self.button_backup = Button(self.master, text="Backup", command=self.backup)
@@ -116,21 +119,22 @@ class ScmGui(Tk):
 
         cmd = Menu(menubar, tearoff=0)
         cmd.add_command(label="Edit Config", command=self.edit_config)
-        file.add_separator()
+        cmd.add_separator()
         cmd.add_command(label="Create Lists", command=self.create_lists)
         cmd.add_command(label="Fix Errors", command=self.fixit)
         menubar.add_cascade(label="Edit", menu=cmd)
 
         cmd = Menu(menubar, tearoff=0)
-        cmd.add_command(label="Analyse Swim England File", command=self.swim_england)
         cmd.add_command(label="Analyse Facebook", command=self.facebook)
+        cmd.add_command(label="Analyse Swim England File", command=self.swim_england)
         cmd.add_command(label="List Coaches", command=self.coaches)
         cmd.add_command(label="Show Not-confirmed Emails", command=self.confirm)
         menubar.add_cascade(label="Reports", menu=cmd)
 
         about = Menu(menubar, tearoff=0)
         about.add_command(label="About...", command=xabout)
-        about.add_command(label="Help.", command=xhelp)
+        about.add_command(label="Help", command=xhelp)
+        about.add_command(label="License", command=license)
         menubar.add_cascade(label="About", menu=about)
 
         self.master.config(menu=menubar)
@@ -138,6 +142,10 @@ class ScmGui(Tk):
     def scm_init(self):
         """Initialise SCM."""
         password = self.__password.get()
+        
+        self.clear_data()
+        self.api_init = False
+        
         if password:
             if self.scm.initialise(password) is False:
                 messagebox.showerror("Error", "Cannot initialise SCM (wrong password?)")
@@ -163,12 +171,11 @@ class ScmGui(Tk):
 
     def open_archive(self):
         """Open Archive file."""
-        if self.api_init is False:
-            if self.scm_init() is False:
-                return
-
         if self.thread:
             return  # already running
+        
+        if self.scm_init() is False:
+            return
 
         self.thread = AnalysisThread(self, True).start()
 
@@ -183,9 +190,10 @@ class ScmGui(Tk):
         cfg = os.path.join(home, CONFIG_DIR)
 
         dir_opt = {}
+        dir_opt["title"] = "Find Swim Enngland File"
         dir_opt["initialdir"] = cfg
         dir_opt["mustexist"] = True
-        dir_opt["parent"] = self.gui.master
+        dir_opt["parent"] = self.master
         dir_opt["defaultextension"] = ".csv"
 
         where = filedialog.askopenfilename(**dir_opt)
@@ -232,15 +240,7 @@ class ScmGui(Tk):
         home = str(Path.home())
         cfg = os.path.join(home, CONFIG_DIR, CONFIG_FILE)
 
-        dir_opt = {}
-        dir_opt["initialdir"] = cfg
-        dir_opt["mustexist"] = True
-        dir_opt["parent"] = self.gui.master
-        dir_opt["defaultextension"] = ".yaml"
-
-        where = filedialog.askopenfilename(**dir_opt)
-
-        Edit(self.master, where)
+        Edit(self.master, cfg, self.scm)
 
     def create_lists(self):
         """Create Lists."""
@@ -255,21 +255,16 @@ class ScmGui(Tk):
 
     def analyse_window(self):
         """Window for analysis result."""
-        if self.api_init is False:
-            if self.scm_init() is False:
-                return
-
         if self.thread:
             return  # already running
+        
+        if self.scm_init() is False:
+            return
 
         self.thread = AnalysisThread(self, False).start()
 
     def fixit(self):
         """Window for reports."""
-        if self.api_init is False:
-            if self.scm_init() is False:
-                return
-
         if self.thread:
             return  # already running
 
@@ -291,12 +286,11 @@ class ScmGui(Tk):
 
     def backup(self):
         """Window for reports."""
-        if self.api_init is False:
-            if self.scm_init() is False:
-                return
-
         if self.thread:
             return  # already running
+
+        if self.scm_init() is False:
+               return
 
         self.thread = BackupThread(self).start()
 
@@ -321,26 +315,37 @@ class ScmGui(Tk):
         report = self.reports.get()
         mode = self.grouping.get()
 
+        self.result_text.txt.config(state=NORMAL)
         self.result_text.txt.delete("1.0", END)
 
-        if report == "all reports":
+        if report == "All Reports":
             report = None
+        else:
+            report = report.lower()
 
-        if mode == "error":
+        if mode == "Error":
             output = self.issues.print_by_error(report)
         else:
             output = self.issues.print_by_name(report)
 
         self.result_text.insert(END, output)
+        self.result_text.txt.config(state=DISABLED)
 
     def create_report_window(self):
         """Create the reports window."""
-        self.report_window = Toplevel(self.gui.master)
+        self.report_window = Toplevel(self.master)
         self.report_window.title("SCM Helper - Reports")
 
-        self.report_text = ScrollingText(self.gui.result_window)
-        self.report_text.config(width=800, height=800)
+        self.report_text = ScrollingText(self.report_window)
+        self.report_text.config(width=600, height=800)
         self.report_text.grid(row=1, column=1)
+        
+        self.report_window.protocol("WM_DELETE_WINDOW", self.close_report)
+
+    def close_report(self):
+        """Action on close."""
+        self.report_window.destroy()
+        self.report_window = None
 
 
 class AnalysisThread(threading.Thread):
@@ -357,9 +362,13 @@ class AnalysisThread(threading.Thread):
         """Run analyser."""
         self.gui.buttons(DISABLED)
 
+        if self.gui.result_window:
+            self.gui.result_text.txt.config(state=NORMAL)
+            self.gui.result_text.txt.delete("1.0", END)
+
         self.gui.notify.txt.delete("1.0", END)
-        self.gui.clear_data()
-        if self.gui.get_config_file() is False:
+            
+        if self.scm.get_config_file() is False:
             messagebox.showerror("Error", f"Error in config file.")
             return
 
@@ -376,20 +385,17 @@ class AnalysisThread(threading.Thread):
             where = filedialog.askdirectory(**dir_opt)
             if self.scm.decrypt(where) is False:
                 messagebox.showerror("Error", f"Cannot read from archive: {where}")
-                self.gui.clear_data()
                 self.gui.buttons(NORMAL)
                 return
         else:
             if self.scm.get_data(False) is False:
                 messagebox.showerror("Analsyis", "Failed to read data")
-                self.gui.clear_data()
                 self.gui.buttons(NORMAL)
                 self.gui.thread = None
                 return
 
         if self.scm.linkage() is False:
             messagebox.showerror("Analsyis", "Error processing data")
-            self.gui.clear_data()
             self.gui.buttons(NORMAL)
             self.gui.thread = None
             return
@@ -401,13 +407,16 @@ class AnalysisThread(threading.Thread):
             self.create_window()
 
         output = self.gui.issues.print_by_error(None)
-
+        
+        self.gui.notify.txt.insert(END, self.scm.print_summary())
         self.gui.result_text.insert(END, output)
-        self.gui.master.lift()
+        self.gui.result_window.lift()
 
         self.gui.buttons(NORMAL)
-        self.gui.thread = None
+        self.gui.result_text.txt.config(state=DISABLED)
 
+        self.gui.thread = None
+        
         return
 
     def create_window(self):
@@ -419,12 +428,13 @@ class AnalysisThread(threading.Thread):
         myrow = 1
 
         self.gui.reports = StringVar()
-        self.gui.reports.set("all reports")
+        self.gui.reports.set("All Reports")
 
         label = Label(self.gui.result_window, text="Select Report: ")
         label.grid(row=myrow, column=1, sticky=W, pady=2)
-
-        all_reports = ["all reports"] + REPORTS
+        
+        rpts = [resp.title() for resp in REPORTS]
+        all_reports = ["All Reports"] + rpts
 
         menu = OptionMenu(
             self.gui.result_window,
@@ -455,6 +465,13 @@ class AnalysisThread(threading.Thread):
         self.gui.result_text = ScrollingText(self.gui.result_window)
         self.gui.result_text.config(width=800, height=800)
         self.gui.result_text.grid(row=myrow, column=1, columnspan=6)
+        
+        self.gui.result_window.protocol("WM_DELETE_WINDOW", self.close_report)
+
+    def close_report(self):
+        """Action on close."""
+        self.gui.result_window.destroy()
+        self.gui.result_window = None
 
 
 class BackupThread(threading.Thread):
@@ -471,7 +488,6 @@ class BackupThread(threading.Thread):
         self.gui.buttons(DISABLED)
 
         self.gui.notify.txt.delete("1.0", END)
-        self.gui.clear_data()
 
         if self.scm.backup_data():
             output = self.scm.print_summary(backup=True)
@@ -498,10 +514,7 @@ class UpdateThread(threading.Thread):
         self.gui.buttons(DISABLED)
 
         self.gui.notify.txt.delete("1.0", END)
-        self.gui.clear_data()
-
         self.scm.update()
-
         self.gui.notify.txt.insert(END, "Lists Created.")
 
         self.gui.buttons(NORMAL)
@@ -545,33 +558,44 @@ class ScrollingText(Frame):  # pylint: disable=too-many-ancestors
 class Edit(Frame):  # pylint: disable=too-many-ancestors
     """Class to edit a frame."""
 
-    def __init__(self, parent, filename):
+    def __init__(self, parent, filename, scm):
         """Initialise."""
         Frame.__init__(self, parent)
         self.parent = parent
         self.file = filename
+        self.scm = scm
+        
+        self.edit_win = Toplevel(self.master)
+        self.edit_win.title("SCM Helper - Edit Config")
 
-        self.text_pad = scrolledtext.ScrolledText(parent)
-        self.text_pad.grid(row=1, column=1)
+        self.text_pad = scrolledtext.ScrolledText(self.edit_win)
+        self.text_pad.grid(row=1, column=1, columnspan=8, pady=2)
 
         with open(self.file, FILE_READ) as file:
             contents = file.read()
             self.text_pad.insert("1.0", contents)
             file.close()
+            
+        self.text_pad.edit_modified(False)
 
-        abtn = Button(self, text="Save", command=self.save_command)
-        abtn.grid(row=2, column=1)
+        abtn = Button(self.edit_win, text="Save", command=self.save_command)
+        abtn.grid(row=2, column=1, pady=2, sticky=W)
 
-        cbtn = Button(self, text="Close", command=self.on_exit)
-        cbtn.grid(row=2, column=2)
+        cbtn = Button(self.edit_win, text="Close", command=self.on_exit)
+        cbtn.grid(row=2, column=2, pady=2, sticky=W)
+
+        self.edit_win.protocol("WM_DELETE_WINDOW", self.on_exit)
 
     def on_exit(self):
         """Close."""
-        msg = "SCM-Helper: Yes / No?", "Save Config"
-        resp = messagebox.askyesno(msg, parent=self.parent)
-        if resp:
-            self.save_command()
-        self.parent.destroy()
+        if (self.text_pad.edit_modified()):
+            title = "SCM-Helper: Save Config"
+            msg = "Save Config?"
+            resp = messagebox.askyesno(title, msg, parent=self.edit_win)
+            if resp:
+                if self.save_command() is False:
+                    return
+        self.edit_win.destroy()
 
     def save_command(self):
         """Save."""
@@ -580,15 +604,27 @@ class Edit(Frame):  # pylint: disable=too-many-ancestors
             data = self.text_pad.get("1.0", END)
             file.write(data)
             file.close()
+            
+        if self.scm.get_config_file() is False:
+            msg = "Error in config file - see status window for details."
+            messagebox.showerror("Error", msg, parent=self.parent)
+            return False
+            
+        self.text_pad.edit_modified(False)
+        return True
 
+def license():
+    """Show License."""
+
+    messagebox.showinfo("License", LICENSE)
 
 def xabout():
     """About message."""
     home = str(Path.home())
     cfg = os.path.join(home, CONFIG_DIR)
 
-    msg = "SCM Helper by Colin Robbins.\n"
-    msg += f"Version: {VERSION}.\n"
+    msg = "SCM Helper by Colin Robbins.\n\n"
+    msg += f"Version: {VERSION}.\n\n"
     msg += f"Config directory: {cfg}"
 
     messagebox.showinfo("About", msg)

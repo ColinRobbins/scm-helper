@@ -1,6 +1,6 @@
 """Notify."""
 import sys
-from tkinter import messagebox, simpledialog
+from tkinter import messagebox, simpledialog, END
 
 WHERE = None
 
@@ -14,6 +14,7 @@ def notify(msg):
     global WHERE
     if WHERE:
         WHERE.write(msg)
+        WHERE.txt.see(END)
     elif WHERE is None:
         sys.stderr.write(msg)
         sys.stderr.flush()

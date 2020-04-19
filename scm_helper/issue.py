@@ -539,7 +539,7 @@ class IssueHandler:
         matrix = {}
         for anissue in self.by_error:
             for anerror in self.by_error[anissue]:
-                name, msg, report, dummy2, dummy3 = anerror
+                name, msg, report, dummy = anerror
                 if report == R_CONFIRMATION:
                     scm = self.scm
                     entity = scm.members.by_name.get(name, scm.members.knownas[name])

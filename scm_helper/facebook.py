@@ -34,7 +34,8 @@ class Facebook:
                         return False
                 else:
                     return False
-        return True
+            return True
+        return False
 
     def analyse(self):
         """Analyse filebook files."""
