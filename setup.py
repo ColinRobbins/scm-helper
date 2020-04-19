@@ -3,14 +3,14 @@ import setuptools
 
 with open("README.md", "r") as fh:
     DESCRIPTION = fh.read()
-    
-version = {}
-with open ("scm_helper/version.py") as fh:
-    exec(fp.read(), version)
+
+VERSION = {}
+with open("scm_helper/version.py") as fh:
+    exec(fh.read(), VERSION)
 
 setuptools.setup(
     name="scm",
-    version=version['VERSION'],
+    version=VERSION["VERSION"],
     author="Colin Robbins",
     author_email="colin.john.robbins@gmail.com",
     description="Helper tool to manage data in Swim Club Manager",
