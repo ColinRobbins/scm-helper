@@ -11,6 +11,7 @@ from tkinter import (
     Entry,
     Frame,
     Label,
+    LabelFrame,
     Menu,
     OptionMenu,
     Scrollbar,
@@ -18,7 +19,7 @@ from tkinter import (
     Text,
     Tk,
     Toplevel,
-    W,
+    W,E,S,N,
     filedialog,
     messagebox,
     scrolledtext,
@@ -77,36 +78,46 @@ class ScmGui():
         self.api_init = False
 
         msg = "Welcome to SCM Helper by Colin Robbins.\nPlease enter your password.\n"
-        self.notify.txt.insert(END, msg)
+        self.notify.insert(END, msg)
 
     def create_main_window(self):
         """Create the main window."""
         # Row 1
         myrow = 1
-        label = Label(self.master, text="Password: ")
-        label.grid(row=myrow, column=1, sticky=W, pady=2)
+
+        top_frame = Frame(self.master)
+        top_frame.grid(row=0, column=0, sticky=W+E)
+        
+        label = Label(top_frame, text="Password: ")
+        label.grid(row=0, column=0, pady=10, padx=10, )
+
         self.__password = StringVar()
         self.__password.set("")
-        password = Entry(self.master, show="*", textvariable=self.__password, width=20)
-        password.grid(row=myrow, column=2, sticky=W)
+        password = Entry(top_frame, show="*", textvariable=self.__password, width=20)
+        password.grid(row=0, column=1, pady=10, padx=10)
 
         msg = "Analyse"
-        self.button_analyse = Button(self.master, text=msg, command=self.analyse_window)
-        self.button_analyse.grid(row=myrow, column=3, pady=2, sticky=W)
+        self.button_analyse = Button(top_frame, text=msg, command=self.analyse_window)
+        self.button_analyse.grid(row=0, column=2, pady=10, padx=10)
 
-        self.button_backup = Button(self.master, text="Backup", command=self.backup)
-        self.button_backup.grid(row=myrow, column=4, sticky=W)
+        self.button_backup = Button(top_frame, text="Backup", command=self.backup)
+        self.button_backup.grid(row=0, column=3, pady=10, padx=10)
 
-        self.button_fixit = Button(
-            self.master, text="Fixit", command=self.fixit, state=DISABLED
-        )
-        self.button_fixit.grid(row=myrow, column=5, sticky=W)
+        self.button_fixit = Button( top_frame, text="Fixit", command=self.fixit)
+        self.button_fixit.config(state=DISABLED)
+        self.button_fixit.grid(row=0, column=4, pady=10, padx=10)
 
-        # Row 2
-        myrow = 2
-        self.notify = ScrollingText(self.master)
-        self.notify.config(width=600, height=250)
-        self.notify.grid(row=myrow, column=1, columnspan=5, pady=2)
+        top_group = LabelFrame(self.master, text="Notifications", pady=5, padx=5)
+        top_group.grid(row=1, column=0, columnspan=5, pady=10, padx=10, sticky=E+W+N+S)
+        
+        self.master.columnconfigure(0, weight=1)
+        self.master.rowconfigure(1, weight=1)
+        
+        top_group.columnconfigure(0, weight=1)
+        top_group.rowconfigure(0, weight=1)
+
+        self.notify = scrolledtext.ScrolledText(top_group, width=60, height=20)
+        self.notify.grid(row=0, column=0, sticky=E+W+N+S)
 
     def create_menu(self):
         """Create Menus."""
@@ -165,7 +176,7 @@ class ScmGui():
 
         if self.report_window is None:
             self.create_report_window()
-        self.report_text.txt.delete("1.0", END)
+        self.report_text.delete("1.0", END)
 
         return True
 
@@ -315,8 +326,8 @@ class ScmGui():
         report = self.reports.get()
         mode = self.grouping.get()
 
-        self.result_text.txt.config(state=NORMAL)
-        self.result_text.txt.delete("1.0", END)
+        self.result_text.config(state=NORMAL)
+        self.result_text.delete("1.0", END)
 
         if report == "All Reports":
             report = None
@@ -329,16 +340,21 @@ class ScmGui():
             output = self.issues.print_by_name(report)
 
         self.result_text.insert(END, output)
-        self.result_text.txt.config(state=DISABLED)
+        self.result_text.config(state=DISABLED)
 
     def create_report_window(self):
         """Create the reports window."""
         self.report_window = Toplevel(self.master)
         self.report_window.title("SCM Helper - Reports")
+        
+        top_frame = Frame(self.report_window)
+        top_frame.grid(row=0, column=0, sticky=W+E)
 
-        self.report_text = ScrollingText(self.report_window)
-        self.report_text.config(width=600, height=800)
-        self.report_text.grid(row=1, column=1)
+        self.report_window.columnconfigure(0, weight=1)
+        self.report_window.rowconfigure(0, weight=1)
+
+        self.report_text = scrolledtext.ScrolledText(top_frame, width=80, height=40)
+        self.report_text.grid(row=0, column=0, sticky=E+W+N+S)
         
         self.report_window.protocol("WM_DELETE_WINDOW", self.close_report)
 
@@ -363,10 +379,10 @@ class AnalysisThread(threading.Thread):
         self.gui.buttons(DISABLED)
 
         if self.gui.result_window:
-            self.gui.result_text.txt.config(state=NORMAL)
-            self.gui.result_text.txt.delete("1.0", END)
+            self.gui.result_text.config(state=NORMAL)
+            self.gui.result_text.delete("1.0", END)
 
-        self.gui.notify.txt.delete("1.0", END)
+        self.gui.notify.delete("1.0", END)
             
         if self.scm.get_config_file() is False:
             messagebox.showerror("Error", f"Error in config file.")
@@ -408,12 +424,12 @@ class AnalysisThread(threading.Thread):
 
         output = self.gui.issues.print_by_error(None)
         
-        self.gui.notify.txt.insert(END, self.scm.print_summary())
+        self.gui.notify.insert(END, self.scm.print_summary())
         self.gui.result_text.insert(END, output)
         self.gui.result_window.lift()
 
         self.gui.buttons(NORMAL)
-        self.gui.result_text.txt.config(state=DISABLED)
+        self.gui.result_text.config(state=DISABLED)
 
         self.gui.thread = None
         
@@ -424,48 +440,53 @@ class AnalysisThread(threading.Thread):
         self.gui.result_window = Toplevel(self.gui.master)
         self.gui.result_window.title("SCM Helper - Results")
 
-        # Row 1
-        myrow = 1
-
         self.gui.reports = StringVar()
         self.gui.reports.set("All Reports")
+        
+        top_frame = Frame(self.gui.result_window)
+        top_frame.grid(row=0, column=0, sticky=W+E)
 
-        label = Label(self.gui.result_window, text="Select Report: ")
-        label.grid(row=myrow, column=1, sticky=W, pady=2)
+        label = Label(top_frame, text="Select Report: ")
+        label.grid(row=0, column=0, pady=10, padx=10)
         
         rpts = [resp.title() for resp in REPORTS]
         all_reports = ["All Reports"] + rpts
 
         menu = OptionMenu(
-            self.gui.result_window,
+            top_frame,
             self.gui.reports,
             *all_reports,
             command=self.gui.process_option,
         )
-        menu.grid(row=myrow, column=2, sticky=W)
+        menu.grid(row=0, column=1, pady=10, padx=10)
 
         self.gui.grouping = StringVar()
         self.gui.grouping.set("Error")
 
-        label = Label(self.gui.result_window, text="Group Report by: ")
-        label.grid(row=myrow, column=3, sticky=W, pady=2)
+        label = Label(top_frame, text="Group Report by: ")
+        label.grid(row=0, column=2, pady=10, padx=10)
 
         menu = OptionMenu(
-            self.gui.result_window,
+            top_frame,
             self.gui.grouping,
             "Error",
             "Member",
             command=self.gui.process_option,
         )
-        menu.grid(row=myrow, column=4, sticky=W)
+        menu.grid(row=0, column=3, pady=10, padx=10)
 
-        # Row 2
-        myrow = 2
-
-        self.gui.result_text = ScrollingText(self.gui.result_window)
-        self.gui.result_text.config(width=800, height=800)
-        self.gui.result_text.grid(row=myrow, column=1, columnspan=6)
+        top_group = LabelFrame(self.gui.result_window, text="Analysis...", pady=5, padx=5)
+        top_group.grid(row=1, column=0, columnspan=4, pady=10, padx=10, sticky=E+W+N+S)
         
+        self.gui.result_window.columnconfigure(0, weight=1)
+        self.gui.result_window.rowconfigure(1, weight=1)
+        
+        top_group.columnconfigure(0, weight=1)
+        top_group.rowconfigure(0, weight=1)
+
+        self.gui.result_text = scrolledtext.ScrolledText(top_group, width=100, height=40)
+        self.gui.result_text.grid(row=0, column=0, sticky=E+W+N+S)
+
         self.gui.result_window.protocol("WM_DELETE_WINDOW", self.close_report)
 
     def close_report(self):
@@ -487,12 +508,12 @@ class BackupThread(threading.Thread):
         """Run analyser."""
         self.gui.buttons(DISABLED)
 
-        self.gui.notify.txt.delete("1.0", END)
+        self.gui.notify.delete("1.0", END)
 
         if self.scm.backup_data():
             output = self.scm.print_summary(backup=True)
-            self.gui.notify.txt.insert(END, output)
-            self.gui.notify.txt.insert(END, "Backup Complete.")
+            self.gui.notify.insert(END, output)
+            self.gui.notify.insert(END, "Backup Complete.")
         else:
             messagebox.showerror("Error", "Backup failure")
 
@@ -513,47 +534,12 @@ class UpdateThread(threading.Thread):
         """Run analyser."""
         self.gui.buttons(DISABLED)
 
-        self.gui.notify.txt.delete("1.0", END)
+        self.gui.notify.delete("1.0", END)
         self.scm.update()
-        self.gui.notify.txt.insert(END, "Lists Created.")
+        self.gui.notify.insert(END, "Lists Created.")
 
         self.gui.buttons(NORMAL)
         self.gui.thread = None
-
-
-class ScrollingText(Frame):  # pylint: disable=too-many-ancestors
-    """Text scrolling combo."""
-
-    # Credit: https://stackoverflow.com/questions/13832720/
-    # how-to-attach-a-scrollbar-to-a-text-widget
-
-    def __init__(self, *args, **kwargs):
-        """Initialise."""
-        super().__init__(*args, **kwargs)
-
-        # ensure a consistent GUI size
-        self.grid_propagate(False)
-        # implement stretchability
-        self.grid_rowconfigure(2, weight=1)
-        self.grid_columnconfigure(2, weight=1)
-
-        # create a Text widget
-        self.txt = Text(self)
-        self.txt.grid(row=2, column=1, columnspan=3, sticky="nsew", padx=2, pady=2)
-
-        # create a Scrollbar and associate it with txt
-        scrollb = Scrollbar(self, command=self.txt.yview)
-        scrollb.grid(row=2, column=4, sticky="nsew")
-        self.txt["yscrollcommand"] = scrollb.set
-
-    def insert(self, where, what):
-        """Insert text."""
-        self.txt.insert(where, what)
-
-    def write(self, what):
-        """Insert text at the end."""
-        self.txt.insert(END, what)
-
 
 class Edit(Frame):  # pylint: disable=too-many-ancestors
     """Class to edit a frame."""
@@ -568,8 +554,26 @@ class Edit(Frame):  # pylint: disable=too-many-ancestors
         self.edit_win = Toplevel(self.master)
         self.edit_win.title("SCM Helper - Edit Config")
 
-        self.text_pad = scrolledtext.ScrolledText(self.edit_win)
-        self.text_pad.grid(row=1, column=1, columnspan=8, pady=2)
+        top_frame = Frame(self.edit_win)
+        top_frame.grid(row=0, column=0, sticky=W+E)
+
+        abtn = Button(top_frame, text="Save", command=self.save_command)
+        abtn.grid(row=0, column=0, pady=10, padx=10)
+
+        cbtn = Button(top_frame, text="Close", command=self.on_exit)
+        cbtn.grid(row=0, column=1, pady=10, padx=10)
+        
+        top_group = LabelFrame(self.edit_win, text=filename, pady=5, padx=5)
+        top_group.grid(row=1, column=0, columnspan=2, pady=10, padx=10, sticky=E+W+N+S)
+        
+        self.edit_win.columnconfigure(0, weight=1)
+        self.edit_win.rowconfigure(1, weight=1)
+        
+        top_group.columnconfigure(0, weight=1)
+        top_group.rowconfigure(0, weight=1)
+
+        self.text_pad = scrolledtext.ScrolledText(top_group, width=80, height=40)
+        self.text_pad.grid(row=0, column=0, sticky=E+W+N+S)
 
         with open(self.file, FILE_READ) as file:
             contents = file.read()
@@ -577,13 +581,7 @@ class Edit(Frame):  # pylint: disable=too-many-ancestors
             file.close()
             
         self.text_pad.edit_modified(False)
-
-        abtn = Button(self.edit_win, text="Save", command=self.save_command)
-        abtn.grid(row=2, column=1, pady=2, sticky=W)
-
-        cbtn = Button(self.edit_win, text="Close", command=self.on_exit)
-        cbtn.grid(row=2, column=2, pady=2, sticky=W)
-
+        
         self.edit_win.protocol("WM_DELETE_WINDOW", self.on_exit)
 
     def on_exit(self):

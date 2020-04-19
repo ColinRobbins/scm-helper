@@ -64,7 +64,7 @@ class Entities:
 
     def parse_data(self, data):
         """Read data."""
-        notify(f"{self._name}... ")
+        notify(f"{self._name}...\n")
         self._raw_data = data
         self.create_entities(self._raw_data)
 

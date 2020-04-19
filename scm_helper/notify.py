@@ -13,8 +13,8 @@ def notify(msg):
     # pylint: disable=global-statement
     global WHERE
     if WHERE:
-        WHERE.write(msg)
-        WHERE.txt.see(END)
+        WHERE.insert(END, msg)
+        WHERE.see(END)
     elif WHERE is None:
         sys.stderr.write(msg)
         sys.stderr.flush()
