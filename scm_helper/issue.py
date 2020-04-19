@@ -344,7 +344,7 @@ E_VOLUNTEER = {
 # fmt: on
 
 ISSUE_LIST = [
-E_ABSENT,
+    E_ABSENT,
     E_ASA,
     E_COACH_ROLE,
     E_COACH_WITH_SESSIONS,
@@ -404,7 +404,7 @@ E_ABSENT,
     E_TYPE_GROUP,
     E_UNKNOWN,
     E_UNUSED_LOGIN,
-    E_VOLUNTEER
+    E_VOLUNTEER,
 ]
 
 # Handler

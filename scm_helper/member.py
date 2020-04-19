@@ -443,7 +443,7 @@ class Member(Entity):
         """Analise the member."""
         # pylint: disable=too-many-branches
         # pylint: disable=too-many-statements
-        
+
         if self.is_active is False:
             self.check_inactive()
             return
