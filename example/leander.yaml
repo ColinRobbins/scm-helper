@@ -13,23 +13,17 @@ club: "Nottingham Leander Swimming Club"
 allow_update:  True   # Set to true if this tool is allowed to edit SCM
                       # Set to false if you don't trust the software to be reliable.
 
-# Debug level
-# Set to 0 for no debug info
-# A setting of 1 is recommended while getting it working!
-debug_level: 5
-
-
 #############################################
 # Email config
 #############################################
 
 email:
-  smtp_server: smtpout.secureserver.net
+  smtp_server: smtp.server.net
   smtp_port: 25
-  username: camayoc@colinrobbins.me
-  send_to: colin.john.robbins@gmail.com
+  username: someone@somewhere.com
+  send_to: someone@gmail.com
   tls: False
-  password: "config/email.enc"
+  password: "email.enc"
 
 #############################################
 # File input, for correlation
@@ -360,55 +354,55 @@ facebook:
 #
 #############################################
 lists:
-    suffix: " (Test)"     # Use to identity generated lists
-    edit: True            # Allow script to modify generated lists
-    confirmation: False     # Generate lists of non-confirmed and expired confirmation members
+    suffix: " (Generated)"  # Use to identity generated lists
+    edit: True              # Allow script to modify generated lists
+    confirmation: True      # Generate lists of non-confirmed and expired confirmation members
     list:
          "Swimmer: Development Only":
             group: "Development"
             unique: True                # ONLY the group, no others
             allow_group: "Water Polo"   # If unique is set, allow this too
-#        "Swimmers: 17 and under on Dec 31":
-#            type: "swimmer"
-#            max_age_eoy: 17
-#        "Swimmers: 12 and under on Dec 31":
-#            type: "swimmer"
-#            max_age_eoy: 12
-#        "Swimmers: 18 and over on Dec 31":
-#            type: "swimmer"
-#            min_age_eoy: 18
-#        "Swimmers: between 13 and 20 on Dec 31":
-#            type: "swimmer"
-#            min_age_eoy: 13
-#            max_age_eoy: 20
-#        "Water Polo: Men: 16 and over":
-#            group: "Water Polo"
-#            min_age: 16
-#            gender: "male"
-#        "Water Polo: Women: 16 and over":
-#            group: "Water Polo"
-#            min_age: 16
-#            gender: "female"
-#        "Water Polo: Boys: 2003, 2004":
-#            group: "Water Polo"
-#            min_year: 2003
-#            max_year: 2004
-#            gender: "male"
-#        "Water Polo: Girls: 2003, 2004":
-#            group: "Water Polo"
-#            min_year: 2003
-#            max_year: 2004
-#            gender: "female"
-#        "Water Polo: Boys: 2005-2007":
-#            group: "Water Polo"
-#            min_year: 2005
-#            max_year: 2007
-#            gender: "male"
-#        "Water Polo: Girls: 2005-2007":
-#            group: "Water Polo"
-#            min_year: 2005
-#            max_year: 2007
-#            gender: "female"
+         "Swimmers: 17 and under on Dec 31":
+             type: "swimmer"
+             max_age_eoy: 17
+         "Swimmers: 12 and under on Dec 31":
+             type: "swimmer"
+             max_age_eoy: 12
+         "Swimmers: 18 and over on Dec 31":
+             type: "swimmer"
+             min_age_eoy: 18
+         "Swimmers: between 13 and 20 on Dec 31":
+             type: "swimmer"
+             min_age_eoy: 13
+             max_age_eoy: 20
+         "Water Polo: Men: 16 and over":
+             group: "Water Polo"
+             min_age: 16
+             gender: "male"
+         "Water Polo: Women: 16 and over":
+             group: "Water Polo"
+             min_age: 16
+             gender: "female"
+         "Water Polo: Boys: 2003, 2004":
+             group: "Water Polo"
+             min_year: 2003
+             max_year: 2004
+             gender: "male"
+         "Water Polo: Girls: 2003, 2004":
+             group: "Water Polo"
+             min_year: 2003
+             max_year: 2004
+             gender: "female"
+         "Water Polo: Boys: 2005-2007":
+             group: "Water Polo"
+             min_year: 2005
+             max_year: 2007
+             gender: "male"
+         "Water Polo: Girls: 2005-2007":
+             group: "Water Polo"
+             min_year: 2005
+             max_year: 2007
+             gender: "female"
 
 #############################################
 # Entity Types
@@ -454,21 +448,12 @@ jobtitle:
 #############################################
 
 issues:
-    E_CONFIRMATION_EXPIRED:
+    E_CONFIRMATION_EXPIRED:   # ignor confired errors during lockdown
         ignore_error: true
     E_NOT_CONFIRMED:
         ignore_error: true
-    E_SAFEGUARD_EXPIRED:
-        ignore_error: true
-    E_NO_SAFEGUARD:
-      ignore_error: true
-    E_DBS_EXPIRED:
-      ignore_error: true
-    E_NO_DBS:
-      ignore_error: true
-    E_NOT_CONFIRMED:
-      ignore_error: true
-    E_NO_CONDUCT:
-      ignore_error: true
-    E_NO_CONDUCT_DATE:
-      ignore_error: true
+
+# Debug level
+# Set to 0 for no debug info
+# A setting of 1 is recommended while getting it working!
+debug_level: 1
