@@ -288,9 +288,9 @@ def gui(argv=None):
 
 
 def main():
-    """Main."""
-    PLATFORM = platform.system()
-    if PLATFORM == "Windows":
+    """Main function."""
+    xplatform = platform.system()
+    if xplatform == "Windows":
         gui()
     else:
         cmd()

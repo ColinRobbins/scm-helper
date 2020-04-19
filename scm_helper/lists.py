@@ -99,9 +99,8 @@ class List(Entity):
             return
 
         for member in self.members:
-            if (
-                member.is_active is False
-            ):  # Never get here as entity linkage prevents it.
+            if member.is_active is False:
+                # Never get here as entity linkage prevents it.
                 msg = f"Inactive but on email list {self.name} (fixable)"
                 issue(member, E_LIST_ERROR, msg)
                 if self.newdata & A_MEMBERS in self.newdata:

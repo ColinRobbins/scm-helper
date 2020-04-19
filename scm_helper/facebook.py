@@ -26,13 +26,13 @@ class Facebook:
         self.scm = scm
 
         home = str(Path.home())
-        dir = os.path.join(home, CONFIG_DIR)
+        mydir = os.path.join(home, CONFIG_DIR)
 
         cfg = get_config(scm, C_FACEBOOK)
         if cfg:
             for facebook in cfg:
                 face = FacebookPage()
-                filename = os.path.join(dir, facebook)
+                filename = os.path.join(mydir, facebook)
                 res = face.readfile(filename, scm)
                 if res:
                     self.facebook.append(face)

@@ -34,6 +34,7 @@ class Csv(Files):
         self._csv = []
         self.by_name = {}
         self.by_knownas = {}
+        self.cfg_file = None
 
     def readfile(self, file, scm):
         """Read CSV file."""

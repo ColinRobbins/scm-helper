@@ -17,10 +17,7 @@ from tkinter import (
     N,
     OptionMenu,
     S,
-    Scrollbar,
     StringVar,
-    Text,
-    Tk,
     Toplevel,
     W,
     filedialog,
@@ -78,9 +75,6 @@ class ScmGui:
 
     def create_main_window(self):
         """Create the main window."""
-        # Row 1
-        myrow = 1
-
         top_frame = Frame(self.master)
         top_frame.grid(row=0, column=0, sticky=W + E)
 
@@ -145,7 +139,7 @@ class ScmGui:
         about = Menu(menubar, tearoff=0)
         about.add_command(label="About...", command=xabout)
         about.add_command(label="Help", command=xhelp)
-        about.add_command(label="License", command=license)
+        about.add_command(label="License", command=xlicense)
         menubar.add_cascade(label="About", menu=about)
 
         self.master.config(menu=menubar)
@@ -363,7 +357,7 @@ class ScmGui:
         self.report_window.protocol("WM_DELETE_WINDOW", self.close_report)
 
     def close_report(self):
-        """Action on close."""
+        """Close report window."""
         self.report_window.destroy()
         self.report_window = None
 
@@ -498,7 +492,7 @@ class AnalysisThread(threading.Thread):
         self.gui.analysis_window.protocol("WM_DELETE_WINDOW", self.close_report)
 
     def close_report(self):
-        """Action on close."""
+        """Close report window."""
         self.gui.analysis_window.destroy()
         self.gui.analysis_window = None
 
@@ -625,9 +619,8 @@ class Edit(Frame):  # pylint: disable=too-many-ancestors
         return True
 
 
-def license():
+def xlicense():
     """Show License."""
-
     messagebox.showinfo("License", LICENSE)
 
 
