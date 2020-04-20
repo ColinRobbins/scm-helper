@@ -230,6 +230,7 @@ class ScmGui:
 
         fbook.analyse()
         output = fbook.print_errors()
+        fbook.delete()
         self.report_text.insert(END, output)
         self.report_window.lift()
 
