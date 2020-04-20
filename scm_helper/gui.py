@@ -215,6 +215,8 @@ class ScmGui:
 
         csv.analyse(self.scm)
         output = csv.print_errors()
+        
+        del csv
         self.report_text.insert(END, output)
         self.report_window.lift()
 
@@ -230,7 +232,9 @@ class ScmGui:
 
         fbook.analyse()
         output = fbook.print_errors()
+        
         fbook.delete()
+        del fbook
         self.report_text.insert(END, output)
         self.report_window.lift()
 
