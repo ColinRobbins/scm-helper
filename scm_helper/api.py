@@ -104,8 +104,6 @@ class API:
         if verify_schema(self._config) is False:
             return False
 
-        file.close()
-
         return True
 
     def get_config(self, password):
