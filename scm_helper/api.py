@@ -282,7 +282,6 @@ class API:
         home = str(Path.home())
         today = date.today()
         cfg = os.path.join(home, CONFIG_DIR)
-        backup = os.path.join(home, CONFIG_DIR, BACKUP_DIR)
         directory = os.path.join(home, CONFIG_DIR, BACKUP_DIR, f"{today}")
 
         src = os.path.join(cfg, CONFIG_FILE)
