@@ -264,15 +264,6 @@ def cmd(argv=None):
         print("Summary...")
         print(scm.print_summary())
 
-    # not needed here, but used to prove point
-    scm.delete()
-    if fbook:
-        fbook.delete()
-    del fbook
-    del csv
-    del scm
-    del issues
-
 
 def gui(argv=None):
     """Start GUI."""
