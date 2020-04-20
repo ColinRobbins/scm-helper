@@ -3,8 +3,6 @@ from schema import And, Optional, Schema, SchemaError
 
 from scm_helper.notify import notify
 
-VERSION = 1.0
-
 # SCM access URLs etc
 URL_BASE = "https://api.swimclubmanager.co.uk"
 USER_AGENT = "SCM Access Script (Python)"
