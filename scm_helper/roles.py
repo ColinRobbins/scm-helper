@@ -63,7 +63,7 @@ class Role(Entity):
             else:
                 fix = {}
                 fix[A_MEMBERS] = self.data[A_MEMBERS]
-            fix[A_MEMBERS].delete({A_GUID: member.guid})
+            fix[A_MEMBERS].remove({A_GUID: member.guid})
             self.fixit(fix, f"Delete from role {self.name}")
 
         if member.username is None:

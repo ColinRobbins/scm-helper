@@ -10,13 +10,13 @@ class Files:
         self._scm = []
         self._error = {}
 
-    def file_error(self, name, error):
+    def file_error(self, name, error, extra=None):
         """Log an error in the file."""
         if error in self._error:
-            self._error[error].append(name)
+            self._error[error].append([name, extra])
         else:
             self._error[error] = []
-            self._error[error].append(name)
+            self._error[error].append([name, extra])
 
     def print_errors(self):
         """Print errors."""
@@ -25,7 +25,10 @@ class Files:
         
         for error in self._error:
             output += f"{error}:\n"
-            for name in sorted(self._error[error]):
-                output += f"   {name}\n"
+            for name, extra in sorted(self._error[error]):
+                output += f"   {name}"
+                if extra:
+                    output += f" {extra}"
+                output += "\n"
 
         return output

@@ -153,7 +153,10 @@ class Csv(Files):
                     continue
 
         for member in members.entities:
-            if member.is_swimmer is False:  # Only swimmers pay
+            if member.is_active is False:
+                continue
+            
+            if not (member.is_swimmer or member.is_polo or member.is_synchro):
                 continue
 
             if self.check_ignore(member):
@@ -174,7 +177,9 @@ class Csv(Files):
                 row = self.by_knownas[member.knownas]
 
             if row is None:
-                self.file_error(member.name, "In SCM but not in file")
+                msg = "In SCM but not in file"
+                extra = f"(Group: {member.first_group})"
+                self.file_error(member.name, msg, extra)
                 continue
 
             if good_name_match is None:
@@ -213,7 +218,7 @@ class Csv(Files):
 
     def check_ignore(self, member):
         """Return true if swimmer in ignore list."""
-        cfg_ignore = get_config(self._scm, C_FILES, self._filename, C_IGNORE_GROUP)
+        cfg_ignore = get_config(self._scm, C_FILES, self.cfg_file, C_IGNORE_GROUP)
         if cfg_ignore:
             for ignore in cfg_ignore:
                 if member.find_group(ignore):
