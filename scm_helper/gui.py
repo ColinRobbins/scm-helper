@@ -657,11 +657,11 @@ def xhelp():
 def wrap(func, arg=None):
     """Catch programming logic errors."""
     try:
-        if arg:
+        if arg is not None:
             return func(arg)
         return func()
 
     except (AssertionError, LookupError, NameError, TypeError, ValueError) as err:
         notify(f"Internal SCM Helper Error:\n{err}\nPlease log an issue on github.\n")
-        debug(traceback.format_exc(), 1)
+        debug(traceback.format_exc(5), 1)
         return False
