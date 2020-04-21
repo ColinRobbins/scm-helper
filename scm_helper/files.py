@@ -1,6 +1,7 @@
 """Read and process CSV Files."""
 import ntpath
 
+
 class Files:
     """General file handling."""
 
@@ -22,7 +23,7 @@ class Files:
         """Print errors."""
         fname = ntpath.basename(self._filename)
         output = f"\nErrors in {fname}\n"
-        
+
         for error in self._error:
             output += f"{error}:\n"
             for name, extra in sorted(self._error[error]):
