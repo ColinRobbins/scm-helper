@@ -72,7 +72,6 @@ class Csv(Files):
                         continue
                     self._csv.append(row)
     
-                    print (f"{cfg_dob} in {row}")
                     # Fix DOB
                     if cfg_dob in row:
                         try:
