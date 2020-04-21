@@ -339,12 +339,18 @@ class API:
 
     def api_read(self, url, page):
         """Read URL page."""
+        club = self._config[C_CLUB]
+        user_agent = USER_AGENT.replace("###CLUB_NAME###", club)
+       
         headers = {
-            "User-Agent": USER_AGENT,
+            "User-Agent": user_agent,
             "Authorization-Token": self._key,
             "Page": str(page),
         }
         
+        debug (f"URL:\n{url}", 9)
+        debug (f"Headers:\n{headers}", 8)
+
         response = requests.get(url, headers=headers)
         if response.ok:
             return response.json()
@@ -359,9 +365,12 @@ class API:
 
     def api_write(self, entity, create):
         """Write data back to SCM."""
+        club = self._config[C_CLUB]
+        user_agent = USER_AGENT.replace("###CLUB_NAME###", club)
+
         headers = {
             "content-type": "application/json",
-            "User-Agent": USER_AGENT,
+            "User-Agent": user_agent,
             "Authorization-Token": self._key,
         }
         
@@ -369,15 +378,15 @@ class API:
             notify("Update prohibited by config.\n")
             return None
 
-        debug (f"URL:\n{entity.url}\n", 9)
-        debug (f"Headers:\n{headers}\n", 9)
+        debug (f"URL:\n{entity.url}", 9)
+        debug (f"Headers:\n{headers}", 8)
 
         data = entity.newdata
         if create:
-            debug(f"Post request:\n{data}\n", 8)
+            debug(f"Post request:\n{data}", 7)
             response = requests.post(entity.url, json=data, headers=headers)
         else:
-            debug(f"Put request:\n{data}\n", 8)
+            debug(f"Put request:\n{data}", 7)
             response = requests.put(entity.url, json=data, headers=headers)
         if response.ok:
             return response

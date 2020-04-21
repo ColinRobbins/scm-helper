@@ -2,10 +2,10 @@
 from schema import And, Optional, Schema, SchemaError
 
 from scm_helper.notify import notify
+from scm_helper.version import VERSION
 
 # SCM access URLs etc
 URL_BASE = "https://api.swimclubmanager.co.uk"
-USER_AGENT = "SCM Access Script (Python)"
 
 URL_CONDUCT = f"{URL_BASE}/CodeOfConduct"
 URL_EVENTS = f"{URL_BASE}/ClubEvents"
@@ -22,6 +22,8 @@ URL_WAITINGLIST = f"{URL_BASE}/WaitingList"
 URL_WHO = f"{URL_BASE}/WhosWho"
 
 HELPURL = "https://github.com/ColinRobbins/scm-helper/wiki"
+
+USER_AGENT = f"SCM-Helper-v{VERSION} ###CLUB_NAME###"
 
 # Do not change below here...
 
