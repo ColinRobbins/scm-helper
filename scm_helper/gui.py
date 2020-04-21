@@ -1,6 +1,7 @@
 """Windows GUI."""
 import os.path
 import threading
+import traceback
 import webbrowser
 from pathlib import Path
 from tkinter import (
@@ -36,9 +37,9 @@ from scm_helper.config import (
 )
 from scm_helper.facebook import Facebook
 from scm_helper.file import Csv
-from scm_helper.issue import REPORTS, IssueHandler
+from scm_helper.issue import REPORTS, IssueHandler, debug
 from scm_helper.license import LICENSE
-from scm_helper.notify import set_notify
+from scm_helper.notify import notify, set_notify
 from scm_helper.version import VERSION
 
 
@@ -213,9 +214,9 @@ class ScmGui:
             messagebox.showerror("Error", "Could not read CSV file")
             return
 
-        csv.analyse(self.scm)
+        wrap(csv.analyse, self.scm)
         output = csv.print_errors()
-        
+
         del csv
         self.report_text.insert(END, output)
         self.report_window.lift()
@@ -230,9 +231,9 @@ class ScmGui:
             messagebox.showerror("Error", "Could not read facebook files")
             return
 
-        fbook.analyse()
+        wrap(fbook.analyse)
         output = fbook.print_errors()
-        
+
         fbook.delete()
         del fbook
         self.report_text.insert(END, output)
@@ -301,7 +302,7 @@ class ScmGui:
             self.buttons(NORMAL)
             return
 
-        self.scm.apply_fixes()
+        wrap(self.scm.apply_fixes)
 
         self.buttons(NORMAL)
 
@@ -409,24 +410,24 @@ class AnalysisThread(threading.Thread):
             dir_opt["parent"] = self.gui.master
 
             where = filedialog.askdirectory(**dir_opt)
-            if self.scm.decrypt(where) is False:
+            if wrap(self.scm.decrypt, where) is False:
                 messagebox.showerror("Error", f"Cannot read from archive: {where}")
                 self.gui.buttons(NORMAL)
                 return
         else:
-            if self.scm.get_data(False) is False:
+            if wrap(self.scm.get_data, False) is False:
                 messagebox.showerror("Analsyis", "Failed to read data")
                 self.gui.buttons(NORMAL)
                 self.gui.thread = None
                 return
 
-        if self.scm.linkage() is False:
+        if wrap(self.scm.linkage) is False:
             messagebox.showerror("Analsyis", "Error processing data")
             self.gui.buttons(NORMAL)
             self.gui.thread = None
             return
 
-        self.scm.analyse()
+        wrap(self.scm.analyse)
         self.gui.gotdata = True
 
         if self.gui.analysis_window is None:
@@ -524,7 +525,7 @@ class BackupThread(threading.Thread):
 
         self.gui.notify.delete("1.0", END)
 
-        if self.scm.backup_data():
+        if wrap(self.scm.backup_data):
             output = self.scm.print_summary(backup=True)
             self.gui.notify.insert(END, output)
             self.gui.notify.insert(END, "Backup Complete.")
@@ -550,7 +551,7 @@ class UpdateThread(threading.Thread):
         self.gui.buttons(DISABLED)
 
         self.gui.notify.delete("1.0", END)
-        self.scm.update()
+        wrap(self.scm.update)
         self.gui.notify.insert(END, "Lists Created.")
         self.gui.notify.see(END)
 
@@ -651,3 +652,16 @@ def xabout():
 def xhelp():
     """|Help message."""
     webbrowser.open_new(HELPURL)
+
+
+def wrap(func, arg=None):
+    """Catch programming logic errors."""
+    try:
+        if arg:
+            return func(arg)
+        return func()
+
+    except (AssertionError, LookupError, NameError, TypeError, ValueError) as err:
+        notify(f"Internal SCM Helper Error:\n{err}\nPlease log an issue on github.\n")
+        debug(traceback.format_exc(), 1)
+        return False
