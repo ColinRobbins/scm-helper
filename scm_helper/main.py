@@ -279,7 +279,7 @@ def gui(argv=None):
 
 
 def main():
-    """Main function."""
+    """Run scm-helper."""
     xplatform = platform.system()
     if xplatform == "Windows":
         gui()

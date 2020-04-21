@@ -230,6 +230,7 @@ class Member(Entity):
 
         self._first_group = self.set_first_group()
 
+        # pylint: disable=fixme
         # HACK - use a group to artificially set is_synchro
         # as this is not returned via API
         # Same needed for open water, but don't care right now.
