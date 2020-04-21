@@ -61,28 +61,31 @@ class Csv(Files):
 
         try:
             count = 0
-            csv_reader = csv.DictReader(
-                open(file), quotechar='"', skipinitialspace=True
-            )
-            for row in csv_reader:
-                count += 1
-                if count == 0:
-                    continue
-                self._csv.append(row)
-
-                # Fix DOB
-                if cfg_dob in row:
-                    try:
-                        row[cfg_dob] = datetime.datetime.strptime(
-                            row[cfg_dob], cfg_dob_format
-                        )
-                    except ValueError as error:
-                        notify(f"Date format error in CSV: {error}\n")
-                        return False
-                if cfg_cat in row:
-                    cat = CAT_RE.search(row[cfg_cat])
-                    if cat:
-                        row[cfg_cat] = cat.group(0)
+            with open(file, newline='') as csvfile:
+                dialect = csv.Sniffer().sniff(csvfile.read(1024))
+                csvfile.seek(0)
+                csv_reader = csv.DictReader(csvfile, dialect=dialect)
+                
+                for row in csv_reader:
+                    count += 1
+                    if count == 0:
+                        continue
+                    self._csv.append(row)
+    
+                    print (f"{cfg_dob} in {row}")
+                    # Fix DOB
+                    if cfg_dob in row:
+                        try:
+                            row[cfg_dob] = datetime.datetime.strptime(
+                                row[cfg_dob], cfg_dob_format
+                            )
+                        except ValueError as error:
+                            notify(f"Date format error in CSV:\n{error}\n")
+                            return False
+                    if cfg_cat in row:
+                        cat = CAT_RE.search(row[cfg_cat])
+                        if cat:
+                            row[cfg_cat] = cat.group(0)
 
             notify(f"Read {file}...\n")
             return True
