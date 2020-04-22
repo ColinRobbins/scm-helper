@@ -1,4 +1,4 @@
-"""INstallation of SCM."""
+"""Installation of scm-helper."""
 import setuptools
 
 with open("README.md", "r") as fh:
@@ -9,7 +9,7 @@ with open("scm_helper/version.py") as fh:
     exec(fh.read(), VERSION)
 
 setuptools.setup(
-    name="scm",
+    name="scm-helper",
     version=VERSION["VERSION"],
     author="Colin Robbins",
     author_email="colin.john.robbins@gmail.com",

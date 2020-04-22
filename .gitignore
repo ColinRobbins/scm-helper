@@ -1,7 +1,7 @@
 .vscode/*
 build/*
 dist/*
-lightwave.egg-info/*
+scm_helper.egg-info/*
 *.pyc
 config/*
 files/*
