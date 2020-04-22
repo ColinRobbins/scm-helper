@@ -53,6 +53,9 @@ class Facebook:
         res = ""
         for facebook in self.facebook:
             res += facebook.print_errors()
+
+        if res == "":
+            res = "Nothing to report"
         return res
 
     def delete(self):

@@ -22,7 +22,7 @@ class Files:
     def print_errors(self):
         """Print errors."""
         fname = ntpath.basename(self._filename)
-        output = f"\nErrors in {fname}\n"
+        output = ""
 
         for error in self._error:
             output += f"{error}:\n"
@@ -31,5 +31,10 @@ class Files:
                 if extra:
                     output += f" {extra}"
                 output += "\n"
+
+        if output == "":
+            output = f"\nNo issues in {fname}\n"
+        else:
+            output = f"\nIssues in {fname}\n" + output
 
         return output
