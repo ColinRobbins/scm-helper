@@ -1,5 +1,7 @@
 # SCM-Helper
-Helper tool for [Swim Club Manager](https://www.swimclubmanager.co.uk/)
+Helper tool for [Swim Club Manager](https://www.swimclubmanager.co.uk/).
+
+Download latest [Windows Version](https://github.com/ColinRobbins/scm-helper/raw/master/download/scm.zip).
 # Features
 * Works on Windows or Linux
 * [Windows](https://github.com/ColinRobbins/scm-helper/wiki/windows) GUI
