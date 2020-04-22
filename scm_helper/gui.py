@@ -39,8 +39,10 @@ from scm_helper.facebook import Facebook
 from scm_helper.file import Csv
 from scm_helper.issue import REPORTS, IssueHandler, debug
 from scm_helper.license import LICENSE
-from scm_helper.notify import notify, set_notify
+from scm_helper.notify import set_notify
 from scm_helper.version import VERSION
+
+NSEW = N + S + E + W
 
 
 class ScmGui:
@@ -63,6 +65,8 @@ class ScmGui:
         self.thread = None
         self.grouping = None
         self.reports = None
+        self.menus = []
+        self.menu_fixit = None
 
         master.title("SCM Helper")
 
@@ -80,6 +84,7 @@ class ScmGui:
 
         msg = "Welcome to SCM Helper by Colin Robbins.\nPlease enter your password.\n"
         self.notify.insert(END, msg)
+        self.notify.config(state=DISABLED)
 
     def create_main_window(self):
         """Create the main window."""
@@ -87,9 +92,7 @@ class ScmGui:
         top_frame.grid(row=0, column=0, sticky=W + E)
 
         label = Label(top_frame, text="Password: ")
-        label.grid(
-            row=0, column=0, pady=10, padx=10,
-        )
+        label.grid(row=0, column=0, pady=10, padx=10)
 
         self.__password = StringVar()
         self.__password.set("")
@@ -108,9 +111,7 @@ class ScmGui:
         self.button_fixit.grid(row=0, column=4, pady=10, padx=10)
 
         top_group = LabelFrame(self.master, text="Notifications...", pady=5, padx=5)
-        top_group.grid(
-            row=1, column=0, columnspan=5, pady=10, padx=10, sticky=E + W + N + S
-        )
+        top_group.grid(row=1, column=0, columnspan=5, pady=10, padx=10, sticky=NSEW)
 
         self.master.columnconfigure(0, weight=1)
         self.master.rowconfigure(1, weight=1)
@@ -119,7 +120,7 @@ class ScmGui:
         top_group.rowconfigure(0, weight=1)
 
         self.notify = scrolledtext.ScrolledText(top_group, width=60, height=20)
-        self.notify.grid(row=0, column=0, sticky=E + W + N + S)
+        self.notify.grid(row=0, column=0, sticky=NSEW)
 
     def create_menu(self):
         """Create Menus."""
@@ -134,14 +135,33 @@ class ScmGui:
         cmd.add_command(label="Edit Config", command=self.edit_config)
         cmd.add_separator()
         cmd.add_command(label="Create Lists", command=self.create_lists)
+        self.menus.append(cmd)
+        cmd.config(state=DISABLED)
+
         cmd.add_command(label="Fix Errors", command=self.fixit)
+        self.menu_fixit = cmd
+        cmd.config(state=DISABLED)
+
         menubar.add_cascade(label="Edit", menu=cmd)
 
         cmd = Menu(menubar, tearoff=0)
+
         cmd.add_command(label="Analyse Facebook", command=self.facebook)
+        self.menus.append(cmd)
+        cmd.config(state=DISABLED)
+
         cmd.add_command(label="Analyse Swim England File", command=self.swim_england)
+        self.menus.append(cmd)
+        cmd.config(state=DISABLED)
+
         cmd.add_command(label="List Coaches", command=self.coaches)
+        self.menus.append(cmd)
+        cmd.config(state=DISABLED)
+
         cmd.add_command(label="Show Not-confirmed Emails", command=self.confirm)
+        self.menus.append(cmd)
+        cmd.config(state=DISABLED)
+
         menubar.add_cascade(label="Reports", menu=cmd)
 
         about = Menu(menubar, tearoff=0)
@@ -154,6 +174,7 @@ class ScmGui:
 
     def scm_init(self):
         """Initialise SCM."""
+        self.notify.config(state=NORMAL)
         password = self.__password.get()
 
         self.clear_data()
@@ -163,11 +184,14 @@ class ScmGui:
             if self.scm.initialise(password) is False:
                 messagebox.showerror("Error", "Cannot initialise SCM (wrong password?)")
                 self.clear_data()
+                self.notify.config(state=DISABLED)
                 return False
             self.api_init = True
             return True
 
         messagebox.showerror("Password", "Please give a password!")
+        self.notify.config(state=DISABLED)
+
         return False
 
     def prep_report(self):
@@ -178,8 +202,11 @@ class ScmGui:
 
         if self.report_window is None:
             self.create_report_window()
+
         self.report_text.delete("1.0", END)
         self.notify.delete("1.0", END)
+        self.report_text.config(state=NORMAL)
+        self.notify.config(state=NORMAL)
 
         return True
 
@@ -212,6 +239,8 @@ class ScmGui:
         where = filedialog.askopenfilename(**dir_opt)
         if csv.readfile(where, self.scm) is False:
             messagebox.showerror("Error", "Could not read CSV file")
+            self.notify.config(state=DISABLED)
+            self.report_text.config(state=DISABLED)
             return
 
         wrap(csv.analyse, self.scm)
@@ -219,6 +248,8 @@ class ScmGui:
 
         del csv
         self.report_text.insert(END, output)
+        self.report_text.config(state=DISABLED)
+        self.notify.config(state=DISABLED)
         self.report_window.lift()
 
     def facebook(self):
@@ -229,6 +260,8 @@ class ScmGui:
         fbook = Facebook()
         if fbook.readfiles(self.scm) is False:
             messagebox.showerror("Error", "Could not read facebook files")
+            self.report_text.config(state=DISABLED)
+            self.notify.config(state=DISABLED)
             return
 
         wrap(fbook.analyse)
@@ -237,6 +270,8 @@ class ScmGui:
         fbook.delete()
         del fbook
         self.report_text.insert(END, output)
+        self.report_text.config(state=DISABLED)
+        self.notify.config(state=DISABLED)
         self.report_window.lift()
 
     def confirm(self):
@@ -246,6 +281,8 @@ class ScmGui:
 
         output = self.issues.confirm_email()
         self.report_text.insert(END, output)
+        self.report_text.config(state=DISABLED)
+        self.notify.config(state=DISABLED)
         self.report_window.lift()
 
     def coaches(self):
@@ -255,6 +292,8 @@ class ScmGui:
 
         output = self.scm.sessions.print_coaches()
         self.report_text.insert(END, output)
+        self.report_text.config(state=DISABLED)
+        self.notify.config(state=DISABLED)
         self.report_window.lift()
 
     def edit_config(self):
@@ -325,12 +364,22 @@ class ScmGui:
         """Change button state."""
         self.button_analyse.config(state=status)
         self.button_backup.config(state=status)
+
+        for menu in self.menus:
+            menu.config(state=status)
+
         if status == NORMAL:
+            self.notify.config(state=DISABLED)
             length = len(self.scm.fixable)
             if length == 0:
                 self.button_fixit.config(state=DISABLED)
+                self.menu_fixit.config(state=DISABLED)
                 return
+        else:
+            self.notify.config(state=NORMAL)
+
         self.button_fixit.config(state=status)
+        self.menu_fixit.config(state=status)
 
     def process_option(self, _):
         """Process an option selection."""
@@ -338,6 +387,7 @@ class ScmGui:
         mode = self.grouping.get()
 
         self.result_text.config(state=NORMAL)
+        self.notify.config(state=NORMAL)
         self.result_text.delete("1.0", END)
 
         if report == "All Reports":
@@ -352,6 +402,7 @@ class ScmGui:
 
         self.result_text.insert(END, output)
         self.result_text.config(state=DISABLED)
+        self.notify.config(state=DISABLED)
 
     def create_report_window(self):
         """Create the reports window."""
@@ -365,7 +416,7 @@ class ScmGui:
         self.report_window.rowconfigure(0, weight=1)
 
         self.report_text = scrolledtext.ScrolledText(top_frame, width=80, height=40)
-        self.report_text.grid(row=0, column=0, sticky=E + W + N + S)
+        self.report_text.grid(row=0, column=0, sticky=NSEW)
 
         self.report_window.protocol("WM_DELETE_WINDOW", self.close_report)
 
@@ -397,6 +448,7 @@ class AnalysisThread(threading.Thread):
 
         if self.scm.get_config_file() is False:
             messagebox.showerror("Error", f"Error in config file.")
+            self.gui.buttons(NORMAL)
             return
 
         if self.archive:
@@ -484,12 +536,9 @@ class AnalysisThread(threading.Thread):
         )
         menu.grid(row=0, column=3, pady=10, padx=10)
 
-        top_group = LabelFrame(
-            self.gui.analysis_window, text="Analysis...", pady=5, padx=5
-        )
-        top_group.grid(
-            row=1, column=0, columnspan=4, pady=10, padx=10, sticky=E + W + N + S
-        )
+        txt = "Analysis..."
+        top_group = LabelFrame(self.gui.analysis_window, text=txt, pady=5, padx=5)
+        top_group.grid(row=1, column=0, columnspan=4, pady=10, padx=10, sticky=NSEW)
 
         self.gui.analysis_window.columnconfigure(0, weight=1)
         self.gui.analysis_window.rowconfigure(1, weight=1)
@@ -500,7 +549,7 @@ class AnalysisThread(threading.Thread):
         self.gui.result_text = scrolledtext.ScrolledText(
             top_group, width=100, height=40
         )
-        self.gui.result_text.grid(row=0, column=0, sticky=E + W + N + S)
+        self.gui.result_text.grid(row=0, column=0, sticky=NSEW)
 
         self.gui.analysis_window.protocol("WM_DELETE_WINDOW", self.close_report)
 
@@ -522,7 +571,6 @@ class BackupThread(threading.Thread):
     def run(self):
         """Run analyser."""
         self.gui.buttons(DISABLED)
-
         self.gui.notify.delete("1.0", END)
 
         if wrap(self.scm.backup_data):
@@ -549,12 +597,11 @@ class UpdateThread(threading.Thread):
     def run(self):
         """Run analyser."""
         self.gui.buttons(DISABLED)
-
         self.gui.notify.delete("1.0", END)
-        wrap(self.scm.update)
-        self.gui.notify.insert(END, "Lists Created.")
-        self.gui.notify.see(END)
 
+        wrap(self.scm.update)
+
+        self.gui.notify.see(END)
         self.gui.buttons(NORMAL)
         self.gui.thread = None
 
@@ -582,9 +629,7 @@ class Edit(Frame):  # pylint: disable=too-many-ancestors
         cbtn.grid(row=0, column=1, pady=10, padx=10)
 
         top_group = LabelFrame(self.edit_win, text=filename, pady=5, padx=5)
-        top_group.grid(
-            row=1, column=0, columnspan=2, pady=10, padx=10, sticky=E + W + N + S
-        )
+        top_group.grid(row=1, column=0, columnspan=2, pady=10, padx=10, sticky=NSEW)
 
         self.edit_win.columnconfigure(0, weight=1)
         self.edit_win.rowconfigure(1, weight=1)
@@ -593,7 +638,7 @@ class Edit(Frame):  # pylint: disable=too-many-ancestors
         top_group.rowconfigure(0, weight=1)
 
         self.text_pad = scrolledtext.ScrolledText(top_group, width=80, height=40)
-        self.text_pad.grid(row=0, column=0, sticky=E + W + N + S)
+        self.text_pad.grid(row=0, column=0, sticky=NSEW)
 
         with open(self.file, FILE_READ) as file:
             contents = file.read()
@@ -662,6 +707,7 @@ def wrap(func, arg=None):
         return func()
 
     except (AssertionError, LookupError, NameError, TypeError, ValueError) as err:
-        notify(f"Internal SCM Helper Error:\n{err}\nPlease log an issue on github.\n")
+        msg = f"Internal SCM Helper Error:\n{err}\nPlease log an issue on github.\n"
+        messagebox.showerror("Error", msg)
         debug(traceback.format_exc(5), 1)
         return False
