@@ -45,7 +45,6 @@ Where <options> are:
 
 SCM Helper Version: {VERSION}
 For more help see: {HELPURL}
-
 """
 
 SHORT_OPTS = "hlmfq"
