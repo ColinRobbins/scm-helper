@@ -1,7 +1,6 @@
 """Issue handling."""
-import sys
-
 from scm_helper.config import C_IGNORE_ERROR, C_ISSUES, EXCEPTION_GENERAL, O_NEWSTARTER
+from scm_helper.notify import notify
 
 R_COACH = "coaches"
 R_CONFIRMATION = "confirmation"
@@ -452,7 +451,8 @@ def debug(msg, level):
     if level > HANDLER.debug_level:
         return
 
-    print(msg, file=sys.stderr)
+    msg += "\n"
+    notify(msg)
 
 
 def set_debug_level(level):

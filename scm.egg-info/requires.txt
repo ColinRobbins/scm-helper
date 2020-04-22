@@ -1,4 +1,4 @@
-schema
-requests
-pyyaml
-cryptography
+cryptography>=2.8
+pyyaml>=5.3
+requests>=2.22.0
+schema>=0.7.2

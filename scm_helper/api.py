@@ -341,15 +341,15 @@ class API:
         """Read URL page."""
         club = self._config[C_CLUB]
         user_agent = USER_AGENT.replace("###CLUB_NAME###", club)
-       
+
         headers = {
             "User-Agent": user_agent,
             "Authorization-Token": self._key,
             "Page": str(page),
         }
-        
-        debug (f"URL:\n{url}", 9)
-        debug (f"Headers:\n{headers}", 8)
+
+        debug(f"URL:\n{url}", 9)
+        debug(f"Headers:\n{headers}", 8)
 
         response = requests.get(url, headers=headers)
         if response.ok:
@@ -373,13 +373,13 @@ class API:
             "User-Agent": user_agent,
             "Authorization-Token": self._key,
         }
-        
+
         if get_config(entity.scm, C_ALLOW_UPDATE) is False:
             notify("Update prohibited by config.\n")
             return None
 
-        debug (f"URL:\n{entity.url}", 9)
-        debug (f"Headers:\n{headers}", 8)
+        debug(f"URL:\n{entity.url}", 9)
+        debug(f"Headers:\n{headers}", 8)
 
         data = entity.newdata
         if create:

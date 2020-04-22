@@ -61,17 +61,17 @@ class Csv(Files):
 
         try:
             count = 0
-            with open(file, newline='') as csvfile:
+            with open(file, newline="") as csvfile:
                 dialect = csv.Sniffer().sniff(csvfile.read(1024))
                 csvfile.seek(0)
                 csv_reader = csv.DictReader(csvfile, dialect=dialect)
-                
+
                 for row in csv_reader:
                     count += 1
                     if count == 0:
                         continue
                     self._csv.append(row)
-    
+
                     # Fix DOB
                     if cfg_dob in row:
                         try:
@@ -155,7 +155,7 @@ class Csv(Files):
         for member in members.entities:
             if member.is_active is False:
                 continue
-            
+
             if not (member.is_swimmer or member.is_polo or member.is_synchro):
                 continue
 
