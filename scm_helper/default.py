@@ -33,7 +33,7 @@ def create_default_config():
             file.write(content)
 
         notify("Done.\n")
-        
+
         return True
 
     except OSError as error:

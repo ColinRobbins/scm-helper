@@ -135,7 +135,7 @@ class ScmGui:
         cmd.add_command(label="Edit Config", command=self.edit_config)
         cmd.add_separator()
         cmd.add_command(label="Create Lists", command=self.create_lists, state=DISABLED)
-        self.menus.append([cmd,"Create Lists"])
+        self.menus.append([cmd, "Create Lists"])
 
         cmd.add_command(label="Fix Errors", command=self.fixit, state=DISABLED)
         self.menu_fixit = [cmd, "Fix Errors"]
@@ -147,13 +147,17 @@ class ScmGui:
         cmd.add_command(label="Analyse Facebook", command=self.facebook, state=DISABLED)
         self.menus.append([cmd, "Analyse Facebook"])
 
-        cmd.add_command(label="Analyse Swim England File", command=self.swim_england, state=DISABLED)
+        cmd.add_command(
+            label="Analyse Swim England File", command=self.swim_england, state=DISABLED
+        )
         self.menus.append([cmd, "Analyse Swim England File"])
 
         cmd.add_command(label="List Coaches", command=self.coaches, state=DISABLED)
         self.menus.append([cmd, "List Coaches"])
 
-        cmd.add_command(label="Show Not-confirmed Emails", command=self.confirm, state=DISABLED)
+        cmd.add_command(
+            label="Show Not-confirmed Emails", command=self.confirm, state=DISABLED
+        )
         self.menus.append([cmd, "Show Not-confirmed Emails"])
 
         menubar.add_cascade(label="Reports", menu=cmd)
@@ -241,7 +245,7 @@ class ScmGui:
             self.notify.config(state=DISABLED)
             self.report_text.config(state=DISABLED)
             return
-        
+
         output = csv.print_errors()
 
         del csv
@@ -365,7 +369,7 @@ class ScmGui:
 
         for menu, item in self.menus:
             menu.entryconfig(item, state=status)
-            
+
         menu, item = self.menu_fixit
 
         if status == NORMAL:

@@ -435,7 +435,7 @@ class Member(Entity):
         if jobtitle:
             if self.jobtitle:
                 return
-            issue(self, E_NO_JOB, f"{name}", 0, (fixable))
+            issue(self, E_NO_JOB, f"{name}", 0, "fixable")
             fix = {}
             fix["JobTitle"] = xtype.title()
             self.fixit(fix, f"Add jobtitle: {name}")
