@@ -401,6 +401,10 @@ class API:
 
     def apply_fixes(self):
         """Apply any fixes."""
+        if len(self.fixable) == 0:
+            notify("Nothing to fix\n")
+            return False
+            
         for fix in self.fixable:
             if fix.apply_fix() is None:
                 return False

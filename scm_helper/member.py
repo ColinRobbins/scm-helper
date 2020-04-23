@@ -413,7 +413,7 @@ class Member(Entity):
             self.fixit(fix, "Capitalisation of name")
             return
 
-        issue(self, E_NAME_CAPITAL, f"Knownas = {knownas} (fixable)", -1)
+        issue(self, E_NAME_CAPITAL, f"Knownas = {knownas}", -1, "(fixable)")
         fix = {}
         fix[A_KNOWNAS] = knownas.title()
         self.fixit(fix, f"Capitalisation of {knownas}")
@@ -435,7 +435,7 @@ class Member(Entity):
         if jobtitle:
             if self.jobtitle:
                 return
-            issue(self, E_NO_JOB, f"{name} (fixable)")
+            issue(self, E_NO_JOB, f"{name}", 0, (fixable))
             fix = {}
             fix["JobTitle"] = xtype.title()
             self.fixit(fix, f"Add jobtitle: {name}")

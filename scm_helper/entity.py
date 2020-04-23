@@ -178,8 +178,16 @@ class Entity:
                     self.members.append(guid)
                 else:
                     name = guid.name
-                    myclass = self.__class__.__name__
-                    issue(self, E_INACTIVE, f"member {name} {myclass}")
+                    issue(self, E_INACTIVE, f"member {name}", 0, "(Fixable)")
+                    
+                    if self.newdata and (A_MEMBERS in self.newdata):
+                        fix = self.newdata
+                    else:
+                        fix = {}
+                        fix[A_MEMBERS] = self.data[A_MEMBERS]
+                    remove = {A_GUID: guid.guid}
+                    fix[A_MEMBERS].remove(remove)
+                    self.fixit(fix, f"Delete {guid.name} (inactive)")
 
     def check_attribute(self, attribute):
         """Return the value, if there is one."""
@@ -266,7 +274,7 @@ class Entity:
         """Fix an entity."""
         printer = pprint.PrettyPrinter(indent=4)
         data = printer.pformat(self.newdata)
-        err = f"Fix '{self.name}' with: '{self.fixmsg}'.\nConfirm"
+        err = f"Fix '{self.name}' with:\n    {self.fixmsg}\nConfirm"
         debug("fixit:", 5)
         debug(data, 5)
         resp = interact_yesno(err)
