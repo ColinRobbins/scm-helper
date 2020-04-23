@@ -134,33 +134,27 @@ class ScmGui:
         cmd = Menu(menubar, tearoff=0)
         cmd.add_command(label="Edit Config", command=self.edit_config)
         cmd.add_separator()
-        cmd.add_command(label="Create Lists", command=self.create_lists)
-        self.menus.append(cmd)
-        cmd.config(state=DISABLED)
+        cmd.add_command(label="Create Lists", command=self.create_lists, state=DISABLED)
+        self.menus.append([cmd,"Create Lists"])
 
-        cmd.add_command(label="Fix Errors", command=self.fixit)
-        self.menu_fixit = cmd
-        cmd.config(state=DISABLED)
+        cmd.add_command(label="Fix Errors", command=self.fixit, state=DISABLED)
+        self.menu_fixit = [cmd, "Fix Errors"]
 
         menubar.add_cascade(label="Edit", menu=cmd)
 
         cmd = Menu(menubar, tearoff=0)
 
-        cmd.add_command(label="Analyse Facebook", command=self.facebook)
-        self.menus.append(cmd)
-        cmd.config(state=DISABLED)
+        cmd.add_command(label="Analyse Facebook", command=self.facebook, state=DISABLED)
+        self.menus.append([cmd, "Analyse Facebook"])
 
-        cmd.add_command(label="Analyse Swim England File", command=self.swim_england)
-        self.menus.append(cmd)
-        cmd.config(state=DISABLED)
+        cmd.add_command(label="Analyse Swim England File", command=self.swim_england, state=DISABLED)
+        self.menus.append([cmd, "Analyse Swim England File"])
 
-        cmd.add_command(label="List Coaches", command=self.coaches)
-        self.menus.append(cmd)
-        cmd.config(state=DISABLED)
+        cmd.add_command(label="List Coaches", command=self.coaches, state=DISABLED)
+        self.menus.append([cmd, "List Coaches"])
 
-        cmd.add_command(label="Show Not-confirmed Emails", command=self.confirm)
-        self.menus.append(cmd)
-        cmd.config(state=DISABLED)
+        cmd.add_command(label="Show Not-confirmed Emails", command=self.confirm, state=DISABLED)
+        self.menus.append([cmd, "Show Not-confirmed Emails"])
 
         menubar.add_cascade(label="Reports", menu=cmd)
 
@@ -243,7 +237,11 @@ class ScmGui:
             self.report_text.config(state=DISABLED)
             return
 
-        wrap(csv.analyse, self.scm)
+        if wrap(csv.analyse, self.scm) is False:
+            self.notify.config(state=DISABLED)
+            self.report_text.config(state=DISABLED)
+            return
+        
         output = csv.print_errors()
 
         del csv
@@ -365,21 +363,23 @@ class ScmGui:
         self.button_analyse.config(state=status)
         self.button_backup.config(state=status)
 
-        for menu in self.menus:
-            menu.config(state=status)
+        for menu, item in self.menus:
+            menu.entryconfig(item, state=status)
+            
+        menu, item = self.menu_fixit
 
         if status == NORMAL:
             self.notify.config(state=DISABLED)
             length = len(self.scm.fixable)
             if length == 0:
                 self.button_fixit.config(state=DISABLED)
-                self.menu_fixit.config(state=DISABLED)
+                menu.entryconfig(item, state=DISABLED)
                 return
         else:
             self.notify.config(state=NORMAL)
 
         self.button_fixit.config(state=status)
-        self.menu_fixit.config(state=status)
+        menu.entryconfig(item, state=status)
 
     def process_option(self, _):
         """Process an option selection."""
@@ -707,7 +707,7 @@ def wrap(func, arg=None):
         return func()
 
     except (AssertionError, LookupError, NameError, TypeError, ValueError) as err:
+        debug(traceback.format_exc(5), 1)
         msg = f"Internal SCM Helper Error:\n{err}\nPlease log an issue on github.\n"
         messagebox.showerror("Error", msg)
-        debug(traceback.format_exc(5), 1)
         return False
