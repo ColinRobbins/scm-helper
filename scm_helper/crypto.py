@@ -128,7 +128,7 @@ class Crypto:
 
     def get_key(self, filename):
         """Encrypt file."""
-        apikey = interact("No keyfile, creating one\nEnter API key: ")
+        apikey = interact("No SCM API keyfile, creating one.  Enter API key: ")
 
         try:
             fernet = Fernet(self.__key)

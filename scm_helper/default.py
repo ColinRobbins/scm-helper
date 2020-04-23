@@ -16,16 +16,12 @@ def create_default_config():
 
     notify("Welcome to SCM Helper.\nStarting configuration for first time use..\n")
 
-    msg = "Please enter Swimming Club Name: "
+    msg = "Please enter your Swimming Club Name: "
     clubname = interact(msg)
 
     msg = f"Create initial configuration file:\n   {cfg_file}\nfor '{clubname}'"
     if interact_yesno(msg) is False:
         return False
-
-    nmsg = "You will now need to provide a new password.\n"
-    nmsg += "This is used to protect the API key.\n"
-    notify(nmsg)
 
     content = DEFAULT_CONFIG.replace("###CLUB_NAME###", clubname)
 
@@ -37,6 +33,7 @@ def create_default_config():
             file.write(content)
 
         notify("Done.\n")
+        
         return True
 
     except OSError as error:

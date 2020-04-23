@@ -89,7 +89,10 @@ class API:
         if os.path.isfile(cfg) is False:
             if create_default_config() is False:
                 return False
-
+            nmsg = "You will now be asked to provide a password.\n"
+            nmsg += "This is used to protect the API key.\n"
+            notify(nmsg)
+            
         try:
             with open(cfg) as file:
                 self._config = yaml.safe_load(file)
