@@ -387,7 +387,7 @@ SCHEMA = Schema(
 )
 
 
-def get_config(scm, item, *argv):
+def get_config(scm, item, item1=None, item2=None, item3=None):
     """Get config parameters..."""
     # pylint: disable=too-many-return-statements
     # Yes, need them all...
@@ -396,35 +396,25 @@ def get_config(scm, item, *argv):
     if cfg is None:
         return None
 
-    if len(argv) == 0:
+    if item1 is None:
         return cfg
 
-    if len(argv) >= 1:
-        item1 = argv[0]
-        if item1 not in cfg:
-            return None
-        if len(argv) == 1:
-            return cfg[item1]
+    if item1 not in cfg:
+        return None
+        
+    if item2 is None:
+        return cfg[item1]
 
-    if len(argv) >= 2:
-        item2 = argv[1]
-        if item2 not in cfg[item1]:
-            return None
-        if len(argv) == 2:
-            return cfg[item1][item2]
+    if item2 not in cfg[item1]:
+        return None
+        
+    if item3 is None:
+        return cfg[item1][item2]
 
-    if len(argv) >= 3:
-        item3 = argv[2]
-        if item3 not in cfg[item1][item2]:
-            return None
-        if len(argv) == 3:
-            return cfg[item1][item2][item3]
+    if item3 not in cfg[item1][item2]:
+        return None
 
-    if len(argv) >= 4:
-        # should use debug(), but that would cause an import loop.
-        notify(f"CODE ERROR - too many args in get_config({item2},{item3})")
-
-    return None
+    return cfg[item1][item2][item3]
 
 
 def verify_schema(data):

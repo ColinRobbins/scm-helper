@@ -410,22 +410,8 @@ ISSUE_LIST = [
 HANDLER = None
 
 
-def issue(xobject, error, *argv):
+def issue(xobject, error, msg=None, level=0, msg2=""):
     """Record an issue."""
-    msg = None
-    msg2 = ""
-    level = 0
-    if len(argv) == 1:
-        msg = argv[0]
-    if len(argv) == 2:
-        msg = argv[0]
-        level = argv[1]
-    if len(argv) == 3:
-        msg = argv[0]
-        level = argv[1]
-        msg2 = argv[2]
-    if len(argv) >= 4:
-        debug(f"CODE ERROR - too many args in issue({error})", 0)
 
     if level != -1:
         if xobject.print_exception(EXCEPTION_GENERAL) is False:
