@@ -1,6 +1,5 @@
 """Configuration stuff."""
 from schema import And, Optional, Schema, SchemaError
-
 from scm_helper.notify import notify
 from scm_helper.version import VERSION
 
@@ -401,13 +400,13 @@ def get_config(scm, item, item1=None, item2=None, item3=None):
 
     if item1 not in cfg:
         return None
-        
+
     if item2 is None:
         return cfg[item1]
 
     if item2 not in cfg[item1]:
         return None
-        
+
     if item3 is None:
         return cfg[item1][item2]
 

@@ -49,7 +49,7 @@ def interact_yesno(msg):
         return messagebox.askyesno("SCM-Helper: Yes / No?", msg, parent=WHERE.master)
     msg += " (y/n)?"
     print(msg, end="")
-    
+
     resp = input()
     if resp == "y":
         return True

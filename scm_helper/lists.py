@@ -107,7 +107,7 @@ class List(Entity):
                     fix = self.newdata
                 else:
                     fix = {}
-                    fix[A_MEMBERS] = self.data[A_MEMBERS]
+                    fix[A_MEMBERS] = self.data[A_MEMBERS].copy()
                 fix[A_MEMBERS].remove({A_GUID: member.guid})
                 self.fixit(fix, f"Delete {member.name}")
 

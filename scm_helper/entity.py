@@ -179,12 +179,12 @@ class Entity:
                 else:
                     name = guid.name
                     issue(self, E_INACTIVE, f"member {name}", 0, "(Fixable)")
-                    
+
                     if self.newdata and (A_MEMBERS in self.newdata):
                         fix = self.newdata
                     else:
                         fix = {}
-                        fix[A_MEMBERS] = self.data[A_MEMBERS]
+                        fix[A_MEMBERS] = self.data[A_MEMBERS].copy()
                     remove = {A_GUID: guid.guid}
                     fix[A_MEMBERS].remove(remove)
                     self.fixit(fix, f"Delete {guid.name} (inactive)")

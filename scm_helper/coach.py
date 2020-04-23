@@ -63,7 +63,7 @@ def check_coach_permissions(coach, role):
             issue(coach, E_PERMISSION_MISSING, session.full_name)
             fix = {}
             data = coach.data["SessionRestrictions"]
-            fix["SessionRestrictions"] = data
+            fix["SessionRestrictions"] = data.copy()
             fix["SessionRestrictions"].append({A_GUID: session.guid})
             coach.fixit(fix, f"Add permission for {session.name}")
 
@@ -79,6 +79,6 @@ def check_coach_permissions(coach, role):
             fix = {}
             data = coach.data["SessionRestrictions"]
             debug(f"Session restriction deletion - before:\n{data}\n", 9)
-            fix["SessionRestrictions"] = data
+            fix["SessionRestrictions"] = data.copy
             fix["SessionRestrictions"].remove({A_GUID: permission.guid})
             coach.fixit(fix, f"Remove permission for {permission.name}")

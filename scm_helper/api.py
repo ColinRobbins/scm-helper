@@ -6,7 +6,6 @@ from shutil import copyfile
 
 import requests
 import yaml
-
 from scm_helper.conduct import CodesOfConduct
 from scm_helper.config import (
     BACKUP_DIR,
@@ -358,7 +357,7 @@ class API:
         if response.status_code == 404:  # Worked, but not found
             return False
 
-        notify(f"Erroring getting data from {url}, page:{page}\n")
+        notify(f"\nErroring getting data from {url}, page:{page}\n")
         notify(response.reason)
         notify("\n")
         return None
@@ -394,7 +393,7 @@ class API:
         if response.status_code == 404:  # Worked, but not found
             return False
 
-        notify(f"Erroring posting data {entity.name}\n")
+        notify(f"\nErroring posting data {entity.name}\n")
         notify(response.reason)
         notify("\n")
         return None
@@ -404,7 +403,7 @@ class API:
         if len(self.fixable) == 0:
             notify("Nothing to fix\n")
             return False
-            
+
         for fix in self.fixable:
             if fix.apply_fix() is None:
                 return False
