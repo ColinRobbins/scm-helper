@@ -57,7 +57,7 @@ class Role(Entity):
     def check_role_member(self, member, unused):
         """Check out a role member."""
         if member.is_active is False:
-            issue(member, E_INACTIVE, "Member of role {self.name} (fixable)")
+            issue(member, E_INACTIVE, f"Member of role {self.name} (fixable)")
             if self.newdata & A_MEMBERS in self.newdata:
                 fix = self.newdata
             else:
@@ -67,7 +67,7 @@ class Role(Entity):
             self.fixit(fix, f"Delete from role {self.name}")
 
         if member.username is None:
-            issue(member, E_NO_LOGIN, "Member of role {self.name}, so cannot login")
+            issue(member, E_NO_LOGIN, f"Member of role {self.name}, so cannot login")
 
         if get_config(self.scm, C_ROLES, C_ROLE, self.name, C_IS_COACH):
             if member.is_coach is False:
