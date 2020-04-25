@@ -1,5 +1,6 @@
 """Windows GUI."""
 import os.path
+import sys
 import threading
 import traceback
 import webbrowser
@@ -478,12 +479,15 @@ class AnalysisThread(threading.Thread):
                 return
 
         if wrap(self.scm.linkage) is False:
-            messagebox.showerror("Analsyis", "Error processing data")
             self.gui.buttons(NORMAL)
             self.gui.thread = None
             return
 
-        wrap(self.scm.analyse)
+        if wrap(self.scm.analyse) is False:
+            self.gui.buttons(NORMAL)
+            self.gui.thread = None
+            return
+        
         self.gui.gotdata = True
 
         if self.gui.analysis_window is None:
@@ -710,8 +714,30 @@ def wrap(func, arg=None):
             return func(arg)
         return func()
 
-    except (AssertionError, LookupError, NameError, TypeError, ValueError) as err:
-        debug(traceback.format_exc(5), 1)
+    except (AssertionError, AttributeError, LookupError, NameError, TypeError, ValueError) as err:
+        errmsg = traceback.format_exc(5)
+        debug(errmsg, 0)
         msg = f"Internal SCM Helper Error:\n{err}\nPlease log an issue on github.\n"
+
+        tb = sys.exc_info()[2]
+        while 1:
+            if not tb.tb_next:
+                break
+            tb = tb.tb_next
+        stack = []
+        f = tb.tb_frame
+        while f:
+            stack.append(f)
+            f = f.f_back
+        stack.reverse(  )
+        for frame in stack:
+            for key, value in frame.f_locals.items(  ):
+                # Print liekly to cause erro itself, but should get enough out of it...
+                try:
+                    debug (f"   {key}: {value.name}", 0)
+                except:
+                    continue
+            
         messagebox.showerror("Error", msg)
+
         return False
