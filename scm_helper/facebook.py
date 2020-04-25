@@ -1,6 +1,7 @@
 """Read and process a file of Facebook date."""
 import os
 import re
+import ntpath
 from pathlib import Path
 
 from scm_helper.config import C_FACEBOOK, CONFIG_DIR, FILE_READ, get_config
@@ -80,7 +81,9 @@ class FacebookPage(Files):
         self._filename = filename
         self.scm = scm
 
-        notify(f"Reading {filename}...\n")
+        shortfile = ntpath.basename(filename)
+
+        notify(f"Reading {shortfile}...\n")
 
         try:
             with open(filename, FILE_READ, encoding="utf8") as file:

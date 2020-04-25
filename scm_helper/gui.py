@@ -710,7 +710,9 @@ def wrap(func, arg=None):
             return func(arg)
         return func()
 
-    except (AssertionError, LookupError, NameError, TypeError, ValueError) as err:
+    except (AssertionError, AttributeError, LookupError,
+            NameError, TypeError, ValueError, UnboundLocalError
+            ) as err:
         debug(traceback.format_exc(5), 1)
         msg = f"Internal SCM Helper Error:\n{err}\nPlease log an issue on github.\n"
         messagebox.showerror("Error", msg)
