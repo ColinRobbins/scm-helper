@@ -30,6 +30,7 @@ BACKUP_DIR = "backups"
 CONFIG_DIR = "scm-helper"
 CONFIG_FILE = "config.yaml"
 KEYFILE = "apikey.enc"
+RECORDS_DIR = "records"
 
 CODES_OF_CONDUCT = "Conduct"
 EVENTS = "Club Events"
@@ -165,6 +166,7 @@ C_PARENTS = "parents"
 C_PASSWORD = "password"
 C_PRIORITY = "priority"
 C_PSEUDO = "pseudo"
+C_RECORDS = "records"
 C_REGISTER = "register"
 C_ROLE = "role"
 C_ROLES = "roles"
@@ -382,6 +384,7 @@ SCHEMA = Schema(
             },
         },
         Optional(C_FACEBOOK): [str],
+        Optional(C_RECORDS): [str],
     }
 )
 

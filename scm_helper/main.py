@@ -12,6 +12,7 @@ from scm_helper.file import Csv
 from scm_helper.gui import ScmGui
 from scm_helper.issue import REPORTS, IssueHandler
 from scm_helper.notify import notify, set_notify
+from scm_helper.records import Records
 from scm_helper.sendmail import send_email
 from scm_helper.version import VERSION
 
@@ -38,6 +39,7 @@ Where <options> are:
    --notes = print notes
    --password <password> = supply the password - useful for scripting.
    -q, --quiet = quiet mode
+   --records = process records
    --report <report> = which reports to run
    --restore <type> = restore an entity of <type> (need -archive as well)
    --to <email> = Who to send the emial to (used with --email)
@@ -68,6 +70,7 @@ LONG_OPTS = [
     "notes",
     "password",
     "quiet",
+    "records",
     "report=",
     "restore=",
     "to=",
@@ -156,6 +159,13 @@ def cmd(argv=None):
         if fbook.readfiles(scm) is False:
             sys.exit(2)
 
+    if scm.option("--records"):
+        record = Records()
+        if record.read_baselines(scm) is False:
+            sys.exit(2)
+        record.create_html()
+        sys.exit()
+            
     if scm.option("--verify"):
         if scm.decrypt(scm.option("--verify")) is False:
             sys.exit(2)
