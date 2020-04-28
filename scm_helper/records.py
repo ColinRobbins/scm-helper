@@ -1,11 +1,11 @@
 """Process club records."""
 import csv
+import ntpath
 import os
 import re
-import ntpath
 from pathlib import Path
 
-from scm_helper.config import C_RECORDS, CONFIG_DIR, RECORDS_DIR, FILE_READ, get_config
+from scm_helper.config import C_RECORDS, CONFIG_DIR, FILE_READ, RECORDS_DIR, get_config
 from scm_helper.files import Files
 from scm_helper.notify import notify
 
@@ -19,25 +19,31 @@ R_LOCATION = "Location"
 R_DATE = "Date"
 
 RELAY_STROKES = {
-  "Free": "Freestyle",
-  "Medley": "Medley",
+    "Free": "Freestyle",
+    "Medley": "Medley",
 }
 
 # A list would do, but this allows a lookup
 RELAY_DISTANCE = {"200": 200, "400": 400, "800": 800}
-RELAY_AGES = {"72":72, "100":100, "120":120 ,"160": 160, "200": 200, "240": 240, "280": 280}
-RELAY_GENDER = {
-    "M": "Male",
-    "F": "Female",
-    "Mixed": "Mixed"
+PRINT_DISTANCE = {"200": "4 x 50", "400": "4 x 100", "800": "4 x 200"}
+RELAY_AGES = {
+    "72": "72+",
+    "100": "100-119",
+    "120": "120-159",
+    "160": "160-199",
+    "200": "200-239",
+    "240": "240-279",
+    "280": "280+",
 }
+RELAY_GENDER = {"M": "Male", "F": "Female", "Mixed": "Mixed"}
 
-R_COURSE = {
-    "25": "LC",
-    "50": "SC"
-}
+R_COURSE = {"25": "SC", "50": "LC"}
 
-class Records():
+TAG_INNER_EVEN = "name=record-inner-even"
+TAG_INNER_ODD = "name=record-inner-odd"
+
+
+class Records:
     """Read and process record files."""
 
     def __init__(self):
@@ -65,7 +71,6 @@ class Records():
             return True
         return False
 
-
     def create_html(self):
         """Create HTML files for records."""
         for record in self.records:
@@ -77,7 +82,7 @@ class Records():
             del record
 
 
-class Record():
+class Record:
     """Manage a records file."""
 
     def __init__(self):
@@ -86,7 +91,7 @@ class Record():
         self.scm = None
         self.csv = []
         self.records = {}
-        
+
     def read_baseline(self, filename, scm):
         """Read Facebook file."""
         self._filename = filename
@@ -106,26 +111,26 @@ class Record():
                     if count == 0:
                         continue
                     self.csv.append(row)
-                    #TODO  split and tidy!
+                    # TODO  split and tidy!
                     event = row[R_EVENT].split()
                     if RELAY_GENDER.get(event[0], None) is None:
-                        notify (f"Line {count}: unknown gender '{event[0]}'\n")
+                        notify(f"Line {count}: unknown gender '{event[0]}'\n")
                     if RELAY_AGES.get(event[1], None) is None:
-                        notify (f"Line {count}: unknown age '{event[1]}'\n")
-                        
+                        notify(f"Line {count}: unknown age '{event[1]}'\n")
+
                     dist = RELAY_DISTANCE.get(event[2], None)
                     if dist is None:
                         mdist = RELAY_DISTANCE.get(event[2].rstrip("m"), None)
                         if mdist is None:
-                            notify (f"Line {count}: unknown distance '{event[2]}'\n")
+                            notify(f"Line {count}: unknown distance '{event[2]}'\n")
                         else:
                             event[2] = str(mdist)
-                        
+
                     if RELAY_STROKES.get(event[3], None) is None:
-                        notify (f"Line {count}: unknown event '{event[3]}'\n")
+                        notify(f"Line {count}: unknown event '{event[3]}'\n")
                     if R_COURSE.get(event[4], None) is None:
-                        notify (f"Line {count}: unknown course '{event[4]}'\n")
-                        
+                        notify(f"Line {count}: unknown course '{event[4]}'\n")
+
                     self.records[" ".join(event)] = row
 
             notify(f"Read {filename}...\n")
@@ -141,7 +146,6 @@ class Record():
 
         notify("Unknown error\n")
         return False
-        
 
     def create_html(self):
         """create a records file."""
@@ -151,57 +155,77 @@ class Record():
 
         with open(header, FILE_READ) as file:
             prefix = file.read()
-            
+
         res = prefix
-        
+
         for gender in RELAY_GENDER:
-            
+
             o_gender = ""
             for stroke in RELAY_STROKES:
-    
+
                 o_dist = ""
                 for dist in RELAY_DISTANCE:
-    
+
                     o_age = ""
+                    tag = TAG_INNER_ODD
                     for age in RELAY_AGES:
                         opt = ""
-                        
+
                         opt_sc = self.print_record(stroke, dist, age, "25", gender)
                         opt_lc = self.print_record(stroke, dist, age, "50", gender)
-     
+
                         if opt_sc or opt_lc:
-                            opt += "        <table class=record-inner><tbody>\n"
+                            opt += "                <div class=divTable><div class=divTableBody>\n"
                             if opt_sc:
                                 opt += opt_sc
                             if opt_lc:
                                 opt += opt_lc
-                            opt += "        </tbody></table>\n"
+                            opt += "                </div></div>\n"
                         else:
-                            opt += "      -\n"
-                            
-                        o_age += "   <tr>\n"
-                        o_age += f"    <td>\n    Age: {age}:\n    {opt}    </td>\n"
-                        o_age += "   </tr>\n"
-                            
+                            opt += "                -\n"
+
+                        if tag == TAG_INNER_EVEN:
+                            tag = TAG_INNER_ODD
+                        else:
+                            tag = TAG_INNER_EVEN
+                        o_age += f"""
+            <div class=divTableRow {tag}>
+                <div class=divTableCell>
+                Age: {RELAY_AGES[age]}:
+                </div>
+                <div class=divTableCell>
+{opt}
+                </div>
+            </div>
+            """
+
                     if o_age:
-                        o_dist += "  <table class=record-outer ><tbody>\n"
-                        o_dist += f"  Dist: {dist}:\n{o_age}\n"
-                        o_dist += "  </tbody></table>\n"
-            
+                        o_dist += f"""
+        <h3>{PRINT_DISTANCE[dist]}:</h3>
+        <div class=divTable>
+        <div class=divTableBody>
+{o_age}
+        </div>
+        </div>
+        """
+
                 if o_dist:
-                    o_gender += (f" <div id=\"record-{stroke}\">\n")
-                    o_gender += (f" {RELAY_STROKES[stroke]}:\n{o_dist}\n")
-                    o_gender += " </div><br/>\n"
-          
+                    o_gender += f"""
+    <div class="divTable" name=\"record-{stroke.lower()}\">
+{o_dist}
+    </div>
+    """
+
             if res:
-                res += f"<div id=\"record-{gender}\">\n"
-                res += gender
-                res += o_gender
-                res += "</div><br/>\n"
-                
+                pgen = RELAY_GENDER[gender].lower()
+                res += f"""
+<div name=\"record-{pgen}\">
+{o_gender}
+</div>
+"""
+
         return res
-                
-                
+
     def print_record(self, stroke, dist, age, course, gender):
         """Print a record."""
         lookup = f"{gender} {age} {dist} {stroke} {course}"
@@ -215,12 +239,13 @@ class Record():
             swimmer3 = record[R_SWIMMER3]
             swimmer4 = record[R_SWIMMER4]
             if xtime:
-                opt = "        <tr>\n"
-                opt += f"        <td>{loc}</td>\n"
-                opt += f"        <td>{xtime} ({R_COURSE[course]})</td>\n"
-                opt += f"        <td>{xdate}</td>\n"
-                opt += f"        <td>{swimmer1}, {swimmer2}, {swimmer3}, {swimmer4}</td>\n"
-                opt += "        </tr>\n"
+                opt = "\n                   <div class=divTableRow>\n"
+                opt += f"                   <div class=divTableCell>{xtime} ({R_COURSE[course]})</div>\n"
+                opt += f"                   <div class=divTableCell>{xdate}</div>\n"
+                opt += f"                   <div class=divTable><div class=divTableBody><div class=divTableRow>\n"
+                opt += f"                      <div class=divTableCell>{loc}</div>\n"
+                opt += f"                   </div><div class=divTableRow>\n"
+                opt += f"                      <div class=divTableCell>{swimmer1}, {swimmer2}, {swimmer3}, {swimmer4}</div>\n"
+                opt += "                    </div></div></div></div>\n"
                 return opt
         return ""
-    
