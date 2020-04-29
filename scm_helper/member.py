@@ -140,7 +140,7 @@ class Member(Entity):
         note = FACEBOOK_RE.findall(notes)
         if note:
             for facebook in note:
-                facebook.strip()
+                facebook = facebook.strip()
                 self.facebook.append(facebook)
                 debug(f"Found Facebook name in notes '{facebook}'", 6)
 

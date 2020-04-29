@@ -43,7 +43,7 @@ class Csv(Files):
 
         self.cfg_file = ntpath.basename(file)
 
-        notify(f"Reading {file}...\n")
+        notify(f"Reading {self.cfg_file}...\n")
 
         cfg_dob_format = get_config(
             scm, C_FILES, self.cfg_file, C_MAPPING, C_DOB_FORMAT
