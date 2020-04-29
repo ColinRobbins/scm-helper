@@ -173,6 +173,9 @@ class Entity:
         """Link members."""
         if (A_MEMBERS in self.data) and (len(self.data[A_MEMBERS]) > 0):
             for swimmer in self.data[A_MEMBERS]:
+                if swimmer[A_GUID] not in members.by_guid:
+                    debug(f"GUID {swimmer[A_GUID]} missing in list - email address only?",1)
+                    continue
                 guid = members.by_guid[swimmer[A_GUID]]
                 if guid.is_active:
                     self.members.append(guid)
