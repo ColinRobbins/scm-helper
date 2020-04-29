@@ -25,6 +25,7 @@ from scm_helper.issue import (
     E_NO_SWIMMERS,
     E_NOT_ATTENDED,
     E_NOT_IN_GROUP,
+    debug_trace,
     issue,
 )
 
@@ -128,6 +129,7 @@ class Session(Entity):
 
         return res
 
+    @debug_trace(1)
     def analyse(self):
         """Analise the session."""
         # pylint: disable=too-many-branches

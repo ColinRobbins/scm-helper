@@ -20,7 +20,7 @@ from scm_helper.config import (
     CTYPE_VOLUNTEER,
     SCM_DATE_FORMAT,
 )
-from scm_helper.issue import E_INACTIVE, debug, issue
+from scm_helper.issue import E_INACTIVE, debug, debug_trace, issue
 from scm_helper.notify import interact, interact_yesno, notify
 
 
@@ -169,6 +169,7 @@ class Entity:
         # Override uses exception
         return True
 
+    @debug_trace(2)
     def linkage(self, members):
         """Link members."""
         if (A_MEMBERS in self.data) and (len(self.data[A_MEMBERS]) > 0):

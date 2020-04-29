@@ -29,6 +29,7 @@ setuptools.setup(
         "requests>=2.22.0",
         "pyyaml>=5.3",
         "cryptography>=2.8",
+        "func-timeout>=4.3.5",
     ],
     classifiers=[
         "Programming Language :: Python :: 3",

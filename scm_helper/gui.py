@@ -27,6 +27,7 @@ from tkinter import (
     scrolledtext,
 )
 
+from func_timeout import FunctionTimedOut, func_timeout
 from scm_helper.api import API
 from scm_helper.config import (
     BACKUP_DIR,
@@ -242,7 +243,7 @@ class ScmGui:
             self.report_text.config(state=DISABLED)
             return
 
-        if wrap(csv.analyse, self.scm) is False:
+        if wrap(5, csv.analyse, self.scm) is False:
             self.notify.config(state=DISABLED)
             self.report_text.config(state=DISABLED)
             return
@@ -267,7 +268,7 @@ class ScmGui:
             self.notify.config(state=DISABLED)
             return
 
-        wrap(fbook.analyse)
+        wrap(None, fbook.analyse)
         output = fbook.print_errors()
 
         fbook.delete()
@@ -344,7 +345,7 @@ class ScmGui:
             self.buttons(NORMAL)
             return
 
-        wrap(self.scm.apply_fixes)
+        wrap(None, self.scm.apply_fixes)
 
         self.buttons(NORMAL)
 
@@ -467,27 +468,27 @@ class AnalysisThread(threading.Thread):
             dir_opt["parent"] = self.gui.master
 
             where = filedialog.askdirectory(**dir_opt)
-            if wrap(self.scm.decrypt, where) is False:
+            if wrap(None, self.scm.decrypt, where) is False:
                 messagebox.showerror("Error", f"Cannot read from archive: {where}")
                 self.gui.buttons(NORMAL)
                 return
         else:
-            if wrap(self.scm.get_data, False) is False:
+            if wrap(None, self.scm.get_data, False) is False:
                 messagebox.showerror("Analsyis", "Failed to read data")
                 self.gui.buttons(NORMAL)
                 self.gui.thread = None
                 return
 
-        if wrap(self.scm.linkage) is False:
+        if wrap(5, self.scm.linkage) is False:
             self.gui.buttons(NORMAL)
             self.gui.thread = None
             return
 
-        if wrap(self.scm.analyse) is False:
+        if wrap(5, self.scm.analyse) is False:
             self.gui.buttons(NORMAL)
             self.gui.thread = None
             return
-        
+
         self.gui.gotdata = True
 
         if self.gui.analysis_window is None:
@@ -581,7 +582,7 @@ class BackupThread(threading.Thread):
         self.gui.buttons(DISABLED)
         self.gui.notify.delete("1.0", END)
 
-        if wrap(self.scm.backup_data):
+        if wrap(None, self.scm.backup_data):
             output = self.scm.print_summary(backup=True)
             self.gui.notify.insert(END, output)
             self.gui.notify.insert(END, "Backup Complete.")
@@ -607,7 +608,7 @@ class UpdateThread(threading.Thread):
         self.gui.buttons(DISABLED)
         self.gui.notify.delete("1.0", END)
 
-        wrap(self.scm.update)
+        wrap(None, self.scm.update)
 
         self.gui.notify.see(END)
         self.gui.buttons(NORMAL)
@@ -707,37 +708,58 @@ def xhelp():
     webbrowser.open_new(HELPURL)
 
 
-def wrap(func, arg=None):
+def wrap_trace():
+    """Give as many error details as possible."""
+    tback = sys.exc_info()[2]
+    while 1:
+        if not tback.tb_next:
+            break
+        tback = tback.tb_next
+    stack = []
+    xframe = tback.tb_frame
+    while xframe:
+        stack.append(xframe)
+        xframe = xframe.f_back
+    stack.reverse()
+    for frame in stack:
+        for key, value in frame.f_locals.items():
+            # Print likely to cause error itself, but should get enough out of it...
+            try:
+                debug(f"   {key}: {value.name}", 0)
+            # pylint: disable=bare-except
+            except:
+                continue
+
+
+def wrap(xtime, func, arg=None):
     """Catch programming logic errors."""
     try:
+        if xtime is None:
+            if arg is not None:
+                return func(arg)
+            return func()
         if arg is not None:
-            return func(arg)
-        return func()
+            return func_timeout(xtime, func(arg))
+        return func_timeout(xtime, func())
 
-    except (AssertionError, AttributeError, LookupError, NameError, TypeError, ValueError) as err:
+    except FunctionTimedOut:
+        msg = f"Abandon {func.__name__} due to timeout ({xtime} secs)"
+        wrap_trace()
+        messagebox.showerror("Error", msg)
+        return False
+
+    # pylint: disable=bad-continuation
+    except (
+        AssertionError,
+        AttributeError,
+        LookupError,
+        NameError,
+        TypeError,
+        ValueError,
+    ) as err:
         errmsg = traceback.format_exc(5)
         debug(errmsg, 0)
         msg = f"Internal SCM Helper Error:\n{err}\nPlease log an issue on github.\n"
-
-        tb = sys.exc_info()[2]
-        while 1:
-            if not tb.tb_next:
-                break
-            tb = tb.tb_next
-        stack = []
-        f = tb.tb_frame
-        while f:
-            stack.append(f)
-            f = f.f_back
-        stack.reverse(  )
-        for frame in stack:
-            for key, value in frame.f_locals.items(  ):
-                # Print liekly to cause erro itself, but should get enough out of it...
-                try:
-                    debug (f"   {key}: {value.name}", 0)
-                except:
-                    continue
-            
+        wrap_trace()
         messagebox.showerror("Error", msg)
-
         return False

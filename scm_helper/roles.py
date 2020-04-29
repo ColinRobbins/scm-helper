@@ -24,6 +24,7 @@ from scm_helper.issue import (
     E_NO_SWIMMERS,
     E_UNUSED_LOGIN,
     E_VOLUNTEER,
+    debug_trace,
     issue,
 )
 
@@ -39,6 +40,7 @@ class Roles(Entities):
 class Role(Entity):
     """A role."""
 
+    @debug_trace(1)
     def analyse(self):
         """Analise the role."""
         cfg = get_config(self.scm, C_ROLES, C_ROLE)

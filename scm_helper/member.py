@@ -75,6 +75,7 @@ from scm_helper.issue import (
     E_TYPE_GROUP,
     E_UNKNOWN,
     debug,
+    debug_trace,
     issue,
 )
 from scm_helper.parent import analyse_parent
@@ -440,6 +441,7 @@ class Member(Entity):
             fix["JobTitle"] = xtype.title()
             self.fixit(fix, f"Add jobtitle: {name}")
 
+    @debug_trace(1)
     def analyse(self):
         """Analise the member."""
         # pylint: disable=too-many-branches

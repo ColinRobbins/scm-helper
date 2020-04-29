@@ -413,6 +413,8 @@ HANDLER = None
 def issue(xobject, error, msg=None, level=0, msg2=""):
     """Record an issue."""
 
+    debug(f"ISSUE: {xobject.name}, {error[MESSAGE]} / {msg}", 1)
+
     if level != -1:
         if xobject.print_exception(EXCEPTION_GENERAL) is False:
             debug(f"Error ignored due to exception {xobject.name}", 6)
@@ -444,8 +446,27 @@ def debug(msg, level):
 def set_debug_level(level):
     """Set debugging level."""
     if level is None:
-        HANDLER.debug_level = 0
+        HANDLER.debug_level = 1
     HANDLER.debug_level = level
+    if HANDLER.debug_level < 1:
+        level = 1
+
+
+def debug_trace(level):
+    """Decorator to provide a trace capability."""
+
+    def wrap(func):
+        def wrapped_f(self, *args):
+            name = func.__name__
+            xclass = self.__class__.__name__
+            debug(f"Entry {name}/{xclass}/{self.name}", level)
+            retval = func(self, *args)
+            debug(f"Exit {self.name}", level)
+            return retval
+
+        return wrapped_f
+
+    return wrap
 
 
 class IssueHandler:
