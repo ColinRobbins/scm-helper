@@ -7,4 +7,4 @@ config/*
 files/*
 backups/*
 *.csv
-scm.spec
+*.spec
