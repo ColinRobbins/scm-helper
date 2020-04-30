@@ -269,6 +269,7 @@ def main():
     argv = sys.argv[1:]
     if len(argv) > 0:
         cmd()  # Command line options = run command line version
+        sys.exit()
 
     try:
         root = Tk()

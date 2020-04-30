@@ -182,7 +182,7 @@ class Entity:
                     self.members.append(guid)
                 else:
                     name = guid.name
-                    issue(self, E_INACTIVE, f"member {name}", 0, "(Fixable)")
+                    issue(self, E_INACTIVE, f"member {name}", 0, "Fixable")
 
                     if self.newdata and (A_MEMBERS in self.newdata):
                         fix = self.newdata

@@ -1,4 +1,5 @@
 """Issue handling."""
+from datetime import datetime
 from scm_helper.config import C_IGNORE_ERROR, C_ISSUES, EXCEPTION_GENERAL, O_NEWSTARTER
 from scm_helper.notify import notify
 
@@ -454,18 +455,16 @@ def set_debug_level(level):
 
 def debug_trace(level):
     """Decorator to provide a trace capability."""
-
     def wrap(func):
         def wrapped_f(self, *args):
             name = func.__name__
             xclass = self.__class__.__name__
-            debug(f"Entry {name}/{xclass}/{self.name}", level)
+            xtime = datetime.now().time()
+            debug(f"{xtime}: Entry {name}/{xclass}/{self.name}", level)
             retval = func(self, *args)
             debug(f"Exit {self.name}", level)
             return retval
-
         return wrapped_f
-
     return wrap
 
 

@@ -27,6 +27,7 @@ from tkinter import (
     scrolledtext,
 )
 
+from datetime import datetime
 from func_timeout import FunctionTimedOut, func_timeout
 from scm_helper.api import API
 from scm_helper.config import (
@@ -243,7 +244,7 @@ class ScmGui:
             self.report_text.config(state=DISABLED)
             return
 
-        if wrap(5, csv.analyse, self.scm) is False:
+        if wrap(10, csv.analyse, self.scm) is False:
             self.notify.config(state=DISABLED)
             self.report_text.config(state=DISABLED)
             return
@@ -479,12 +480,12 @@ class AnalysisThread(threading.Thread):
                 self.gui.thread = None
                 return
 
-        if wrap(5, self.scm.linkage) is False:
+        if wrap(10, self.scm.linkage) is False:
             self.gui.buttons(NORMAL)
             self.gui.thread = None
             return
 
-        if wrap(5, self.scm.analyse) is False:
+        if wrap(10, self.scm.analyse) is False:
             self.gui.buttons(NORMAL)
             self.gui.thread = None
             return
@@ -739,11 +740,14 @@ def wrap(xtime, func, arg=None):
                 return func(arg)
             return func()
         if arg is not None:
-            return func_timeout(xtime, func(arg))
-        return func_timeout(xtime, func())
+            return func_timeout(xtime, func, args=args)
+        return func_timeout(xtime, func)
 
     except FunctionTimedOut:
-        msg = f"Abandon {func.__name__} due to timeout ({xtime} secs)"
+        errmsg = traceback.format_exc(10)
+        debug(errmsg, 0)
+        nowtime = datetime.now().time()
+        msg = f"{nowtime}: Abandon {func.__name__} due to timeout ({xtime} secs)"
         wrap_trace()
         messagebox.showerror("Error", msg)
         return False
@@ -757,7 +761,7 @@ def wrap(xtime, func, arg=None):
         TypeError,
         ValueError,
     ) as err:
-        errmsg = traceback.format_exc(5)
+        errmsg = traceback.format_exc(10)
         debug(errmsg, 0)
         msg = f"Internal SCM Helper Error:\n{err}\nPlease log an issue on github.\n"
         wrap_trace()

@@ -390,7 +390,7 @@ class Member(Entity):
         lastname = self.data[A_LASTNAME]
         knownas = self.data[A_KNOWNAS]
         ka_upper = True
-
+        
         if knownas:
             ka_upper = knownas[0].isupper()
 
@@ -414,7 +414,7 @@ class Member(Entity):
             self.fixit(fix, "Capitalisation of name")
             return
 
-        issue(self, E_NAME_CAPITAL, f"Knownas = {knownas}", -1, "(fixable)")
+        issue(self, E_NAME_CAPITAL, f"Knownas = {knownas}", -1, "fixable")
         fix = {}
         fix[A_KNOWNAS] = knownas.title()
         self.fixit(fix, f"Capitalisation of {knownas}")
