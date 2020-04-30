@@ -60,7 +60,7 @@ class Role(Entity):
         """Check out a role member."""
         if member.is_active is False:
             issue(member, E_INACTIVE, f"Member of role {self.name} (fixable)")
-            if self.newdata & A_MEMBERS in self.newdata:
+            if self.newdata and (A_MEMBERS in self.newdata):
                 fix = self.newdata
             else:
                 fix = {}
