@@ -329,11 +329,15 @@ class Member(Entity):
         if self.check_attribute(A_DATELEFT):
             return
 
-        issue(self, E_NO_LEAVE_DATE, "(fixable)", -1)
-        fix = {}
-        fix[A_DATELEFT] = lastmod.strftime(SCM_DATE_FORMAT)
-        self.fixit(fix, f"Add dataleft = {fix[A_DATELEFT]}")
-        return
+        if lastmod:
+            issue(self, E_NO_LEAVE_DATE, "fixable", -1)
+            fix = {}
+            fix[A_DATELEFT] = lastmod.strftime(SCM_DATE_FORMAT)
+            self.fixit(fix, f"Add dataleft = {fix[A_DATELEFT]}")
+            return
+        
+        issue(self, E_NO_LEAVE_DATE, "", -1)
+
 
     def _list_add(self, err):
         """Add a member to a confirmation list."""
@@ -401,7 +405,7 @@ class Member(Entity):
             return
 
         if (fn_upper is False) or (ln_upper is False):
-            issue(self, E_NAME_CAPITAL, "(fixable)", -1)
+            issue(self, E_NAME_CAPITAL, "fixable", -1)
 
             fix = {}
             if fn_upper is False:
