@@ -34,7 +34,7 @@ def analyse_parent(parent):
 
     if active is False:
         if inactive is None:
-            issue(parent, E_NO_CHILD, "(fixable)")
+            issue(parent, E_NO_CHILD, "fixable")
             fix = {}
             fix[A_ISPARENT] = "0"
             parent.fixit(fix, "Remove 'is parent'")
