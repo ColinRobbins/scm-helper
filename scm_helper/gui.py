@@ -488,6 +488,7 @@ class AnalysisThread(threading.Thread):
         if wrap(10, self.scm.analyse) is False:
             self.gui.buttons(NORMAL)
             self.gui.thread = None
+            debug("Analyse returned False",1)
             return
 
         self.gui.gotdata = True
@@ -495,9 +496,13 @@ class AnalysisThread(threading.Thread):
         if self.gui.analysis_window is None:
             self.create_window()
 
+        debug("Analyse returned - creating result window", 1)
+        
         output = self.gui.issues.print_by_error(None)
+        
+        result = self.scm.print_summary()
 
-        self.gui.notify.insert(END, self.scm.print_summary())
+        self.gui.notify.insert(END, result)
         self.gui.notify.see(END)
         self.gui.result_text.insert(END, output)
         self.gui.analysis_window.lift()
@@ -506,6 +511,12 @@ class AnalysisThread(threading.Thread):
         self.gui.result_text.config(state=DISABLED)
 
         self.gui.thread = None
+
+        debug("Analyse Thread complete, result posted", 1)
+        print ("Is this a Windows error?")
+        print (result)
+        print ("Should see the report above?")
+
 
         return
 

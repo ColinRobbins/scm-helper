@@ -46,6 +46,7 @@ from scm_helper.members import Members
 from scm_helper.notify import notify
 from scm_helper.roles import Roles
 from scm_helper.sessions import Sessions
+from scm_helper.version import VERSION
 
 
 class API:
@@ -179,7 +180,8 @@ class API:
 
     def get_data(self, backup):
         """Get data."""
-        notify("Reading Data...\n")
+        notify(f"Reading Data...\n")
+        debug(f"(version: {VERSION})",1)
 
         loop = self.classes
         if backup:
@@ -212,6 +214,8 @@ class API:
 
         for aclass in self.classes:
             aclass.analyse()
+
+        notify("Done.\n")
 
     def update(self):
         """Update (lists)."""
