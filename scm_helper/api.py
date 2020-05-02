@@ -6,7 +6,6 @@ from shutil import copyfile
 
 import requests
 import yaml
-
 from scm_helper.conduct import CodesOfConduct
 from scm_helper.config import (
     BACKUP_DIR,

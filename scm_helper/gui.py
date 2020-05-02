@@ -29,7 +29,6 @@ from tkinter import (
 )
 
 from func_timeout import FunctionTimedOut, func_timeout
-
 from scm_helper.api import API
 from scm_helper.config import (
     BACKUP_DIR,
