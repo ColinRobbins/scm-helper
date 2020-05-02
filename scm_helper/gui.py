@@ -567,8 +567,8 @@ class AnalysisThread(threading.Thread):
 
         debug("Analyse returned - creating result window", 8)
 
-        output = wrap(10, self.gui.issues.print_by_error, None)
-        result = wrap(None, self.scm.print_summary)
+        output = self.gui.issues.print_by_error(None)
+        result = self.scm.print_summary()
 
         self.gui.notify_text.insert(END, result)
         self.gui.notify_text.see(END)
