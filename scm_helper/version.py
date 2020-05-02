@@ -1,3 +1,3 @@
 """Version string."""
 
-VERSION = "1.0.5d"
+VERSION = "1.0.6d"

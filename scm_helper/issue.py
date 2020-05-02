@@ -524,14 +524,14 @@ class IssueHandler:
         else:
             create_dict(self.by_error, err, name, msg, msg2, rpt, rev, xobject)
 
-    @debug_trace(1)    #todo set to 6
     def print_by_name(self, reports):
         """Print all issues by name."""
+        debug(f"Print by name called {reports}", 1)   #to set to 6
         return print_dict(self.by_name, reports)
 
-    @debug_trace(1)    #todo set to 6
     def print_by_error(self, reports):
         """Print all issues by error."""
+        debug(f"Print by error called {reports}", 1)   #to set to 6
         if reports is None:
             res = ""
             for report in REPORTS:

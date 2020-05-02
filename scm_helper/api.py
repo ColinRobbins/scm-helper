@@ -312,9 +312,9 @@ class API:
         notify("\n")
         return True
 
-    @debug_trace(1)    #todo set to 6
     def print_summary(self, backup=False):
         """Print summary."""
+        debug("Print summary called", 1)   #to set to 6
         output = ""
         for aclass in self.classes:
             output += aclass.print_summary()
