@@ -611,7 +611,7 @@ def print_dict(xdict, reports):
             inner_match = False
             first = True
             length = len(xdict[key1][key2])
-            for xissue in sorted(xdict[key1][key2]):
+            for xissue in sorted(xdict[key1][key2], key = lambda x: x[0]):
                 val1, val2, rpt, rev, _ = xissue
                 if (first and rev) or (first and (length > 1)):
                     to_print += "\n"
