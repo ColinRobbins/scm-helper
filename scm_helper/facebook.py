@@ -1,7 +1,7 @@
 """Read and process a file of Facebook date."""
+import ntpath
 import os
 import re
-import ntpath
 from pathlib import Path
 
 from scm_helper.config import C_FACEBOOK, CONFIG_DIR, FILE_READ, get_config

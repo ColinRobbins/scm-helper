@@ -22,6 +22,7 @@ setuptools.setup(
         "Bug Tracker": "https://github.com/ColinRobbins/scm-helper/issues",
         "Documentation": "https://github.com/ColinRobbins/scm-helper/wiki",
         "Source Code": "https://github.com/ColinRobbins/scm-helper",
+        "Change Log": "https://github.com/ColinRobbins/scm-helper/blob/master/CHANGELOG.md",
     },
     packages=setuptools.find_packages(),
     install_requires=[
@@ -29,6 +30,7 @@ setuptools.setup(
         "requests>=2.22.0",
         "pyyaml>=5.3",
         "cryptography>=2.8",
+        "func-timeout>=4.3.5",
     ],
     classifiers=[
         "Programming Language :: Python :: 3",

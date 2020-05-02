@@ -259,7 +259,7 @@ def check_confirmed_diff(swimmer, parent):
 
     prefix = "Different confirmed dates"
     postfix = "- checking other details for consistency"
-    debug(f"{prefix} {swimmer.name}, {parent.name} {postfix}", 6)
+    debug(f"{prefix} {swimmer.name}, {parent.name} {postfix}", 8)
 
     if swimmer.email != parent.email:
         return True

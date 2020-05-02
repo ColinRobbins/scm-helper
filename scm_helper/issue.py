@@ -1,4 +1,6 @@
 """Issue handling."""
+from datetime import datetime
+
 from scm_helper.config import C_IGNORE_ERROR, C_ISSUES, EXCEPTION_GENERAL, O_NEWSTARTER
 from scm_helper.notify import notify
 
@@ -110,7 +112,7 @@ E_INACTIVE = {
     REPORT: R_MEMBER}
 E_INACTIVE_TOOLONG = {
     NAME: "E_INACTIVE_TOOLONG",
-    MESSAGE: "Inactive for too long",
+    MESSAGE: "Inactive for too long - consider archiving",
     REVERSE: False,
     REPORT: R_MEMBER}
 E_LIST_ERROR = {
@@ -413,9 +415,11 @@ HANDLER = None
 def issue(xobject, error, msg=None, level=0, msg2=""):
     """Record an issue."""
 
+    debug(f"ISSUE: {xobject.name}, {error[MESSAGE]} / {msg}", 5)
+
     if level != -1:
         if xobject.print_exception(EXCEPTION_GENERAL) is False:
-            debug(f"Error ignored due to exception {xobject.name}", 6)
+            debug(f"Error ignored due to exception {xobject.name}", 3)
             return
 
         if level > HANDLER.debug_level:
@@ -426,7 +430,7 @@ def issue(xobject, error, msg=None, level=0, msg2=""):
                 pass
             else:
                 prefix = "Error ignored - new starter - "
-                debug(f"{prefix}{xobject.name}, {error[MESSAGE]} ({msg})", 5)
+                debug(f"{prefix}{xobject.name}, {error[MESSAGE]} ({msg})", 3)
                 return
 
     HANDLER.add_issue(xobject, error, msg, msg2)
@@ -445,7 +449,27 @@ def set_debug_level(level):
     """Set debugging level."""
     if level is None:
         HANDLER.debug_level = 0
+        return
+
     HANDLER.debug_level = level
+
+
+def debug_trace(level):
+    """Decorator to provide a trace capability."""
+
+    def wrap(func):
+        def wrapped_f(self, *args):
+            name = func.__name__
+            xclass = self.__class__.__name__
+            xtime = datetime.now().time()
+            debug(f"{xtime}: Entry {name}/{xclass}/{self.name}", level)
+            retval = func(self, *args)
+            debug(f"Exit {self.name}", level)
+            return retval
+
+        return wrapped_f
+
+    return wrap
 
 
 class IssueHandler:
@@ -506,10 +530,12 @@ class IssueHandler:
 
     def print_by_name(self, reports):
         """Print all issues by name."""
+        debug(f"Print by name called {reports}", 6)
         return print_dict(self.by_name, reports)
 
     def print_by_error(self, reports):
         """Print all issues by error."""
+        debug(f"Print by error called {reports}", 6)
         if reports is None:
             res = ""
             for report in REPORTS:
@@ -584,10 +610,11 @@ def print_dict(xdict, reports):
         for key2 in sorted(xdict[key1]):
             to_print += f"    {key2}"
 
+            debug(f"PRINT ISSUE: {key1} / {key2}", 6)
             inner_match = False
             first = True
             length = len(xdict[key1][key2])
-            for xissue in sorted(xdict[key1][key2]):
+            for xissue in sorted(xdict[key1][key2], key=lambda x: x[0]):
                 val1, val2, rpt, rev, _ = xissue
                 if (first and rev) or (first and (length > 1)):
                     to_print += "\n"

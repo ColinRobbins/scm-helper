@@ -1,8 +1,10 @@
 """Windows GUI."""
 import os.path
+import sys
 import threading
 import traceback
 import webbrowser
+from datetime import datetime
 from pathlib import Path
 from tkinter import (
     DISABLED,
@@ -26,6 +28,7 @@ from tkinter import (
     scrolledtext,
 )
 
+from func_timeout import FunctionTimedOut, func_timeout
 from scm_helper.api import API
 from scm_helper.config import (
     BACKUP_DIR,
@@ -43,20 +46,22 @@ from scm_helper.notify import set_notify
 from scm_helper.version import VERSION
 
 NSEW = N + S + E + W
+AFTER = 2500  # How log to wait for Windows to catchup after processing
 
 
 class ScmGui:
     """Tkinter based GUI (for Windows)."""
 
     # pylint: disable=too-many-instance-attributes
+    # pylint: disable=too-many-public-methods
 
     def __init__(self, master):
         """Initialise."""
         # pylint: disable=too-many-statements
         # super().__init__(None)
         self.master = master
-        self.analysis_window = None
-        self.result_text = None
+        self.issue_window = None
+        self.issue_text = None
         self.report_window = None
         self.report_text = None
         self.issues = None
@@ -67,13 +72,14 @@ class ScmGui:
         self.reports = None
         self.menus = []
         self.menu_fixit = None
+        self.notify_text = None
 
         master.title("SCM Helper")
 
         self.create_main_window()
         self.create_menu()
 
-        set_notify(self.notify)
+        set_notify(self.notify_text)
         self.issues = IssueHandler()
         self.scm = API(self.issues)
         if self.scm.get_config_file() is False:
@@ -83,8 +89,8 @@ class ScmGui:
         self.api_init = False
 
         msg = "Welcome to SCM Helper by Colin Robbins.\nPlease enter your password.\n"
-        self.notify.insert(END, msg)
-        self.notify.config(state=DISABLED)
+        self.notify_text.insert(END, msg)
+        self.notify_text.config(state=DISABLED)
 
     def create_main_window(self):
         """Create the main window."""
@@ -119,20 +125,22 @@ class ScmGui:
         top_group.columnconfigure(0, weight=1)
         top_group.rowconfigure(0, weight=1)
 
-        self.notify = scrolledtext.ScrolledText(top_group, width=60, height=20)
-        self.notify.grid(row=0, column=0, sticky=NSEW)
+        self.notify_text = scrolledtext.ScrolledText(top_group, width=60, height=20)
+        self.notify_text.grid(row=0, column=0, sticky=NSEW)
 
     def create_menu(self):
         """Create Menus."""
         menubar = Menu(self.master)
         file = Menu(menubar, tearoff=0)
         file.add_command(label="Open Archive", command=self.open_archive)
+        self.menus.append([file, "Open Archive"])
         file.add_separator()
         file.add_command(label="Exit", command=self.master.quit)
         menubar.add_cascade(label="File", menu=file)
 
         cmd = Menu(menubar, tearoff=0)
         cmd.add_command(label="Edit Config", command=self.edit_config)
+        self.menus.append([cmd, "Edit Config"])
         cmd.add_separator()
         cmd.add_command(label="Create Lists", command=self.create_lists, state=DISABLED)
         self.menus.append([cmd, "Create Lists"])
@@ -172,7 +180,7 @@ class ScmGui:
 
     def scm_init(self):
         """Initialise SCM."""
-        self.notify.config(state=NORMAL)
+        self.notify_text.config(state=NORMAL)
         password = self.__password.get()
 
         self.clear_data()
@@ -182,13 +190,13 @@ class ScmGui:
             if self.scm.initialise(password) is False:
                 messagebox.showerror("Error", "Cannot initialise SCM (wrong password?)")
                 self.clear_data()
-                self.notify.config(state=DISABLED)
+                self.notify_text.config(state=DISABLED)
                 return False
             self.api_init = True
             return True
 
         messagebox.showerror("Password", "Please give a password!")
-        self.notify.config(state=DISABLED)
+        self.notify_text.config(state=DISABLED)
 
         return False
 
@@ -202,9 +210,9 @@ class ScmGui:
             self.create_report_window()
 
         self.report_text.delete("1.0", END)
-        self.notify.delete("1.0", END)
+        self.notify_text.delete("1.0", END)
         self.report_text.config(state=NORMAL)
-        self.notify.config(state=NORMAL)
+        self.notify_text.config(state=NORMAL)
 
         return True
 
@@ -237,21 +245,21 @@ class ScmGui:
         where = filedialog.askopenfilename(**dir_opt)
         if csv.readfile(where, self.scm) is False:
             messagebox.showerror("Error", "Could not read CSV file")
-            self.notify.config(state=DISABLED)
+            self.notify_text.config(state=DISABLED)
             self.report_text.config(state=DISABLED)
             return
 
-        if wrap(csv.analyse, self.scm) is False:
-            self.notify.config(state=DISABLED)
+        if wrap(10, csv.analyse, self.scm) is False:
+            self.notify_text.config(state=DISABLED)
             self.report_text.config(state=DISABLED)
             return
 
-        output = csv.print_errors()
+        output = wrap(None, csv.print_errors)
 
         del csv
         self.report_text.insert(END, output)
         self.report_text.config(state=DISABLED)
-        self.notify.config(state=DISABLED)
+        self.notify_text.config(state=DISABLED)
         self.report_window.lift()
 
     def facebook(self):
@@ -263,17 +271,17 @@ class ScmGui:
         if fbook.readfiles(self.scm) is False:
             messagebox.showerror("Error", "Could not read facebook files")
             self.report_text.config(state=DISABLED)
-            self.notify.config(state=DISABLED)
+            self.notify_text.config(state=DISABLED)
             return
 
-        wrap(fbook.analyse)
-        output = fbook.print_errors()
+        wrap(None, fbook.analyse)
+        output = wrap(None, fbook.print_errors)
 
-        fbook.delete()
+        wrap(None, fbook.delete)
         del fbook
         self.report_text.insert(END, output)
         self.report_text.config(state=DISABLED)
-        self.notify.config(state=DISABLED)
+        self.notify_text.config(state=DISABLED)
         self.report_window.lift()
 
     def confirm(self):
@@ -284,7 +292,7 @@ class ScmGui:
         output = self.issues.confirm_email()
         self.report_text.insert(END, output)
         self.report_text.config(state=DISABLED)
-        self.notify.config(state=DISABLED)
+        self.notify_text.config(state=DISABLED)
         self.report_window.lift()
 
     def coaches(self):
@@ -292,10 +300,10 @@ class ScmGui:
         if self.prep_report() is False:
             return
 
-        output = self.scm.sessions.print_coaches()
+        output = wrap(None, self.scm.sessions.print_coaches)
         self.report_text.insert(END, output)
         self.report_text.config(state=DISABLED)
-        self.notify.config(state=DISABLED)
+        self.notify_text.config(state=DISABLED)
         self.report_window.lift()
 
     def edit_config(self):
@@ -335,17 +343,17 @@ class ScmGui:
             messagebox.showerror("Error", "Analyse data first, before fixing")
             return
 
-        self.buttons(DISABLED)
+        self.set_buttons(DISABLED)
 
         length = len(self.scm.fixable)
         if length == 0:
             messagebox.showerror("Error", "Nothing to fix")
-            self.buttons(NORMAL)
+            self.set_buttons(NORMAL)
             return
 
-        wrap(self.scm.apply_fixes)
+        wrap(None, self.scm.apply_fixes)
 
-        self.buttons(NORMAL)
+        self.set_buttons(NORMAL)
 
     def backup(self):
         """Window for reports."""
@@ -359,40 +367,95 @@ class ScmGui:
 
     def clear_data(self):
         """Prepare to rerun."""
-        self.scm.delete()
+        wrap(None, self.scm.delete)
         self.gotdata = False
 
-    def buttons(self, status):
-        """Change button state."""
-        self.button_analyse.config(state=status)
-        self.button_backup.config(state=status)
+    def create_report_window(self):
+        """Create the reports window."""
+        self.report_window = Toplevel(self.master)
+        self.report_window.title("SCM Helper - Report Window")
 
-        for menu, item in self.menus:
-            menu.entryconfig(item, state=status)
+        top_frame = Frame(self.report_window)
+        top_frame.grid(row=0, column=0, sticky=W + E)
 
-        menu, item = self.menu_fixit
+        self.report_window.columnconfigure(0, weight=1)
+        self.report_window.rowconfigure(0, weight=1)
 
-        if status == NORMAL:
-            self.notify.config(state=DISABLED)
-            length = len(self.scm.fixable)
-            if length == 0:
-                self.button_fixit.config(state=DISABLED)
-                menu.entryconfig(item, state=DISABLED)
-                return
-        else:
-            self.notify.config(state=NORMAL)
+        self.report_text = scrolledtext.ScrolledText(top_frame, width=80, height=40)
+        self.report_text.grid(row=0, column=0, sticky=NSEW)
 
-        self.button_fixit.config(state=status)
-        menu.entryconfig(item, state=status)
+        self.report_window.protocol("WM_DELETE_WINDOW", self.close_report_window)
 
-    def process_option(self, _):
+    def close_report_window(self):
+        """Close report window."""
+        self.report_window.destroy()
+        self.report_window = None
+
+    def create_issue_window(self):
+        """Create the results window."""
+        self.issue_window = Toplevel(self.master)
+        self.issue_window.title("SCM Helper - Issue Window")
+
+        self.reports = StringVar()
+        self.reports.set("All Reports")
+
+        top_frame = Frame(self.issue_window)
+        top_frame.grid(row=0, column=0, sticky=W + E)
+
+        label = Label(top_frame, text="Select Report: ")
+        label.grid(row=0, column=0, pady=10, padx=10)
+
+        rpts = [resp.title() for resp in REPORTS]
+        all_reports = ["All Reports"] + rpts
+
+        menu = OptionMenu(
+            top_frame, self.reports, *all_reports, command=self.process_issue_option,
+        )
+        menu.grid(row=0, column=1, pady=10, padx=10)
+
+        self.grouping = StringVar()
+        self.grouping.set("Error")
+
+        label = Label(top_frame, text="Group Report by: ")
+        label.grid(row=0, column=2, pady=10, padx=10)
+
+        menu = OptionMenu(
+            top_frame,
+            self.grouping,
+            "Error",
+            "Member",
+            command=self.process_issue_option,
+        )
+        menu.grid(row=0, column=3, pady=10, padx=10)
+
+        txt = "Analysis..."
+        top_group = LabelFrame(self.issue_window, text=txt, pady=5, padx=5)
+        top_group.grid(row=1, column=0, columnspan=4, pady=10, padx=10, sticky=NSEW)
+
+        self.issue_window.columnconfigure(0, weight=1)
+        self.issue_window.rowconfigure(1, weight=1)
+
+        top_group.columnconfigure(0, weight=1)
+        top_group.rowconfigure(0, weight=1)
+
+        self.issue_text = scrolledtext.ScrolledText(top_group, width=100, height=40)
+        self.issue_text.grid(row=0, column=0, sticky=NSEW)
+
+        self.issue_window.protocol("WM_DELETE_WINDOW", self.close_issue_window)
+
+    def close_issue_window(self):
+        """Close issue window."""
+        self.issue_window.destroy()
+        self.issue_window = None
+
+    def process_issue_option(self, _):
         """Process an option selection."""
         report = self.reports.get()
         mode = self.grouping.get()
 
-        self.result_text.config(state=NORMAL)
-        self.notify.config(state=NORMAL)
-        self.result_text.delete("1.0", END)
+        self.issue_text.config(state=NORMAL)
+        self.notify_text.config(state=NORMAL)
+        self.issue_text.delete("1.0", END)
 
         if report == "All Reports":
             report = None
@@ -404,30 +467,39 @@ class ScmGui:
         else:
             output = self.issues.print_by_name(report)
 
-        self.result_text.insert(END, output)
-        self.result_text.config(state=DISABLED)
-        self.notify.config(state=DISABLED)
+        self.issue_text.insert(END, output)
 
-    def create_report_window(self):
-        """Create the reports window."""
-        self.report_window = Toplevel(self.master)
-        self.report_window.title("SCM Helper - Reports")
+        self.master.update_idletasks()
+        self.master.after(AFTER, self.set_normal)
 
-        top_frame = Frame(self.report_window)
-        top_frame.grid(row=0, column=0, sticky=W + E)
+    def set_buttons(self, status):
+        """Change button state."""
+        self.button_analyse.config(state=status)
+        self.button_backup.config(state=status)
 
-        self.report_window.columnconfigure(0, weight=1)
-        self.report_window.rowconfigure(0, weight=1)
+        for menu, item in self.menus:
+            menu.entryconfig(item, state=status)
 
-        self.report_text = scrolledtext.ScrolledText(top_frame, width=80, height=40)
-        self.report_text.grid(row=0, column=0, sticky=NSEW)
+        menu, item = self.menu_fixit
 
-        self.report_window.protocol("WM_DELETE_WINDOW", self.close_report)
+        if status == NORMAL:
+            self.notify_text.config(state=DISABLED)
+            length = len(self.scm.fixable)
+            if length == 0:
+                self.button_fixit.config(state=DISABLED)
+                menu.entryconfig(item, state=DISABLED)
+                return
+            if self.issue_window:
+                self.issue_text.config(state=DISABLED)
+        else:
+            self.notify_text.config(state=NORMAL)
 
-    def close_report(self):
-        """Close report window."""
-        self.report_window.destroy()
-        self.report_window = None
+        self.button_fixit.config(state=status)
+        menu.entryconfig(item, state=status)
+
+    def set_normal(self):
+        """Set GUI to normal state after processing."""
+        self.set_buttons(NORMAL)
 
 
 class AnalysisThread(threading.Thread):
@@ -442,17 +514,17 @@ class AnalysisThread(threading.Thread):
 
     def run(self):
         """Run analyser."""
-        self.gui.buttons(DISABLED)
+        self.gui.set_buttons(DISABLED)
 
-        if self.gui.analysis_window:
-            self.gui.result_text.config(state=NORMAL)
-            self.gui.result_text.delete("1.0", END)
+        if self.gui.issue_window:
+            self.gui.issue_text.config(state=NORMAL)
+            self.gui.issue_text.delete("1.0", END)
 
-        self.gui.notify.delete("1.0", END)
+        self.gui.notify_text.delete("1.0", END)
 
         if self.scm.get_config_file() is False:
             messagebox.showerror("Error", f"Error in config file.")
-            self.gui.buttons(NORMAL)
+            self.gui.set_buttons(NORMAL)
             return
 
         if self.archive:
@@ -466,101 +538,51 @@ class AnalysisThread(threading.Thread):
             dir_opt["parent"] = self.gui.master
 
             where = filedialog.askdirectory(**dir_opt)
-            if wrap(self.scm.decrypt, where) is False:
+            if wrap(None, self.scm.decrypt, where) is False:
                 messagebox.showerror("Error", f"Cannot read from archive: {where}")
-                self.gui.buttons(NORMAL)
+                self.gui.master.after(AFTER, self.gui.set_normal)
+                self.gui.thread = None
                 return
         else:
-            if wrap(self.scm.get_data, False) is False:
+            if wrap(None, self.scm.get_data, False) is False:
                 messagebox.showerror("Analsyis", "Failed to read data")
-                self.gui.buttons(NORMAL)
+                self.gui.master.after(AFTER, self.gui.set_normal)
                 self.gui.thread = None
                 return
 
-        if wrap(self.scm.linkage) is False:
-            messagebox.showerror("Analsyis", "Error processing data")
-            self.gui.buttons(NORMAL)
+        if wrap(10, self.scm.linkage) is False:
+            self.gui.master.after(AFTER, self.gui.set_normal)
             self.gui.thread = None
             return
 
-        wrap(self.scm.analyse)
+        if wrap(10, self.scm.analyse) is False:
+            self.gui.master.after(AFTER, self.gui.set_normal)
+            self.gui.thread = None
+            return
+
         self.gui.gotdata = True
 
-        if self.gui.analysis_window is None:
-            self.create_window()
+        if self.gui.issue_window is None:
+            self.gui.create_issue_window()
 
-        output = self.gui.issues.print_by_error(None)
+        debug("Analyse returned - creating result window", 8)
 
-        self.gui.notify.insert(END, self.scm.print_summary())
-        self.gui.notify.see(END)
-        self.gui.result_text.insert(END, output)
-        self.gui.analysis_window.lift()
+        output = wrap(10, self.gui.issues.print_by_error, None)
+        result = wrap(None, self.scm.print_summary)
 
-        self.gui.buttons(NORMAL)
-        self.gui.result_text.config(state=DISABLED)
+        self.gui.notify_text.insert(END, result)
+        self.gui.notify_text.see(END)
+        self.gui.issue_text.insert(END, output)
+
+        self.gui.master.update_idletasks()
+        self.gui.issue_window.lift()
+        self.gui.master.after(AFTER, self.gui.set_normal)
 
         self.gui.thread = None
 
+        debug("Analyse Thread complete, result posted", 8)
+
         return
-
-    def create_window(self):
-        """Create the results window."""
-        self.gui.analysis_window = Toplevel(self.gui.master)
-        self.gui.analysis_window.title("SCM Helper - Analysis")
-
-        self.gui.reports = StringVar()
-        self.gui.reports.set("All Reports")
-
-        top_frame = Frame(self.gui.analysis_window)
-        top_frame.grid(row=0, column=0, sticky=W + E)
-
-        label = Label(top_frame, text="Select Report: ")
-        label.grid(row=0, column=0, pady=10, padx=10)
-
-        rpts = [resp.title() for resp in REPORTS]
-        all_reports = ["All Reports"] + rpts
-
-        menu = OptionMenu(
-            top_frame, self.gui.reports, *all_reports, command=self.gui.process_option,
-        )
-        menu.grid(row=0, column=1, pady=10, padx=10)
-
-        self.gui.grouping = StringVar()
-        self.gui.grouping.set("Error")
-
-        label = Label(top_frame, text="Group Report by: ")
-        label.grid(row=0, column=2, pady=10, padx=10)
-
-        menu = OptionMenu(
-            top_frame,
-            self.gui.grouping,
-            "Error",
-            "Member",
-            command=self.gui.process_option,
-        )
-        menu.grid(row=0, column=3, pady=10, padx=10)
-
-        txt = "Analysis..."
-        top_group = LabelFrame(self.gui.analysis_window, text=txt, pady=5, padx=5)
-        top_group.grid(row=1, column=0, columnspan=4, pady=10, padx=10, sticky=NSEW)
-
-        self.gui.analysis_window.columnconfigure(0, weight=1)
-        self.gui.analysis_window.rowconfigure(1, weight=1)
-
-        top_group.columnconfigure(0, weight=1)
-        top_group.rowconfigure(0, weight=1)
-
-        self.gui.result_text = scrolledtext.ScrolledText(
-            top_group, width=100, height=40
-        )
-        self.gui.result_text.grid(row=0, column=0, sticky=NSEW)
-
-        self.gui.analysis_window.protocol("WM_DELETE_WINDOW", self.close_report)
-
-    def close_report(self):
-        """Close report window."""
-        self.gui.analysis_window.destroy()
-        self.gui.analysis_window = None
 
 
 class BackupThread(threading.Thread):
@@ -574,18 +596,20 @@ class BackupThread(threading.Thread):
 
     def run(self):
         """Run analyser."""
-        self.gui.buttons(DISABLED)
-        self.gui.notify.delete("1.0", END)
+        self.gui.set_buttons(DISABLED)
+        self.gui.notify_text.delete("1.0", END)
 
-        if wrap(self.scm.backup_data):
+        if wrap(None, self.scm.backup_data):
             output = self.scm.print_summary(backup=True)
-            self.gui.notify.insert(END, output)
-            self.gui.notify.insert(END, "Backup Complete.")
-            self.gui.notify.see(END)
+            self.gui.notify_text.insert(END, output)
+            self.gui.notify_text.insert(END, "Backup Complete.")
+            self.gui.notify_text.see(END)
         else:
             messagebox.showerror("Error", "Backup failure")
 
-        self.gui.buttons(NORMAL)
+        self.gui.master.update_idletasks()
+        self.gui.master.after(AFTER, self.gui.set_normal)
+
         self.gui.thread = None
 
 
@@ -600,13 +624,16 @@ class UpdateThread(threading.Thread):
 
     def run(self):
         """Run analyser."""
-        self.gui.buttons(DISABLED)
-        self.gui.notify.delete("1.0", END)
+        self.gui.set_buttons(DISABLED)
+        self.gui.notify_text.delete("1.0", END)
 
-        wrap(self.scm.update)
+        wrap(None, self.scm.update)
 
-        self.gui.notify.see(END)
-        self.gui.buttons(NORMAL)
+        self.gui.notify_text.see(END)
+
+        self.gui.master.update_idletasks()
+        self.gui.master.after(AFTER, self.gui.set_normal)
+
         self.gui.thread = None
 
 
@@ -703,17 +730,61 @@ def xhelp():
     webbrowser.open_new(HELPURL)
 
 
-def wrap(func, arg=None):
+def wrap_trace():
+    """Give as many error details as possible."""
+    tback = sys.exc_info()[2]
+    while 1:
+        if not tback.tb_next:
+            break
+        tback = tback.tb_next
+    stack = []
+    xframe = tback.tb_frame
+    while xframe:
+        stack.append(xframe)
+        xframe = xframe.f_back
+    stack.reverse()
+    for frame in stack:
+        for key, value in frame.f_locals.items():
+            # Print likely to cause error itself, but should get enough out of it...
+            try:
+                debug(f"   {key}: {value.name}", 1)
+            # pylint: disable=bare-except
+            except:  # noqa: E722
+                continue
+
+
+def wrap(xtime, func, arg=None):
     """Catch programming logic errors."""
     try:
+        if xtime is None:
+            if arg is not None:
+                return func(arg)
+            return func()
         if arg is not None:
-            return func(arg)
-        return func()
+            return func_timeout(xtime, func, args=[arg])
+        return func_timeout(xtime, func)
 
-    except (AssertionError, AttributeError, LookupError,
-            NameError, TypeError, ValueError, UnboundLocalError
-            ) as err:
-        debug(traceback.format_exc(5), 1)
+    except FunctionTimedOut:
+        errmsg = traceback.format_exc(10)
+        debug(errmsg, 1)
+        nowtime = datetime.now().time()
+        msg = f"{nowtime}: Abandon {func.__name__} due to timeout ({xtime} secs)"
+        wrap_trace()
+        messagebox.showerror("Error", msg)
+        return False
+
+    # pylint: disable=bad-continuation
+    except (
+        AssertionError,
+        AttributeError,
+        LookupError,
+        NameError,
+        TypeError,
+        ValueError,
+    ) as err:
+        errmsg = traceback.format_exc(10)
+        debug(errmsg, 1)
         msg = f"Internal SCM Helper Error:\n{err}\nPlease log an issue on github.\n"
+        wrap_trace()
         messagebox.showerror("Error", msg)
         return False

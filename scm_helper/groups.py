@@ -25,6 +25,7 @@ from scm_helper.issue import (
     E_SESSIONS,
     E_TYPE,
     debug,
+    debug_trace,
     issue,
 )
 
@@ -60,6 +61,7 @@ class Group(Entity):
                 if ignore_group:
                     swimmer.set_ignore_group(True)
 
+    @debug_trace(5)
     def analyse(self):
         """Analise the group."""
         # pylint: disable=too-many-branches
@@ -79,7 +81,7 @@ class Group(Entity):
             xtype = self.config_item(C_TYPE)
 
         if ignore:
-            debug(f"Ignoring group {self.name}", 9)
+            debug(f"Ignoring group {self.name}", 7)
             return
 
         if len(self.members) == 0:

@@ -63,10 +63,6 @@ FILE_WRITE = "w"
 # JSON labels
 GUID = "Guid"
 
-# Config.yaml parameters
-DEBUG_LEVEL = "debug_level"
-
-
 # Exceptions in Notes
 EXCEPTION_EMAILDIFF = "API: different email OK"
 EXCEPTION_GENERAL = "API: Exception"
