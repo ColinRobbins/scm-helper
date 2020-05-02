@@ -448,11 +448,10 @@ def debug(msg, level):
 def set_debug_level(level):
     """Set debugging level."""
     if level is None:
-        HANDLER.debug_level = 1
+        HANDLER.debug_level = 0
         return
+
     HANDLER.debug_level = level
-    if HANDLER.debug_level < 1:
-        level = 1
 
 
 def debug_trace(level):
