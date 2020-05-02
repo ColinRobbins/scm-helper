@@ -6,7 +6,6 @@ import traceback
 import webbrowser
 from datetime import datetime
 from pathlib import Path
-from time import sleep
 from tkinter import (
     DISABLED,
     END,
@@ -55,6 +54,7 @@ class ScmGui:
     """Tkinter based GUI (for Windows)."""
 
     # pylint: disable=too-many-instance-attributes
+    # pylint: disable=too-many-public-methods
 
     def __init__(self, master):
         """Initialise."""
@@ -344,17 +344,17 @@ class ScmGui:
             messagebox.showerror("Error", "Analyse data first, before fixing")
             return
 
-        self.set_set_buttons(DISABLED)
+        self.set_buttons(DISABLED)
 
         length = len(self.scm.fixable)
         if length == 0:
             messagebox.showerror("Error", "Nothing to fix")
-            self.set_set_buttons(NORMAL)
+            self.set_buttons(NORMAL)
             return
 
         wrap(None, self.scm.apply_fixes)
 
-        self.set_set_buttons(NORMAL)
+        self.set_buttons(NORMAL)
 
     def backup(self):
         """Window for reports."""
@@ -471,7 +471,7 @@ class ScmGui:
         self.issue_text.insert(END, output)
 
         self.master.update_idletasks()
-        self.master.after(AFTER, self.gui.set_normal)
+        self.master.after(AFTER, self.set_normal)
 
     def set_buttons(self, status):
         """Change button state."""
