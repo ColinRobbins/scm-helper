@@ -51,7 +51,7 @@ class Lists(Entities):
             return
 
         if get_config(self.scm, C_LISTS, C_EDIT) is not True:
-            notify("List update prohibited by config\n")
+            notify("List update prohibited by config.\n")
             return
 
         lists = get_config(self.scm, C_LISTS, C_LIST)
