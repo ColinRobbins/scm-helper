@@ -488,7 +488,6 @@ class AnalysisThread(threading.Thread):
         if wrap(10, self.scm.analyse) is False:
             self.gui.buttons(NORMAL)
             self.gui.thread = None
-            debug("Analyse returned False",1)
             return
 
         self.gui.gotdata = True
@@ -737,7 +736,7 @@ def wrap_trace():
         for key, value in frame.f_locals.items():
             # Print likely to cause error itself, but should get enough out of it...
             try:
-                debug(f"   {key}: {value.name}", 0)
+                debug(f"   {key}: {value.name}", 1)
             # pylint: disable=bare-except
             except:
                 continue
@@ -756,7 +755,7 @@ def wrap(xtime, func, arg=None):
 
     except FunctionTimedOut:
         errmsg = traceback.format_exc(10)
-        debug(errmsg, 0)
+        debug(errmsg, 1)
         nowtime = datetime.now().time()
         msg = f"{nowtime}: Abandon {func.__name__} due to timeout ({xtime} secs)"
         wrap_trace()
@@ -773,7 +772,7 @@ def wrap(xtime, func, arg=None):
         ValueError,
     ) as err:
         errmsg = traceback.format_exc(10)
-        debug(errmsg, 0)
+        debug(errmsg, 1)
         msg = f"Internal SCM Helper Error:\n{err}\nPlease log an issue on github.\n"
         wrap_trace()
         messagebox.showerror("Error", msg)

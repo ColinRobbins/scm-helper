@@ -40,7 +40,7 @@ from scm_helper.crypto import Crypto
 from scm_helper.default import create_default_config
 from scm_helper.entity import Entities
 from scm_helper.groups import Groups
-from scm_helper.issue import debug, set_debug_level
+from scm_helper.issue import debug, set_debug_level, debug_trace
 from scm_helper.lists import Lists
 from scm_helper.members import Members
 from scm_helper.notify import notify
@@ -127,7 +127,7 @@ class API:
         debug_config = self.config(DEBUG_LEVEL)
         set_debug_level(debug_config)
 
-        debug(f"Quarter offset: {self.q_offset}", 7)
+        debug(f"Quarter offset: {self.q_offset}", 9)
 
         return True
 
@@ -181,7 +181,7 @@ class API:
     def get_data(self, backup):
         """Get data."""
         notify(f"Reading Data...\n")
-        debug(f"(version: {VERSION})",1)
+        debug(f"(version: {VERSION})", 1)
 
         loop = self.classes
         if backup:
@@ -312,6 +312,7 @@ class API:
         notify("\n")
         return True
 
+    @debug_trace(1)    #todo set to 4
     def print_summary(self, backup=False):
         """Print summary."""
         output = ""

@@ -169,13 +169,13 @@ class Entity:
         # Override uses exception
         return True
 
-    @debug_trace(2)
+    @debug_trace(4)
     def linkage(self, members):
         """Link members."""
         if (A_MEMBERS in self.data) and (len(self.data[A_MEMBERS]) > 0):
             for swimmer in self.data[A_MEMBERS]:
                 if swimmer[A_GUID] not in members.by_guid:
-                    debug(f"GUID {swimmer[A_GUID]} missing in list - email address only?",1)
+                    debug(f"GUID {swimmer[A_GUID]} missing in list - email address only?", 7)
                     continue
                 guid = members.by_guid[swimmer[A_GUID]]
                 if guid.is_active:
@@ -279,8 +279,8 @@ class Entity:
         printer = pprint.PrettyPrinter(indent=4)
         data = printer.pformat(self.newdata)
         err = f"Fix '{self.name}' with:\n    {self.fixmsg}\nConfirm"
-        debug("fixit:", 5)
-        debug(data, 5)
+        debug("fixit:", 7)
+        debug(data, 8)
         resp = interact_yesno(err)
         if resp is False:
             return False

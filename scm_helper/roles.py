@@ -40,7 +40,7 @@ class Roles(Entities):
 class Role(Entity):
     """A role."""
 
-    @debug_trace(1)
+    @debug_trace(3)
     def analyse(self):
         """Analise the role."""
         cfg = get_config(self.scm, C_ROLES, C_ROLE)

@@ -142,7 +142,7 @@ class Member(Entity):
             for facebook in note:
                 facebook = facebook.strip()
                 self.facebook.append(facebook)
-                debug(f"Found Facebook name in notes '{facebook}'", 6)
+                debug(f"Found Facebook name in notes '{facebook}'", 8)
 
         note = API_RE.findall(notes)
         if note is None:
@@ -166,9 +166,9 @@ class Member(Entity):
                 excl = exclusion.group(0).strip()
                 if (self.scm.today - when).days <= 0:
                     self.ignore_errors.append(excl)
-                    debug(f"Found API token in notes {api}", 9)
+                    debug(f"Found API token in notes {api}", 8)
                 else:
-                    debug(f"Token expired {api}", 7)
+                    debug(f"Token expired {api}", 8)
             elif gotdate:
                 issue(self, E_DATE, f"Notes: {api}")
 
@@ -284,7 +284,7 @@ class Member(Entity):
     def check_dbs(self, xtype):
         """Check DBS and Safeguarding."""
         if self.print_exception(EXCEPTION_NODBS) is False:
-            debug(f"DBS Exception: {self.name}", 9)
+            debug(f"DBS Exception ignored: {self.name}", 7)
             return
 
         dbs_date = self.set_date(A_DBS_RENEWAL_DATE)
@@ -303,7 +303,7 @@ class Member(Entity):
             issue(self, E_NO_DBS, f"{xtype}")
 
         if self.print_exception(EXCEPTION_NOSAFEGUARD) is False:
-            debug(f"Safeguard Exception: {self.name}", 9)
+            debug(f"Safeguard Exception ignored: {self.name}", 7)
             return
 
         if safe_date:
@@ -445,7 +445,7 @@ class Member(Entity):
             fix["JobTitle"] = xtype.title()
             self.fixit(fix, f"Add jobtitle: {name}")
 
-    @debug_trace(1)
+    @debug_trace(3)
     def analyse(self):
         """Analise the member."""
         # pylint: disable=too-many-branches

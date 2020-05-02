@@ -62,7 +62,7 @@ class CodesOfConduct(Entities):
         """Create a new entity."""
         return Conduct(entity, self.scm, self._url)
 
-    @debug_trace(1)
+    @debug_trace(3)
     def analyse(self):
         """Analise the conduct class."""
         if get_config(self.scm, C_CONDUCT) is None:
