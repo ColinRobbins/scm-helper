@@ -13,7 +13,7 @@ from scm_helper.config import (
     get_config,
 )
 from scm_helper.entity import Entities, Entity
-from scm_helper.issue import E_NO_CONDUCT, E_NO_CONDUCT_DATE, issue
+from scm_helper.issue import E_NO_CONDUCT, E_NO_CONDUCT_DATE, debug_trace, issue
 from scm_helper.notify import notify
 
 
@@ -62,6 +62,7 @@ class CodesOfConduct(Entities):
         """Create a new entity."""
         return Conduct(entity, self.scm, self._url)
 
+    @debug_trace(5)
     def analyse(self):
         """Analise the conduct class."""
         if get_config(self.scm, C_CONDUCT) is None:

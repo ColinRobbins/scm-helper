@@ -2,7 +2,7 @@
 
 ## Supported Versions
 
-SCM Helper is not oficially supported.
+SCM Helper is not officially supported.
 I will provide support an a best endeavours basis.
 
 ## Reporting a Vulnerability

@@ -12,10 +12,10 @@ from scm_helper.config import (
     BACKUP_URLS,
     C_ALLOW_UPDATE,
     C_CLUB,
+    C_DEBUG_LEVEL,
     CODES_OF_CONDUCT,
     CONFIG_DIR,
     CONFIG_FILE,
-    DEBUG_LEVEL,
     GROUPS,
     KEYFILE,
     LISTS,
@@ -46,6 +46,7 @@ from scm_helper.members import Members
 from scm_helper.notify import notify
 from scm_helper.roles import Roles
 from scm_helper.sessions import Sessions
+from scm_helper.version import VERSION
 
 
 class API:
@@ -123,10 +124,10 @@ class API:
         if self._key is None:
             return False
 
-        debug_config = self.config(DEBUG_LEVEL)
+        debug_config = self.config(C_DEBUG_LEVEL)
         set_debug_level(debug_config)
 
-        debug(f"Quarter offset: {self.q_offset}", 7)
+        debug(f"Quarter offset: {self.q_offset}", 9)
 
         return True
 
@@ -179,7 +180,8 @@ class API:
 
     def get_data(self, backup):
         """Get data."""
-        notify("Reading Data...\n")
+        notify(f"Reading Data...\n")
+        debug(f"(version: {VERSION})", 1)
 
         loop = self.classes
         if backup:
@@ -212,6 +214,8 @@ class API:
 
         for aclass in self.classes:
             aclass.analyse()
+
+        notify("Done.\n")
 
     def update(self):
         """Update (lists)."""
@@ -310,6 +314,7 @@ class API:
 
     def print_summary(self, backup=False):
         """Print summary."""
+        debug("Print summary called", 6)
         output = ""
         for aclass in self.classes:
             output += aclass.print_summary()
@@ -409,7 +414,10 @@ class API:
 
         for fix in self.fixable:
             if fix.apply_fix() is None:
+                self.fixable = []
                 return False
+
+        self.fixable = []
         return True
 
     def option(self, option):

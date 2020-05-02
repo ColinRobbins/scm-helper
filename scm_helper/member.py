@@ -75,6 +75,7 @@ from scm_helper.issue import (
     E_TYPE_GROUP,
     E_UNKNOWN,
     debug,
+    debug_trace,
     issue,
 )
 from scm_helper.parent import analyse_parent
@@ -139,9 +140,9 @@ class Member(Entity):
         note = FACEBOOK_RE.findall(notes)
         if note:
             for facebook in note:
-                facebook.strip()
+                facebook = facebook.strip()
                 self.facebook.append(facebook)
-                debug(f"Found Facebook name in notes '{facebook}'", 6)
+                debug(f"Found Facebook name in notes '{facebook}'", 8)
 
         note = API_RE.findall(notes)
         if note is None:
@@ -165,9 +166,9 @@ class Member(Entity):
                 excl = exclusion.group(0).strip()
                 if (self.scm.today - when).days <= 0:
                     self.ignore_errors.append(excl)
-                    debug(f"Found API token in notes {api}", 9)
+                    debug(f"Found API token in notes {api}", 8)
                 else:
-                    debug(f"Token expired {api}", 7)
+                    debug(f"Token expired {api}", 8)
             elif gotdate:
                 issue(self, E_DATE, f"Notes: {api}")
 
@@ -283,7 +284,7 @@ class Member(Entity):
     def check_dbs(self, xtype):
         """Check DBS and Safeguarding."""
         if self.print_exception(EXCEPTION_NODBS) is False:
-            debug(f"DBS Exception: {self.name}", 9)
+            debug(f"DBS Exception ignored: {self.name}", 7)
             return
 
         dbs_date = self.set_date(A_DBS_RENEWAL_DATE)
@@ -302,7 +303,7 @@ class Member(Entity):
             issue(self, E_NO_DBS, f"{xtype}")
 
         if self.print_exception(EXCEPTION_NOSAFEGUARD) is False:
-            debug(f"Safeguard Exception: {self.name}", 9)
+            debug(f"Safeguard Exception ignored: {self.name}", 7)
             return
 
         if safe_date:
@@ -328,11 +329,14 @@ class Member(Entity):
         if self.check_attribute(A_DATELEFT):
             return
 
-        issue(self, E_NO_LEAVE_DATE, "(fixable)", -1)
-        fix = {}
-        fix[A_DATELEFT] = lastmod.strftime(SCM_DATE_FORMAT)
-        self.fixit(fix, f"Add dataleft = {fix[A_DATELEFT]}")
-        return
+        if lastmod:
+            issue(self, E_NO_LEAVE_DATE, "fixable", -1)
+            fix = {}
+            fix[A_DATELEFT] = lastmod.strftime(SCM_DATE_FORMAT)
+            self.fixit(fix, f"Add dataleft = {fix[A_DATELEFT]}")
+            return
+
+        issue(self, E_NO_LEAVE_DATE, "", -1)
 
     def _list_add(self, err):
         """Add a member to a confirmation list."""
@@ -400,7 +404,7 @@ class Member(Entity):
             return
 
         if (fn_upper is False) or (ln_upper is False):
-            issue(self, E_NAME_CAPITAL, "(fixable)", -1)
+            issue(self, E_NAME_CAPITAL, "fixable", -1)
 
             fix = {}
             if fn_upper is False:
@@ -413,7 +417,7 @@ class Member(Entity):
             self.fixit(fix, "Capitalisation of name")
             return
 
-        issue(self, E_NAME_CAPITAL, f"Knownas = {knownas}", -1, "(fixable)")
+        issue(self, E_NAME_CAPITAL, f"Knownas = {knownas}", -1, "fixable")
         fix = {}
         fix[A_KNOWNAS] = knownas.title()
         self.fixit(fix, f"Capitalisation of {knownas}")
@@ -440,6 +444,7 @@ class Member(Entity):
             fix["JobTitle"] = xtype.title()
             self.fixit(fix, f"Add jobtitle: {name}")
 
+    @debug_trace(5)
     def analyse(self):
         """Analise the member."""
         # pylint: disable=too-many-branches

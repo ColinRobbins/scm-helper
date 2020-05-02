@@ -2,6 +2,8 @@
 """SCM wrapper - command line."""
 import sys
 
+# Black directive
+# fmt: off
 sys.path.append("scm_helper/")
 assert sys.version_info >= (3, 7)
 

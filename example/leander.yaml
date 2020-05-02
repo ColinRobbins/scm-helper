@@ -342,9 +342,9 @@ conduct:
 # Facebook Correlations
 #############################################
 facebook:
-    - "files/Nottingham Leander Swimmers.html"
-    - "files/Nottingham Leander Masters.html"
-    - "files/Nottingham Leander Water Polo.html"
+    - "Nottingham Leander Swimmers.html"
+    - "Nottingham Leander Masters.html"
+    - "Nottingham Leander Water Polo.html"
     
 
 #############################################

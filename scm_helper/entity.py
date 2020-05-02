@@ -20,7 +20,7 @@ from scm_helper.config import (
     CTYPE_VOLUNTEER,
     SCM_DATE_FORMAT,
 )
-from scm_helper.issue import E_INACTIVE, debug, issue
+from scm_helper.issue import E_INACTIVE, debug, debug_trace, issue
 from scm_helper.notify import interact, interact_yesno, notify
 
 
@@ -169,16 +169,23 @@ class Entity:
         # Override uses exception
         return True
 
+    @debug_trace(6)
     def linkage(self, members):
         """Link members."""
         if (A_MEMBERS in self.data) and (len(self.data[A_MEMBERS]) > 0):
             for swimmer in self.data[A_MEMBERS]:
+                if swimmer[A_GUID] not in members.by_guid:
+                    msg = (
+                        f"GUID {swimmer[A_GUID]} missing in list - email address only?"
+                    )
+                    debug(msg, 7)
+                    continue
                 guid = members.by_guid[swimmer[A_GUID]]
                 if guid.is_active:
                     self.members.append(guid)
                 else:
                     name = guid.name
-                    issue(self, E_INACTIVE, f"member {name}", 0, "(Fixable)")
+                    issue(self, E_INACTIVE, f"member {name}", 0, "Fixable")
 
                     if self.newdata and (A_MEMBERS in self.newdata):
                         fix = self.newdata
@@ -275,8 +282,8 @@ class Entity:
         printer = pprint.PrettyPrinter(indent=4)
         data = printer.pformat(self.newdata)
         err = f"Fix '{self.name}' with:\n    {self.fixmsg}\nConfirm"
-        debug("fixit:", 5)
-        debug(data, 5)
+        debug("fixit:", 7)
+        debug(data, 8)
         resp = interact_yesno(err)
         if resp is False:
             return False

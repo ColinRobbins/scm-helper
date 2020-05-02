@@ -1,9 +1,8 @@
 #!/usr/bin/python3
 """SCM support tools."""
 import getopt
-import platform
 import sys
-from tkinter import Tk  # only import tkiner if needed.
+from tkinter import TclError, Tk
 
 from scm_helper.api import API
 from scm_helper.config import HELPURL
@@ -264,26 +263,21 @@ def cmd(argv=None):
         print(scm.print_summary())
 
 
-def gui(argv=None):
-    """Start GUI."""
-    if argv is None:
-        argv = sys.argv[1:]
-
-    if len(argv) > 0:
-        cmd()  # Command line options = run command line version
-    else:
-        root = Tk()
-        ScmGui(root)
-        root.mainloop()
-
-
 def main():
     """Run scm-helper."""
-    xplatform = platform.system()
-    if xplatform == "Windows":
-        gui()
-    else:
+    argv = sys.argv[1:]
+    if len(argv) > 0:
+        cmd()  # Command line options = run command line version
+        sys.exit()
+
+    try:
+        root = Tk()
+    except TclError:
         cmd()
+        sys.exit()
+
+    ScmGui(root)
+    root.mainloop()
 
 
 if __name__ == "__main__":

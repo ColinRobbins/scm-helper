@@ -21,7 +21,7 @@ from scm_helper.config import (
     get_config,
 )
 from scm_helper.entity import Entities, Entity, check_type
-from scm_helper.issue import E_LIST_ERROR, E_NO_SWIMMERS, issue
+from scm_helper.issue import E_LIST_ERROR, E_NO_SWIMMERS, debug_trace, issue
 from scm_helper.notify import notify
 
 A_LISTNAME = "ListName"
@@ -51,7 +51,7 @@ class Lists(Entities):
             return
 
         if get_config(self.scm, C_LISTS, C_EDIT) is not True:
-            notify("List update prohibited by config\n")
+            notify("List update prohibited by config.\n")
             return
 
         lists = get_config(self.scm, C_LISTS, C_LIST)
@@ -92,6 +92,7 @@ class Lists(Entities):
 class List(Entity):
     """An existing list."""
 
+    @debug_trace(5)
     def analyse(self):
         """Analyse existing lists."""
         if len(self.members) == 0:
