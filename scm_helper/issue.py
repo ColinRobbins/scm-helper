@@ -611,7 +611,7 @@ def print_dict(xdict, reports):
         for key2 in sorted(xdict[key1]):
             to_print += f"    {key2}"
 
-            debug(f"PRINT ISSUE: {key1} / {key2}", 1)  # TODO change to 5
+            debug(f"PRINT ISSUE: {key1} / {key2}", 6)  
             inner_match = False
             first = True
             length = len(xdict[key1][key2])

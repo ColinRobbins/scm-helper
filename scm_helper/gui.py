@@ -566,7 +566,7 @@ class AnalysisThread(threading.Thread):
         if self.gui.issue_window is None:
             self.gui.create_issue_window()
 
-        debug("Analyse returned - creating result window", 1)  # TODO set to 6
+        debug("Analyse returned - creating result window", 6)
 
         output = self.gui.issues.print_by_error(None)
 
@@ -582,11 +582,7 @@ class AnalysisThread(threading.Thread):
 
         self.gui.thread = None
 
-        # TODO - remove
-        debug("Analyse Thread complete, result posted", 1)
-        print("Is this a Windows threading error?")
-        print(result)
-        print("Should see the report above?")
+        debug("Analyse Thread complete, result posted", 6)
 
         return
 
