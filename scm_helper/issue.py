@@ -448,6 +448,7 @@ def set_debug_level(level):
     """Set debugging level."""
     if level is None:
         HANDLER.debug_level = 1
+        return
     HANDLER.debug_level = level
     if HANDLER.debug_level < 1:
         level = 1
