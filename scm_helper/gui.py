@@ -755,7 +755,7 @@ def wrap_trace():
             try:
                 debug(f"   {key}: {value.name}", 1)
             # pylint: disable=bare-except
-            except:
+            except:  # noqa: E722
                 continue
 
 
