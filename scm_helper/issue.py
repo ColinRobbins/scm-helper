@@ -530,12 +530,12 @@ class IssueHandler:
 
     def print_by_name(self, reports):
         """Print all issues by name."""
-        debug(f"Print by name called {reports}", 6)  
+        debug(f"Print by name called {reports}", 6)
         return print_dict(self.by_name, reports)
 
     def print_by_error(self, reports):
         """Print all issues by error."""
-        debug(f"Print by error called {reports}", 6)  
+        debug(f"Print by error called {reports}", 6)
         if reports is None:
             res = ""
             for report in REPORTS:
@@ -610,7 +610,7 @@ def print_dict(xdict, reports):
         for key2 in sorted(xdict[key1]):
             to_print += f"    {key2}"
 
-            debug(f"PRINT ISSUE: {key1} / {key2}", 6)  
+            debug(f"PRINT ISSUE: {key1} / {key2}", 6)
             inner_match = False
             first = True
             length = len(xdict[key1][key2])

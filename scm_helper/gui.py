@@ -277,7 +277,7 @@ class ScmGui:
         wrap(None, fbook.analyse)
         output = wrap(None, fbook.print_errors)
 
-        wrap (None, fbook.delete)
+        wrap(None, fbook.delete)
         del fbook
         self.report_text.insert(END, output)
         self.report_text.config(state=DISABLED)
