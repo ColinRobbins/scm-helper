@@ -15,7 +15,7 @@ from scm_helper.config import (
     CODES_OF_CONDUCT,
     CONFIG_DIR,
     CONFIG_FILE,
-    DEBUG_LEVEL,
+    C_DEBUG_LEVEL,
     GROUPS,
     KEYFILE,
     LISTS,
@@ -124,7 +124,7 @@ class API:
         if self._key is None:
             return False
 
-        debug_config = self.config(DEBUG_LEVEL)
+        debug_config = self.config(C_DEBUG_LEVEL)
         set_debug_level(debug_config)
 
         debug(f"Quarter offset: {self.q_offset}", 9)
