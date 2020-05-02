@@ -255,7 +255,7 @@ class ScmGui:
             self.report_text.config(state=DISABLED)
             return
 
-        output = csv.print_errors()
+        output = wrap(None, csv.print_errors)
 
         del csv
         self.report_text.insert(END, output)
@@ -276,9 +276,9 @@ class ScmGui:
             return
 
         wrap(None, fbook.analyse)
-        output = fbook.print_errors()
+        output = wrap(None, fbook.print_errors)
 
-        fbook.delete()
+        wrap (None, fbook.delete)
         del fbook
         self.report_text.insert(END, output)
         self.report_text.config(state=DISABLED)
@@ -301,7 +301,7 @@ class ScmGui:
         if self.prep_report() is False:
             return
 
-        output = self.scm.sessions.print_coaches()
+        output = wrap(None, self.scm.sessions.print_coaches)
         self.report_text.insert(END, output)
         self.report_text.config(state=DISABLED)
         self.notify_text.config(state=DISABLED)
@@ -368,7 +368,7 @@ class ScmGui:
 
     def clear_data(self):
         """Prepare to rerun."""
-        self.scm.delete()
+        wrap(None, self.scm.delete)
         self.gotdata = False
 
     def create_report_window(self):
@@ -566,11 +566,10 @@ class AnalysisThread(threading.Thread):
         if self.gui.issue_window is None:
             self.gui.create_issue_window()
 
-        debug("Analyse returned - creating result window", 6)
+        debug("Analyse returned - creating result window", 8)
 
-        output = self.gui.issues.print_by_error(None)
-
-        result = self.scm.print_summary()
+        output = wrap(10, self.gui.issues.print_by_error, None)
+        result = wrap(None, self.scm.print_summary)
 
         self.gui.notify_text.insert(END, result)
         self.gui.notify_text.see(END)
@@ -582,7 +581,7 @@ class AnalysisThread(threading.Thread):
 
         self.gui.thread = None
 
-        debug("Analyse Thread complete, result posted", 6)
+        debug("Analyse Thread complete, result posted", 8)
 
         return
 
@@ -602,7 +601,7 @@ class BackupThread(threading.Thread):
         self.gui.notify_text.delete("1.0", END)
 
         if wrap(None, self.scm.backup_data):
-            output = self.scm.print_summary(backup=True)
+            output = wrap(None, self.scm.print_summary, backup=True)
             self.gui.notify_text.insert(END, output)
             self.gui.notify_text.insert(END, "Backup Complete.")
             self.gui.notify_text.see(END)

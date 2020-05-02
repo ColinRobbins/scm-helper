@@ -415,7 +415,10 @@ class API:
 
         for fix in self.fixable:
             if fix.apply_fix() is None:
+                self.fixable = []
                 return False
+
+        self.fixable = []
         return True
 
     def option(self, option):
