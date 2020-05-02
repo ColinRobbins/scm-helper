@@ -600,7 +600,7 @@ class BackupThread(threading.Thread):
         self.gui.notify_text.delete("1.0", END)
 
         if wrap(None, self.scm.backup_data):
-            output = wrap(None, self.scm.print_summary, backup=True)
+            output = self.scm.print_summary(backup=True)
             self.gui.notify_text.insert(END, output)
             self.gui.notify_text.insert(END, "Backup Complete.")
             self.gui.notify_text.see(END)
