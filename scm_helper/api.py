@@ -315,7 +315,7 @@ class API:
 
     def print_summary(self, backup=False):
         """Print summary."""
-        debug("Print summary called", 1)  # to set to 6
+        debug("Print summary called", 6)  
         output = ""
         for aclass in self.classes:
             output += aclass.print_summary()

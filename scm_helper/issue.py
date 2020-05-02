@@ -530,12 +530,12 @@ class IssueHandler:
 
     def print_by_name(self, reports):
         """Print all issues by name."""
-        debug(f"Print by name called {reports}", 1)  # to set to 6
+        debug(f"Print by name called {reports}", 6)  
         return print_dict(self.by_name, reports)
 
     def print_by_error(self, reports):
         """Print all issues by error."""
-        debug(f"Print by error called {reports}", 1)  # to set to 6
+        debug(f"Print by error called {reports}", 6)  
         if reports is None:
             res = ""
             for report in REPORTS:
