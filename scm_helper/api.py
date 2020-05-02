@@ -6,16 +6,17 @@ from shutil import copyfile
 
 import requests
 import yaml
+
 from scm_helper.conduct import CodesOfConduct
 from scm_helper.config import (
     BACKUP_DIR,
     BACKUP_URLS,
     C_ALLOW_UPDATE,
     C_CLUB,
+    C_DEBUG_LEVEL,
     CODES_OF_CONDUCT,
     CONFIG_DIR,
     CONFIG_FILE,
-    C_DEBUG_LEVEL,
     GROUPS,
     KEYFILE,
     LISTS,
@@ -40,7 +41,7 @@ from scm_helper.crypto import Crypto
 from scm_helper.default import create_default_config
 from scm_helper.entity import Entities
 from scm_helper.groups import Groups
-from scm_helper.issue import debug, set_debug_level, debug_trace
+from scm_helper.issue import debug, set_debug_level
 from scm_helper.lists import Lists
 from scm_helper.members import Members
 from scm_helper.notify import notify
@@ -314,7 +315,7 @@ class API:
 
     def print_summary(self, backup=False):
         """Print summary."""
-        debug("Print summary called", 1)   #to set to 6
+        debug("Print summary called", 1)  # to set to 6
         output = ""
         for aclass in self.classes:
             output += aclass.print_summary()

@@ -335,9 +335,8 @@ class Member(Entity):
             fix[A_DATELEFT] = lastmod.strftime(SCM_DATE_FORMAT)
             self.fixit(fix, f"Add dataleft = {fix[A_DATELEFT]}")
             return
-        
-        issue(self, E_NO_LEAVE_DATE, "", -1)
 
+        issue(self, E_NO_LEAVE_DATE, "", -1)
 
     def _list_add(self, err):
         """Add a member to a confirmation list."""
@@ -394,7 +393,7 @@ class Member(Entity):
         lastname = self.data[A_LASTNAME]
         knownas = self.data[A_KNOWNAS]
         ka_upper = True
-        
+
         if knownas:
             ka_upper = knownas[0].isupper()
 

@@ -2,10 +2,11 @@
 import os.path
 import sys
 import threading
-
 import traceback
 import webbrowser
+from datetime import datetime
 from pathlib import Path
+from time import sleep
 from tkinter import (
     DISABLED,
     END,
@@ -28,9 +29,8 @@ from tkinter import (
     scrolledtext,
 )
 
-from datetime import datetime
-from time import sleep
 from func_timeout import FunctionTimedOut, func_timeout
+
 from scm_helper.api import API
 from scm_helper.config import (
     BACKUP_DIR,
@@ -48,7 +48,7 @@ from scm_helper.notify import set_notify
 from scm_helper.version import VERSION
 
 NSEW = N + S + E + W
-AFTER = 2500    # How log to wait for Windows to catchup after processing
+AFTER = 2500  # How log to wait for Windows to catchup after processing
 
 
 class ScmGui:
@@ -439,18 +439,16 @@ class ScmGui:
         top_group.columnconfigure(0, weight=1)
         top_group.rowconfigure(0, weight=1)
 
-        self.issue_text = scrolledtext.ScrolledText(
-            top_group, width=100, height=40
-        )
+        self.issue_text = scrolledtext.ScrolledText(top_group, width=100, height=40)
         self.issue_text.grid(row=0, column=0, sticky=NSEW)
 
         self.issue_window.protocol("WM_DELETE_WINDOW", self.close_issue_window)
-        
+
     def close_issue_window(self):
         """Close issue window."""
         self.issue_window.destroy()
         self.issue_window = None
-        
+
     def process_issue_option(self, _):
         """Process an option selection."""
         report = self.reports.get()
@@ -471,10 +469,10 @@ class ScmGui:
             output = self.issues.print_by_name(report)
 
         self.issue_text.insert(END, output)
-        
+
         self.master.update_idletasks()
         self.master.after(AFTER, self.gui.set_normal)
-        
+
     def set_buttons(self, status):
         """Change button state."""
         self.button_analyse.config(state=status)
@@ -499,10 +497,11 @@ class ScmGui:
 
         self.button_fixit.config(state=status)
         menu.entryconfig(item, state=status)
-        
+
     def set_normal(self):
         """Set GUI to normal state after processing."""
         self.set_buttons(NORMAL)
+
 
 class AnalysisThread(threading.Thread):
     """Thread to run analysis."""
@@ -567,16 +566,16 @@ class AnalysisThread(threading.Thread):
         if self.gui.issue_window is None:
             self.gui.create_issue_window()
 
-        debug("Analyse returned - creating result window", 1)   # TODO set to 6
-        
+        debug("Analyse returned - creating result window", 1)  # TODO set to 6
+
         output = self.gui.issues.print_by_error(None)
-        
+
         result = self.scm.print_summary()
 
         self.gui.notify_text.insert(END, result)
         self.gui.notify_text.see(END)
         self.gui.issue_text.insert(END, output)
-        
+
         self.gui.master.update_idletasks()
         self.gui.issue_window.lift()
         self.gui.master.after(AFTER, self.gui.set_normal)
@@ -585,12 +584,11 @@ class AnalysisThread(threading.Thread):
 
         # TODO - remove
         debug("Analyse Thread complete, result posted", 1)
-        print ("Is this a Windows threading error?")
-        print (result)
-        print ("Should see the report above?")
+        print("Is this a Windows threading error?")
+        print(result)
+        print("Should see the report above?")
 
         return
-
 
 
 class BackupThread(threading.Thread):
@@ -617,7 +615,7 @@ class BackupThread(threading.Thread):
 
         self.gui.master.update_idletasks()
         self.gui.master.after(AFTER, self.gui.set_normal)
-        
+
         self.gui.thread = None
 
 
@@ -641,7 +639,7 @@ class UpdateThread(threading.Thread):
 
         self.gui.master.update_idletasks()
         self.gui.master.after(AFTER, self.gui.set_normal)
-        
+
         self.gui.thread = None
 
 

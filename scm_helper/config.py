@@ -1,5 +1,6 @@
 """Configuration stuff."""
 from schema import And, Optional, Schema, SchemaError
+
 from scm_helper.notify import notify
 from scm_helper.version import VERSION
 

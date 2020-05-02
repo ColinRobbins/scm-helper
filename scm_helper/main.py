@@ -1,9 +1,8 @@
 #!/usr/bin/python3
 """SCM support tools."""
 import getopt
-import platform
 import sys
-from tkinter import Tk, TclError
+from tkinter import TclError, Tk
 
 from scm_helper.api import API
 from scm_helper.config import HELPURL

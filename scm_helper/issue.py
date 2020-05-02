@@ -1,5 +1,6 @@
 """Issue handling."""
 from datetime import datetime
+
 from scm_helper.config import C_IGNORE_ERROR, C_ISSUES, EXCEPTION_GENERAL, O_NEWSTARTER
 from scm_helper.notify import notify
 
@@ -456,6 +457,7 @@ def set_debug_level(level):
 
 def debug_trace(level):
     """Decorator to provide a trace capability."""
+
     def wrap(func):
         def wrapped_f(self, *args):
             name = func.__name__
@@ -465,7 +467,9 @@ def debug_trace(level):
             retval = func(self, *args)
             debug(f"Exit {self.name}", level)
             return retval
+
         return wrapped_f
+
     return wrap
 
 
@@ -527,12 +531,12 @@ class IssueHandler:
 
     def print_by_name(self, reports):
         """Print all issues by name."""
-        debug(f"Print by name called {reports}", 1)   #to set to 6
+        debug(f"Print by name called {reports}", 1)  # to set to 6
         return print_dict(self.by_name, reports)
 
     def print_by_error(self, reports):
         """Print all issues by error."""
-        debug(f"Print by error called {reports}", 1)   #to set to 6
+        debug(f"Print by error called {reports}", 1)  # to set to 6
         if reports is None:
             res = ""
             for report in REPORTS:
@@ -611,7 +615,7 @@ def print_dict(xdict, reports):
             inner_match = False
             first = True
             length = len(xdict[key1][key2])
-            for xissue in sorted(xdict[key1][key2], key = lambda x: x[0]):
+            for xissue in sorted(xdict[key1][key2], key=lambda x: x[0]):
                 val1, val2, rpt, rev, _ = xissue
                 if (first and rev) or (first and (length > 1)):
                     to_print += "\n"
