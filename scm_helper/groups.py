@@ -61,7 +61,7 @@ class Group(Entity):
                 if ignore_group:
                     swimmer.set_ignore_group(True)
 
-    @debug_trace(3)
+    @debug_trace(5)
     def analyse(self):
         """Analise the group."""
         # pylint: disable=too-many-branches

@@ -312,7 +312,7 @@ class API:
         notify("\n")
         return True
 
-    @debug_trace(1)    #todo set to 4
+    @debug_trace(1)    #todo set to 6
     def print_summary(self, backup=False):
         """Print summary."""
         output = ""

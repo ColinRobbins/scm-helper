@@ -2,6 +2,7 @@
 import os.path
 import sys
 import threading
+
 import traceback
 import webbrowser
 from pathlib import Path
@@ -28,6 +29,7 @@ from tkinter import (
 )
 
 from datetime import datetime
+from time import sleep
 from func_timeout import FunctionTimedOut, func_timeout
 from scm_helper.api import API
 from scm_helper.config import (
@@ -58,7 +60,7 @@ class ScmGui:
         # pylint: disable=too-many-statements
         # super().__init__(None)
         self.master = master
-        self.analysis_window = None
+        self.issue_window = None
         self.result_text = None
         self.report_window = None
         self.report_text = None
@@ -388,7 +390,82 @@ class ScmGui:
         self.button_fixit.config(state=status)
         menu.entryconfig(item, state=status)
 
-    def process_option(self, _):
+    def create_report_window(self):
+        """Create the reports window."""
+        self.report_window = Toplevel(self.master)
+        self.report_window.title("SCM Helper - Report Window")
+
+        top_frame = Frame(self.report_window)
+        top_frame.grid(row=0, column=0, sticky=W + E)
+
+        self.report_window.columnconfigure(0, weight=1)
+        self.report_window.rowconfigure(0, weight=1)
+
+        self.report_text = scrolledtext.ScrolledText(top_frame, width=80, height=40)
+        self.report_text.grid(row=0, column=0, sticky=NSEW)
+
+        self.report_window.protocol("WM_DELETE_WINDOW", self.close_report)
+
+    def close_report(self):
+        """Close report window."""
+        self.report_window.destroy()
+        self.report_window = None
+
+    def create_issue_window(self):
+        """Create the results window."""
+        self.issue_window = Toplevel(self.gui.master)
+        self.issue_window.title("SCM Helper - Issue Window")
+
+        self.reports = StringVar()
+        self.reports.set("All Reports")
+
+        top_frame = Frame(self.gui.issue_window)
+        top_frame.grid(row=0, column=0, sticky=W + E)
+
+        label = Label(top_frame, text="Select Report: ")
+        label.grid(row=0, column=0, pady=10, padx=10)
+
+        rpts = [resp.title() for resp in REPORTS]
+        all_reports = ["All Reports"] + rpts
+
+        menu = OptionMenu(
+            top_frame, self.gui.reports, *all_reports, command=self.gui.process_issue_option,
+        )
+        menu.grid(row=0, column=1, pady=10, padx=10)
+
+        self.gui.grouping = StringVar()
+        self.gui.grouping.set("Error")
+
+        label = Label(top_frame, text="Group Report by: ")
+        label.grid(row=0, column=2, pady=10, padx=10)
+
+        menu = OptionMenu(
+            top_frame,
+            self.gui.grouping,
+            "Error",
+            "Member",
+            command=self.gui.process_issue_option,
+        )
+        menu.grid(row=0, column=3, pady=10, padx=10)
+
+        txt = "Analysis..."
+        top_group = LabelFrame(self.gui.issue_window, text=txt, pady=5, padx=5)
+        top_group.grid(row=1, column=0, columnspan=4, pady=10, padx=10, sticky=NSEW)
+
+        self.issue_window.columnconfigure(0, weight=1)
+        self.issue_window.rowconfigure(1, weight=1)
+
+        top_group.columnconfigure(0, weight=1)
+        top_group.rowconfigure(0, weight=1)
+
+        self.result_text = scrolledtext.ScrolledText(
+            top_group, width=100, height=40
+        )
+        self.result_text.grid(row=0, column=0, sticky=NSEW)
+
+        self.issue_window.protocol("WM_DELETE_WINDOW", self.close_report)
+
+    def process_issue_option(self, _):
         """Process an option selection."""
         report = self.reports.get()
         mode = self.grouping.get()
@@ -411,28 +488,6 @@ class ScmGui:
         self.result_text.config(state=DISABLED)
         self.notify.config(state=DISABLED)
 
-    def create_report_window(self):
-        """Create the reports window."""
-        self.report_window = Toplevel(self.master)
-        self.report_window.title("SCM Helper - Reports")
-
-        top_frame = Frame(self.report_window)
-        top_frame.grid(row=0, column=0, sticky=W + E)
-
-        self.report_window.columnconfigure(0, weight=1)
-        self.report_window.rowconfigure(0, weight=1)
-
-        self.report_text = scrolledtext.ScrolledText(top_frame, width=80, height=40)
-        self.report_text.grid(row=0, column=0, sticky=NSEW)
-
-        self.report_window.protocol("WM_DELETE_WINDOW", self.close_report)
-
-    def close_report(self):
-        """Close report window."""
-        self.report_window.destroy()
-        self.report_window = None
-
-
 class AnalysisThread(threading.Thread):
     """Thread to run analysis."""
 
@@ -447,7 +502,7 @@ class AnalysisThread(threading.Thread):
         """Run analyser."""
         self.gui.buttons(DISABLED)
 
-        if self.gui.analysis_window:
+        if self.gui.issue_window:
             self.gui.result_text.config(state=NORMAL)
             self.gui.result_text.delete("1.0", END)
 
@@ -492,10 +547,10 @@ class AnalysisThread(threading.Thread):
 
         self.gui.gotdata = True
 
-        if self.gui.analysis_window is None:
-            self.create_window()
+        if self.gui.issue_window is None:
+            self.gui.create_issue_window()
 
-        debug("Analyse returned - creating result window", 1)
+        debug("Analyse returned - creating result window", 1)   # TODO set to 6
         
         output = self.gui.issues.print_by_error(None)
         
@@ -504,13 +559,16 @@ class AnalysisThread(threading.Thread):
         self.gui.notify.insert(END, result)
         self.gui.notify.see(END)
         self.gui.result_text.insert(END, output)
-        self.gui.analysis_window.lift()
+        self.gui.issue_window.lift()
+        
+        self.gui.master.update_idletasks()
 
         self.gui.buttons(NORMAL)
         self.gui.result_text.config(state=DISABLED)
 
         self.gui.thread = None
 
+        # TODO - remove
         debug("Analyse Thread complete, result posted", 1)
         print ("Is this a Windows error?")
         print (result)
@@ -519,64 +577,11 @@ class AnalysisThread(threading.Thread):
 
         return
 
-    def create_window(self):
-        """Create the results window."""
-        self.gui.analysis_window = Toplevel(self.gui.master)
-        self.gui.analysis_window.title("SCM Helper - Analysis")
-
-        self.gui.reports = StringVar()
-        self.gui.reports.set("All Reports")
-
-        top_frame = Frame(self.gui.analysis_window)
-        top_frame.grid(row=0, column=0, sticky=W + E)
-
-        label = Label(top_frame, text="Select Report: ")
-        label.grid(row=0, column=0, pady=10, padx=10)
-
-        rpts = [resp.title() for resp in REPORTS]
-        all_reports = ["All Reports"] + rpts
-
-        menu = OptionMenu(
-            top_frame, self.gui.reports, *all_reports, command=self.gui.process_option,
-        )
-        menu.grid(row=0, column=1, pady=10, padx=10)
-
-        self.gui.grouping = StringVar()
-        self.gui.grouping.set("Error")
-
-        label = Label(top_frame, text="Group Report by: ")
-        label.grid(row=0, column=2, pady=10, padx=10)
-
-        menu = OptionMenu(
-            top_frame,
-            self.gui.grouping,
-            "Error",
-            "Member",
-            command=self.gui.process_option,
-        )
-        menu.grid(row=0, column=3, pady=10, padx=10)
-
-        txt = "Analysis..."
-        top_group = LabelFrame(self.gui.analysis_window, text=txt, pady=5, padx=5)
-        top_group.grid(row=1, column=0, columnspan=4, pady=10, padx=10, sticky=NSEW)
-
-        self.gui.analysis_window.columnconfigure(0, weight=1)
-        self.gui.analysis_window.rowconfigure(1, weight=1)
-
-        top_group.columnconfigure(0, weight=1)
-        top_group.rowconfigure(0, weight=1)
-
-        self.gui.result_text = scrolledtext.ScrolledText(
-            top_group, width=100, height=40
-        )
-        self.gui.result_text.grid(row=0, column=0, sticky=NSEW)
-
-        self.gui.analysis_window.protocol("WM_DELETE_WINDOW", self.close_report)
 
     def close_report(self):
         """Close report window."""
-        self.gui.analysis_window.destroy()
-        self.gui.analysis_window = None
+        self.gui.issue_window.destroy()
+        self.gui.issue_window = None
 
 
 class BackupThread(threading.Thread):

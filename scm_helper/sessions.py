@@ -129,7 +129,7 @@ class Session(Entity):
 
         return res
 
-    @debug_trace(3)
+    @debug_trace(5)
     def analyse(self):
         """Analise the session."""
         # pylint: disable=too-many-branches

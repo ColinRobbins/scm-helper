@@ -92,7 +92,7 @@ class Lists(Entities):
 class List(Entity):
     """An existing list."""
 
-    @debug_trace(1)
+    @debug_trace(5)
     def analyse(self):
         """Analyse existing lists."""
         if len(self.members) == 0:

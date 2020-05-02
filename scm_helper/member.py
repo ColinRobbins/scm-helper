@@ -445,7 +445,7 @@ class Member(Entity):
             fix["JobTitle"] = xtype.title()
             self.fixit(fix, f"Add jobtitle: {name}")
 
-    @debug_trace(3)
+    @debug_trace(5)
     def analyse(self):
         """Analise the member."""
         # pylint: disable=too-many-branches

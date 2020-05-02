@@ -169,7 +169,7 @@ class Entity:
         # Override uses exception
         return True
 
-    @debug_trace(4)
+    @debug_trace(6)
     def linkage(self, members):
         """Link members."""
         if (A_MEMBERS in self.data) and (len(self.data[A_MEMBERS]) > 0):
