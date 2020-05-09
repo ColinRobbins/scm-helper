@@ -311,7 +311,7 @@ class ScmGui:
         home = str(Path.home())
         cfg = os.path.join(home, CONFIG_DIR, CONFIG_FILE)
 
-        Edit(self.master, cfg, self.scm)
+        Edit(self.master, cfg, self.scm, self)
 
     def create_lists(self):
         """Create Lists."""
@@ -640,12 +640,13 @@ class UpdateThread(threading.Thread):
 class Edit(Frame):  # pylint: disable=too-many-ancestors
     """Class to edit a frame."""
 
-    def __init__(self, parent, filename, scm):
+    def __init__(self, parent, filename, scm, gui):
         """Initialise."""
         Frame.__init__(self, parent)
         self.parent = parent
         self.file = filename
         self.scm = scm
+        self.gui = gui
 
         self.edit_win = Toplevel(self.master)
         self.edit_win.title("SCM Helper - Edit Config")
@@ -699,12 +700,16 @@ class Edit(Frame):  # pylint: disable=too-many-ancestors
             file.write(data)
             file.close()
 
+        self.gui.notify_text.config(state=NORMAL)
+
         if self.scm.get_config_file() is False:
             msg = "Error in config file - see status window for details."
             messagebox.showerror("Error", msg, parent=self.parent)
+            self.gui.notify_text.config(state=DISABLED)
             return False
 
         self.text_pad.edit_modified(False)
+        self.gui.notify_text.config(state=DISABLED)
         return True
 
 

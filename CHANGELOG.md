@@ -1,5 +1,10 @@
 # Changelog
 
+## ???
+????
+
+* Fix - config errors not showing after editing via the GUI
+
 ## 1.1
 02/05/2020
 * Fix for bug #6 (printing self.name rather than enttity name)
@@ -8,7 +13,7 @@
 * Fix for bug #9 (analyse looping)
 * Fix issue #10 - Fire up GUI on an Apple Mac (untested)
 * Fix for bug #11 - (Handling inaactive member with no lastmodified attribute)
-* Tidied Facebook report 
+* Tidied Facebook report
 * Better exception handling in GUI
 * Tidied debug messages
 
