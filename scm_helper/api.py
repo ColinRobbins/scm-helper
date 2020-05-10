@@ -1,8 +1,8 @@
 """Interface to SCM API."""
 import os.path
+import platform
 from datetime import date, datetime
 from pathlib import Path
-from platform import platform
 from shutil import copyfile
 
 import requests
@@ -84,7 +84,7 @@ class API:
         offset = datetime(int(q_year), int(q_month), 1)
         self.q_offset = (self.today - offset).days
         
-        if "iPad" in platform.platform():
+        if "iPad" in platform.machine():
             self.ipad = True
 
     def get_config_file(self):
