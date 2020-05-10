@@ -2,6 +2,7 @@
 import os.path
 from datetime import date, datetime
 from pathlib import Path
+from platform import platform
 from shutil import copyfile
 
 import requests
@@ -74,6 +75,7 @@ class API:
         self.issue_handler = issues
         self.fixable = []
         self.crypto = None
+        self.ipad = False
 
         self.today = datetime.now()
         q_month = (int((self.today.month - 1) / 3) * 3) + 1
@@ -81,6 +83,9 @@ class API:
         self.eoy = datetime(int(q_year), 12, 31)
         offset = datetime(int(q_year), int(q_month), 1)
         self.q_offset = (self.today - offset).days
+        
+        if "iPad" in platform.platform():
+            self.ipad = True
 
     def get_config_file(self):
         """Read configuration file."""
@@ -133,6 +138,10 @@ class API:
 
     def initialise(self, password):
         """Initialise."""
+        
+        if self.ipad:
+            password = "dummy"      # Can't to crypto on iPad
+            
         if self.get_config(password) is False:
             return False
 
@@ -225,6 +234,11 @@ class API:
 
     def restore(self, xclass):
         """Restore data..."""
+        
+        if self.ipad:
+            notify ("Not implemented on Ipad")
+            return False
+            
         xclass = xclass.lower()
         if xclass in self.class_byname:
             item = self.class_byname[xclass]
@@ -235,6 +249,10 @@ class API:
 
     def dump(self, xclass):
         """Dump data..."""
+        if self.ipad:
+            notify ("Not implemented on Ipad")
+            return False
+            
         f_csv = "CSV"
         f_json = "JSON"
         xlist = [f_json, f_csv]
@@ -274,6 +292,10 @@ class API:
 
     def backup_data(self):
         """Backup."""
+        if self.ipad:
+            notify ("Not implemented on Ipad")
+            return False
+            
         if self.get_data(True) is False:
             return False
 
@@ -301,6 +323,10 @@ class API:
 
     def decrypt(self, xdate):
         """Decrypt file."""
+        if self.ipad:
+            notify ("Not implemented on Ipad")
+            return False
+            
         restore = self.classes + self.backup_classes
 
         for aclass in restore:
