@@ -1,6 +1,11 @@
 """Notify."""
 import sys
-from tkinter import END, messagebox, simpledialog
+
+try:
+    from tkinter import TclError, Tk
+except ImportError:
+    pass        # ignore it, we'll be runnig commmand line only
+
 
 WHERE = None
 

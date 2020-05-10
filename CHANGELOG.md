@@ -4,6 +4,7 @@
 ????
 
 * Fix - config errors not showing after editing via the GUI
+* Added support for iPad (Command line only)
 
 ## 1.1
 02/05/2020

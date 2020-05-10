@@ -2,13 +2,11 @@
 """SCM support tools."""
 import getopt
 import sys
-from tkinter import TclError, Tk
 
 from scm_helper.api import API
 from scm_helper.config import HELPURL
 from scm_helper.facebook import Facebook
 from scm_helper.file import Csv
-from scm_helper.gui import ScmGui
 from scm_helper.issue import REPORTS, IssueHandler
 from scm_helper.notify import notify, set_notify
 from scm_helper.sendmail import send_email
@@ -271,11 +269,13 @@ def main():
         sys.exit()
 
     try:
+        from tkinter import TclError, Tk
         root = Tk()
-    except TclError:
+    except (ImportError, TclError):
         cmd()
         sys.exit()
 
+    from scm_helper.gui import ScmGui
     ScmGui(root)
     root.mainloop()
 
