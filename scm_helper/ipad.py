@@ -3,6 +3,9 @@ import getpass
 import os.path
 from pathlib import Path
 
+from scm_helper.config import BACKUP_DIR, CONFIG_DIR
+from scm_helper.notify import interact, notify
+
 WRITE_BINARY = "w"
 READ_BINARY = "r"
 
@@ -12,7 +15,6 @@ class Crypto:
     def __init__(self, salt, password):
         """Initialise."""
         self.salt = salt
-        self.__key = self.get_encryption_key(self.__password)
 
     def encrypt_file(self, name, data):
         """Encrypt file."""
@@ -35,7 +37,7 @@ class Crypto:
             with open(filename, READ_BINARY) as file:
                 data = file.read()
             file.close()
-            return data
+            return data.strip()
 
         except OSError as error:
             notify(f"Cannot open key file: {error}\n")
