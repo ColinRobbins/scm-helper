@@ -2,9 +2,9 @@
 import sys
 
 try:
-    from tkinter import TclError, Tk
+    from tkinter import END, messagebox, simpledialog
 except ImportError:
-    pass        # ignore it, we'll be runnig commmand line only
+    pass  # ignore it, we'll be runnig commmand line only
 
 
 WHERE = None

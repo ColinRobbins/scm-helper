@@ -269,6 +269,7 @@ def main():
         sys.exit()
 
     try:
+        #pylint: disable=import-outside-toplevel
         from tkinter import TclError, Tk
     except ImportError:
         cmd()
@@ -280,7 +281,9 @@ def main():
         cmd()
         sys.exit()
 
+    #pylint: disable=import-outside-toplevel
     from scm_helper.gui import ScmGui
+
     ScmGui(root)
     root.mainloop()
 

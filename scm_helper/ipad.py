@@ -1,13 +1,15 @@
 """Null Encryption stuff for ipad."""
-import getpass
 import os.path
 from pathlib import Path
 
-from scm_helper.config import BACKUP_DIR, CONFIG_DIR
+from scm_helper.config import CONFIG_DIR
 from scm_helper.notify import interact, notify
 
 WRITE_BINARY = "w"
 READ_BINARY = "r"
+
+#pylint: disable=unused-argument
+#pylint: disable=no-self-use
 
 class Crypto:
     """Encryption class copyed from crypto - but does nothing."""
@@ -19,12 +21,10 @@ class Crypto:
     def encrypt_file(self, name, data):
         """Encrypt file."""
         notify("Not implemented on iPad\n")
-        return None
 
     def decrypt_file(self, name, xdate):
         """Decrypt file."""
         notify("Not implemented on iPad\n")
-        return None
 
     def read_key(self, filename):
         """Read API key."""
@@ -42,7 +42,6 @@ class Crypto:
         except OSError as error:
             notify(f"Cannot open key file: {error}\n")
             return None
-
 
     def get_key(self, filename):
         """Encrypt file."""
