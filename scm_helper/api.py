@@ -37,7 +37,6 @@ from scm_helper.config import (
     verify_schema,
     verify_schema_data,
 )
-from scm_helper.crypto import Crypto
 from scm_helper.default import create_default_config
 from scm_helper.entity import Entities
 from scm_helper.groups import Groups
@@ -120,12 +119,18 @@ class API:
             if self.get_config_file() is False:
                 return False
 
-        self.crypto = Crypto(self._config[C_CLUB], password)  # Salt
+        if self.ipad:
+            from scm_helper.ipad import Crypto
+            self.crypto = Crypto(self._config[C_CLUB], password)  # Salt
+        else:
+            from scm_helper.crypto import Crypto
+            self.crypto = Crypto(self._config[C_CLUB], password)  # Salt
 
         home = str(Path.home())
-
+        
         keyfile = os.path.join(home, CONFIG_DIR, KEYFILE)
         self._key = self.crypto.read_key(keyfile)
+            
         if self._key is None:
             return False
 

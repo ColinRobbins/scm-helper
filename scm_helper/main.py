@@ -270,8 +270,13 @@ def main():
 
     try:
         from tkinter import TclError, Tk
+    except ImportError:
+        cmd()
+        sys.exit()
+
+    try:
         root = Tk()
-    except (ImportError, TclError):
+    except TclError:
         cmd()
         sys.exit()
 
