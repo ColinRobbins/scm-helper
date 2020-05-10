@@ -138,7 +138,7 @@ class Crypto:
                 file.write(encrypted_data)
             file.close()
 
-            notify(f"Generate encrypted keyfille {filename}\n")
+            notify(f"Generated encrypted keyfile {filename}\n")
             return apikey
 
         except OSError as error:
