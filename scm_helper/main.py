@@ -63,7 +63,7 @@ LONG_OPTS = [
     "member",
     "newstarter",
     "notes",
-    "password",
+    "password=",
     "quiet",
     "report=",
     "restore=",
