@@ -158,13 +158,6 @@ def cmd(argv=None):
         if fbook.readfiles(scm) is False:
             sys.exit(2)
 
-    if scm.option("--records"):
-        record = Records()
-        if record.read_baselines(scm) is False:
-            sys.exit(2)
-        record.create_html()
-        sys.exit()
-            
     if scm.option("--verify"):
         if scm.decrypt(scm.option("--verify")) is False:
             sys.exit(2)
@@ -227,6 +220,15 @@ def cmd(argv=None):
             send_email(scm, output, "SCM: Facebook Report")
         else:
             print(output)
+        sys.exit()
+
+    if scm.option("--records"):
+        record = Records()
+        if record.read_baseline(scm) is False:
+            sys.exit(2)
+        if record.read_newtimes() is False:
+            sys.exit(2)
+        record.create_html()
         sys.exit()
 
     scm.analyse()

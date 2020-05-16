@@ -29,6 +29,7 @@ class Members(Entities):
         self.by_guid = {}
         self.by_name = {}
         self.knownas = {}
+        self.by_asa = {}
         self._name = name
         self._url = url
         self._raw_data = []
@@ -81,6 +82,8 @@ class Members(Entities):
             self.by_guid[data.guid] = data
             self.by_name[data.name] = data
             self.knownas[data.knownas] = data
+            if data.asa_number:
+                self.by_asa[data.asa_number] = data
             if data.facebook:
                 for face in data.facebook:
                     self.facebook[face] = data
