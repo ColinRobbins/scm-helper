@@ -18,6 +18,7 @@ from scm_helper.config import (
 )
 from scm_helper.files import Files
 from scm_helper.notify import notify
+from scm_helper.issue import debug
 
 STROKES = {
     "Free": "Freestyle",
@@ -28,34 +29,46 @@ STROKES = {
 }
 
 # A list would do, but this allows a lookup
-DISTANCE = {
-    "50m": 50,
-    "100m": 100,
-    "200m": 200,
-    "400m": 400,
-    "800m": 800,
-    "1500m": 1500,
+DISTANCE = [
+    "50m",
+    "100m",
+    "200m",
+    "400m",
+    "800m",
+    "1500m",
+]
+
+STROKE_DISTANCE = {
+    "Free": ["50m","100m","200m","400m","800m","1500m"],
+    "Back": ["50m","100m","200m"],
+    "Breast": ["50m","100m","200m"],
+    "Fly": ["50m","100m","200m"],
+    "Medley": ["100m","200m", "400m"],
 }
 
 AGES = {
-    "8-9": "U10",
-    "10-11": "U12",
-    "12-13": "U14",
-    "14-15": "U16",
-    "16-17": "U18",
-    "18-24": "18-24",
-    "25-29": "25-29",
-    "30-34": "30-34",
-    "35-39": "35-39",
-    "40-44": "40-44",
-    "45-49": "45-49",
-    "50-54": "50-54",
-    "55-59": "55-59",
-    "60-64": "60-64",
-    "65-60": "65-69",
-    "70-74": "70-74",
-    "75-79": "75-79",
-    "80-84": "80-84",
+    "6-7": 0,
+    "8-9": 0,
+    "10-11": 0,
+    "12-13": 0,
+    "14-15": 0,
+    "16-17": 0,
+    "18-24": 0,
+    "25-29": 0,
+    "30-34": 0,
+    "35-39": 0,
+    "40-44": 0,
+    "45-49": 0,
+    "50-54": 0,
+    "55-59": 0,
+    "60-64": 0,
+    "65-69": 0,
+    "70-74": 0,
+    "75-79": 0,
+    "80-84": 0,
+    "85-89": 0,
+    "90-94": 0,
+    "95-99": 0,
 }
 
 GENDER = {"M": "Male", "F": "Female"}
@@ -68,8 +81,8 @@ TAG_INNER_ODD = "name=record-inner-odd"
 S_EVENT = "event"
 S_ASA = "asa"
 S_NAME = "name"
-S_TIME = "time"
-S_TIMESTR = "timestr"
+S_TIMESTR = "time"
+S_FTIME = "ftime"
 S_LOCATION = "location"
 S_DATE = "date"
 
@@ -128,7 +141,6 @@ class SwimTimes:
         """Initilaise Records handling."""
         self._filename = None
         self.scm = None
-        self.csv = []
         self.records = records
 
     def merge_times(self, filename, scm):
@@ -149,10 +161,16 @@ class SwimTimes:
                     count += 1
                     if count == 1:
                         continue
+                    
+                    if (int(count/1000)) == (count/1000):
+                        notify(f"{count} ")
+                    
+                    if (int(count/10000)) == (count/10000):
+                        notify("\n")
 
-                    self.process_row(row)
+                    self.process_row(row, count)
 
-            notify(f"Read {filename}...\n")
+            notify(f"\nRead {filename}...\n")
             return True
 
         except EnvironmentError:
@@ -166,7 +184,7 @@ class SwimTimes:
         notify("Unknown error\n")
         return False
 
-    def process_row(self, row):
+    def process_row(self, row, count):
         """Process and merge a row into records."""
 
         asa = row["SE Number"]
@@ -200,15 +218,15 @@ class SwimTimes:
             Location = "Unknown"
 
         if dist not in DISTANCE:
-            print("HERE 99")
+            debug(f"Line {count}: Unknown distance {dist}",1)
             return
 
         if stroke not in STROKES:
-            print("HERE 9c9")
+            debug(f"Line {count}: Unknown stroke {stroke}",1)
             return
 
         if asa not in self.scm.members.by_asa:
-            # print (f"NO ASA: {asa}, {swimmer}, {dist}, {stroke}")
+            debug(f"Line {count}: No SE Number {swimmer}",2)
             return
 
         swimtime = convert_time(timestr)
@@ -222,20 +240,23 @@ class SwimTimes:
         swimage = swimyear - yob
 
         if member.date_joined and (swimdate < member.date_joined):
+            debug(f"Line {count}: Ignored, not a member at time of swim",2)
             return
 
-        if swimage < 19:
+        if swimage < 18:
             start_age = int(swimage / 2) * 2
             end_age = start_age + 1
-        elif swimage == 19:
-            start_age = 19
+        elif (swimage == 18) or (swimage == 19):
+            start_age = 18
             end_age = 24
         else:
             start_age = int(swimage / 5) * 5
             # round it
             if start_age == 20:
-                start_age = 19
-            end_age = start_age + 4
+                start_age = 18
+                end_age = 24
+            else:
+                end_age = start_age + 4
 
         location = re.sub("19\d\d", "", location)  # get rid of date
         location = re.sub("20\d\d", "", location)
@@ -244,6 +265,8 @@ class SwimTimes:
         location = re.sub("50m", "", location)
 
         agegroup = f"{start_age}-{end_age}"
+        AGES[agegroup] += 1
+        
         gender = member.gender
 
         event = f"{gender} {agegroup} {dist} {stroke} {pool}"
@@ -253,7 +276,7 @@ class SwimTimes:
             S_ASA: asa,
             S_NAME: member.name,
             S_TIMESTR: timestr,
-            S_TIME: convert_time(timestr),
+            S_FTIME: convert_time(timestr),
             S_LOCATION: location,
             S_DATE: xdate,
         }
@@ -274,14 +297,13 @@ class Record:
         """Initilaise Records handling."""
         self._filename = None
         self.scm = None
-        self.csv = []
         self.records = {}
 
     def check_swim(self, swim):
         """Check a swim time to see if it as a record."""
         if swim[S_EVENT] in self.records:
             event = self.records[swim[S_EVENT]]
-            if swim[S_TIME] >= event[S_TIME]:
+            if swim[S_FTIME] >= event[S_FTIME]:
                 return
 
         self.records[swim["event"]] = swim
@@ -304,10 +326,8 @@ class Record:
                     count += 1
                     if count == 1:
                         continue
-                    self.csv.append(row)
-
                     event = row["event"]
-                    row["ctime"] = convert_time(row["time"])
+                    row[S_FTIME] = convert_time(row[S_TIMESTR])
                     self.records[event] = row
 
             notify(f"Read {filename}...\n")
@@ -341,57 +361,59 @@ class Record:
             for stroke in STROKES:
 
                 o_dist = ""
-                for dist in DISTANCE:
+                for dist in STROKE_DISTANCE[stroke]:
 
                     o_age = ""
                     tag = TAG_INNER_ODD
                     for age in AGES:
+                        if AGES[age] == 0:
+                            continue
                         opt = ""
 
                         opt_sc = self.print_record(stroke, dist, age, "25", gender)
                         opt_lc = self.print_record(stroke, dist, age, "50", gender)
 
                         if opt_sc or opt_lc:
-                            opt += "                <div class=divTable><div class=divTableBody>\n"
+                            opt += " <div class=divTable><div class=divTableBody>\n"
                             if opt_sc:
                                 opt += opt_sc
                             if opt_lc:
                                 opt += opt_lc
-                            opt += "                </div></div>\n"
+                            opt += " </div></div>\n"
                         else:
-                            opt += "                -\n"
+                            opt += " -\n"
 
                         if tag == TAG_INNER_EVEN:
                             tag = TAG_INNER_ODD
                         else:
                             tag = TAG_INNER_EVEN
                         o_age += f"""
-            <div class=divTableRow {tag}>
-                <div class=divTableCell>
-                Age: {AGES[age]}:
-                </div>
-                <div class=divTableCell>
+<div class=divTableRow {tag}>
+<div class=divTableCell>
+Age: {age}:
+</div>
+<div class=divTableCell>
 {opt}
-                </div>
-            </div>
-            """
+</div>
+</div>
+"""
 
                     if o_age:
                         o_dist += f"""
-        <h3>{dist}:</h3>
-        <div class=divTable>
-        <div class=divTableBody>
+<h3>{dist}:</h3>
+<div class=divTable>
+<div class=divTableBody>
 {o_age}
-        </div>
-        </div>
-        """
+</div>
+</div>
+"""
 
                 if o_dist:
                     o_gender += f"""
-    <div class="divTable" name=\"record-{stroke.lower()}\">
+<div class="divTable" name=\"record-{stroke.lower()}\">
 {o_dist}
-    </div>
-    """
+</div>
+"""
 
             if res:
                 pgen = GENDER[gender].lower()
@@ -406,6 +428,7 @@ class Record:
     def print_record(self, stroke, dist, age, course, gender):
         """Print a record."""
         lookup = f"{gender} {age} {dist} {stroke} {course}"
+        
         if lookup in self.records:
             record = self.records[lookup]
             xtime = record[S_TIMESTR]
@@ -413,12 +436,12 @@ class Record:
             name = record[S_NAME]
             loc = record[S_LOCATION]
             if xtime:
-                opt = "\n                   <div class=divTableRow>\n"
-                opt += f"                   <div class=divTableCell>{xtime} ({COURSE[course]})</div>\n"
-                opt += f"                   <div class=divTableCell>{xdate}</div>\n"
-                opt += f"                   <div class=divTableCell>{name}</div>\n"
-                opt += f"                   <div class=divTableCell>{loc}</div>\n"
-                opt += "                    </div></div>\n"
+                opt = "\n  <div class=divTableRow>\n"
+                opt += f"  <div class=divTableCell>{xtime} ({COURSE[course]})</div>\n"
+                opt += f"  <div class=divTableCell>{xdate}</div>\n"
+                opt += f"  <div class=divTableCell>{name}</div>\n"
+                opt += f"  <div class=divTableCell>{loc}</div>\n"
+                opt += "  </div>\n"
                 return opt
         return ""
 
@@ -427,5 +450,8 @@ def convert_time(xtime):
     """Convert a time to a number of seconds."""
 
     hms = xtime.split(":")
-    res = float(hms[0]) * 60 + float(hms[1])
+    if len(hms) == 2:
+        res = float(hms[0]) * 60 + float(hms[1])
+    else:
+        res = float(hms[0])
     return res
