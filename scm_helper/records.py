@@ -298,6 +298,7 @@ class Record:
         self._filename = None
         self.scm = None
         self.records = {}
+        self.swimmers = {}
 
     def check_swim(self, swim):
         """Check a swim time to see if it as a record."""
@@ -327,6 +328,25 @@ class Record:
                     if count == 1:
                         continue
                     event = row["event"]
+                    
+                    test = event.split()
+
+                    if GENDER.get(test[0], None) is None:
+                        notify(f"Line {count}: unknown gender '{test[0]}'\n")
+                        continue
+                    if AGES.get(test[1], None) is None:
+                        notify(f"Line {count}: unknown age '{test[1]}'\n")
+                        continue
+                    if test[2] not in DISTANCE:
+                        notify(f"Line {count}: unknown distance '{test[2]}'\n")
+                        continue
+                    if STROKES.get(test[3], None) is None:
+                        notify(f"Line {count}: unknown event '{test[3]}'\n")
+                        continue
+                    if COURSE.get(test[4], None) is None:
+                        notify(f"Line {count}: unknown course '{test[4]}'\n")
+                        continue
+
                     row[S_FTIME] = convert_time(row[S_TIMESTR])
                     self.records[event] = row
 
@@ -374,12 +394,12 @@ class Record:
                         opt_lc = self.print_record(stroke, dist, age, "50", gender)
 
                         if opt_sc or opt_lc:
-                            opt += " <div class=divTable><div class=divTableBody>\n"
+                            #opt += " <div class=divTable><div class=divTableBody>\n"
                             if opt_sc:
                                 opt += opt_sc
                             if opt_lc:
                                 opt += opt_lc
-                            opt += " </div></div>\n"
+                            #opt += " </div></div>\n"
                         else:
                             opt += " -\n"
 
@@ -422,7 +442,17 @@ Age: {age}:
 {o_gender}
 </div>
 """
+        num = 0
+        top10 = "<p>Top 10 record holders:</p><ul>"
+        for holder in sorted(self.swimmers.items(), key=lambda x: x[1], reverse=True):
+            top10 += f"<li>{holder[0]}: {holder[1]}</li>"
+            num += 1
+            if num > 10:
+                break
 
+        top10 += "</ul>"
+        
+        res = res.replace("RECORDHOLDERS",top10)
         return res
 
     def print_record(self, stroke, dist, age, course, gender):
@@ -435,6 +465,12 @@ Age: {age}:
             xdate = record[S_DATE]
             name = record[S_NAME]
             loc = record[S_LOCATION]
+            
+            if name in self.swimmers:
+                self.swimmers[name] += 1
+            else:
+                self.swimmers[name] = 1
+                
             if xtime:
                 opt = "\n  <div class=divTableRow>\n"
                 opt += f"  <div class=divTableCell>{xtime} ({COURSE[course]})</div>\n"
