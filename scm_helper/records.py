@@ -1,24 +1,22 @@
 """Process club records."""
 import csv
 import datetime
-import ntpath
 import os
 import re
 from pathlib import Path
 
 from scm_helper.config import (
-    C_BASELINE,
     C_RECORDS,
-    C_SWIMTIMES,
+    C_RELAY,
     CONFIG_DIR,
     FILE_READ,
     RECORDS_DIR,
     SCM_CSV_DATE_FORMAT,
     get_config,
 )
-from scm_helper.files import Files
-from scm_helper.notify import notify
 from scm_helper.issue import debug
+from scm_helper.notify import notify
+from scm_helper.relay_records import RelayRecord
 
 STROKES = {
     "Free": "Freestyle",
@@ -39,11 +37,11 @@ DISTANCE = [
 ]
 
 STROKE_DISTANCE = {
-    "Free": ["50m","100m","200m","400m","800m","1500m"],
-    "Back": ["50m","100m","200m"],
-    "Breast": ["50m","100m","200m"],
-    "Fly": ["50m","100m","200m"],
-    "Medley": ["100m","200m", "400m"],
+    "Free": ["50m", "100m", "200m", "400m", "800m", "1500m"],
+    "Back": ["50m", "100m", "200m"],
+    "Breast": ["50m", "100m", "200m"],
+    "Fly": ["50m", "100m", "200m"],
+    "Medley": ["100m", "200m", "400m"],
 }
 
 AGES = {
@@ -86,6 +84,11 @@ S_FTIME = "ftime"
 S_LOCATION = "location"
 S_DATE = "date"
 
+F_BASELINE = "records.csv"
+F_RECORDS = "records.html"
+F_RELAY_BASELINE = "relay_records.csv"
+F_RELAY_RECORDS = "relay_records.html"
+
 
 class Records:
     """Read and process record files."""
@@ -94,6 +97,7 @@ class Records:
         """Initialise."""
         self.scm = None
         self.records = None
+        self.relay = None
 
     def read_baseline(self, scm):
         """Read baseline."""
@@ -102,36 +106,49 @@ class Records:
         home = str(Path.home())
         mydir = os.path.join(home, CONFIG_DIR, RECORDS_DIR)
 
-        cfg = get_config(scm, C_RECORDS, C_BASELINE)
-        if cfg:
-            self.records = Record()
-            filename = os.path.join(mydir, cfg)
-            res = self.records.read_baseline(filename, scm)
-            return res
+        self.records = Record()
+        filename = os.path.join(mydir, F_BASELINE)
+        res = self.records.read_baseline(filename, scm)
 
-        return False
+        if res and get_config(self.scm, C_RECORDS, C_RELAY):
+            self.relay = RelayRecord()
+            filename = os.path.join(mydir, F_RELAY_BASELINE)
+            res = self.relay.read_baseline(filename, scm)
 
-    def read_newtimes(self):
+        return res
+
+    def read_newtimes(self, filename):
         """Read swimtimes."""
+
+        times = SwimTimes(self.records)
+        res = times.merge_times(filename, self.scm)
+        del times
+        return res
+
+    def create_html(self):
+        """Create HTML files for records."""
 
         home = str(Path.home())
         mydir = os.path.join(home, CONFIG_DIR, RECORDS_DIR)
 
-        cfg = get_config(self.scm, C_RECORDS, C_SWIMTIMES)
-        if cfg:
-            times = SwimTimes(self.records)
-            filename = os.path.join(mydir, cfg)
-            res = times.merge_times(filename, self.scm)
-            return res
-        return False
+        res = self.records.create_html()
+        filename = os.path.join(mydir, F_RECORDS)
+        with open(filename, "w") as htmlfile:
+            htmlfile.write(res)
+        notify(f"Created {filename}...\n")
 
-    def create_html(self):
-        """Create HTML files for records."""
-        print(self.records.create_html())
+        if self.relay:
+            res = self.relay.create_html()
+            filename = os.path.join(mydir, F_RELAY_RECORDS)
+            with open(filename, "w") as htmlfile:
+                htmlfile.write(res)
+            notify(f"Created {filename}...\n")
 
     def delete(self):
         """Delete."""
-        del record
+        del self.records
+        if self.relay:
+            del self.relay
 
 
 class SwimTimes:
@@ -148,24 +165,22 @@ class SwimTimes:
         self._filename = filename
         self.scm = scm
 
-        shortfile = ntpath.basename(filename)
+        notify(f"Reading {filename}...\n")
 
         try:
             count = 0
             with open(filename, newline="") as csvfile:
-                dialect = csv.Sniffer().sniff(csvfile.read(1024))
-                csvfile.seek(0)
-                csv_reader = csv.DictReader(csvfile, dialect=dialect)
+                csv_reader = csv.DictReader(csvfile, dialect="excel")
 
                 for row in csv_reader:
                     count += 1
                     if count == 1:
                         continue
-                    
-                    if (int(count/1000)) == (count/1000):
+
+                    if (int(count / 1000)) == (count / 1000):
                         notify(f"{count} ")
-                    
-                    if (int(count/10000)) == (count/10000):
+
+                    if (int(count / 10000)) == (count / 10000):
                         notify("\n")
 
                     self.process_row(row, count)
@@ -186,6 +201,11 @@ class SwimTimes:
 
     def process_row(self, row, count):
         """Process and merge a row into records."""
+
+        # pylint: disable=too-many-locals
+        # pylint: disable=too-many-return-statements
+        # pylint: disable=too-many-branches
+        # pylint: disable=too-many-statements
 
         asa = row["SE Number"]
         swimmer = row["Swimmer"]
@@ -209,27 +229,25 @@ class SwimTimes:
         if relay == "Yes":
             return
 
-        if (pool != "50") and (pool != "25"):
+        if pool not in ("50", "25"):
             return
 
         if location:
             pass
         else:
-            Location = "Unknown"
+            location = "Unknown"
 
         if dist not in DISTANCE:
-            debug(f"Line {count}: Unknown distance {dist}",1)
+            debug(f"Line {count}: Unknown distance {dist}", 1)
             return
 
         if stroke not in STROKES:
-            debug(f"Line {count}: Unknown stroke {stroke}",1)
+            debug(f"Line {count}: Unknown stroke {stroke}", 1)
             return
 
         if asa not in self.scm.members.by_asa:
-            debug(f"Line {count}: No SE Number {swimmer}",2)
+            debug(f"Line {count}: No SE Number {swimmer}", 2)
             return
-
-        swimtime = convert_time(timestr)
 
         member = self.scm.members.by_asa[asa]
 
@@ -240,13 +258,13 @@ class SwimTimes:
         swimage = swimyear - yob
 
         if member.date_joined and (swimdate < member.date_joined):
-            debug(f"Line {count}: Ignored, not a member at time of swim",2)
+            debug(f"Line {count}: Ignored, not a member at time of swim", 2)
             return
 
         if swimage < 18:
             start_age = int(swimage / 2) * 2
             end_age = start_age + 1
-        elif (swimage == 18) or (swimage == 19):
+        elif swimage in (18, 19):
             start_age = 18
             end_age = 24
         else:
@@ -258,15 +276,9 @@ class SwimTimes:
             else:
                 end_age = start_age + 4
 
-        location = re.sub("19\d\d", "", location)  # get rid of date
-        location = re.sub("20\d\d", "", location)
-        location = re.sub("\(25m\)", "", location)
-        location = re.sub("25m", "", location)
-        location = re.sub("50m", "", location)
-
         agegroup = f"{start_age}-{end_age}"
         AGES[agegroup] += 1
-        
+
         gender = member.gender
 
         event = f"{gender} {agegroup} {dist} {stroke} {pool}"
@@ -286,10 +298,6 @@ class SwimTimes:
         return
 
 
-# TODO.
-# CHange Records below for members
-
-
 class Record:
     """Manage a records file."""
 
@@ -299,6 +307,10 @@ class Record:
         self.scm = None
         self.records = {}
         self.swimmers = {}
+
+        self.worldrecord = 0
+        self.europeanrecord = 0
+        self.britishrecord = 0
 
     def check_swim(self, swim):
         """Check a swim time to see if it as a record."""
@@ -314,43 +326,49 @@ class Record:
         self._filename = filename
         self.scm = scm
 
-        shortfile = ntpath.basename(filename)
-
         try:
             count = 0
             with open(filename, newline="") as csvfile:
-                dialect = csv.Sniffer().sniff(csvfile.read(1024))
-                csvfile.seek(0)
-                csv_reader = csv.DictReader(csvfile, dialect=dialect)
+                csv_reader = csv.DictReader(csvfile)
 
                 for row in csv_reader:
-                    count += 1
-                    if count == 1:
+                    if count == 0:
+                        count = 1
                         continue
+                    count += 1
                     event = row["event"]
-                    
+
                     test = event.split()
 
                     if GENDER.get(test[0], None) is None:
                         notify(f"Line {count}: unknown gender '{test[0]}'\n")
                         continue
+
                     if AGES.get(test[1], None) is None:
                         notify(f"Line {count}: unknown age '{test[1]}'\n")
                         continue
+
                     if test[2] not in DISTANCE:
                         notify(f"Line {count}: unknown distance '{test[2]}'\n")
                         continue
+
                     if STROKES.get(test[3], None) is None:
                         notify(f"Line {count}: unknown event '{test[3]}'\n")
                         continue
+
                     if COURSE.get(test[4], None) is None:
                         notify(f"Line {count}: unknown course '{test[4]}'\n")
                         continue
 
+                    if event in self.records:
+                        notify(f"Line {count}: duplicate '{event}'\n")
+                        continue
+
+                    AGES[test[1]] += 1
                     row[S_FTIME] = convert_time(row[S_TIMESTR])
                     self.records[event] = row
 
-            notify(f"Read {filename}...\n")
+            notify(f"Read {filename} ({count})...\n")
             return True
 
         except EnvironmentError:
@@ -367,8 +385,14 @@ class Record:
     def create_html(self):
         """create a records file."""
         # Get prefix
+
+        # pylint: disable=too-many-locals
+        # pylint: disable=too-many-nested-blocks
+        # pylint: disable=too-many-branches
+        # pylint: disable=too-many-statements
+
         header = os.path.splitext(self._filename)[0]
-        header += ".header"
+        header += "_header.txt"
 
         with open(header, FILE_READ) as file:
             prefix = file.read()
@@ -388,18 +412,17 @@ class Record:
                     for age in AGES:
                         if AGES[age] == 0:
                             continue
+
                         opt = ""
 
                         opt_sc = self.print_record(stroke, dist, age, "25", gender)
                         opt_lc = self.print_record(stroke, dist, age, "50", gender)
 
                         if opt_sc or opt_lc:
-                            #opt += " <div class=divTable><div class=divTableBody>\n"
                             if opt_sc:
                                 opt += opt_sc
                             if opt_lc:
                                 opt += opt_lc
-                            #opt += " </div></div>\n"
                         else:
                             opt += " -\n"
 
@@ -449,34 +472,60 @@ Age: {age}:
             num += 1
             if num > 10:
                 break
-
         top10 += "</ul>"
-        
-        res = res.replace("RECORDHOLDERS",top10)
+
+        tally = "<ul>"
+        if self.worldrecord > 0:
+            tally += f"<li>World Records: {self.worldrecord}</li>\n"
+        if self.europeanrecord > 0:
+            tally += f"<li>European Records: {self.europeanrecord}</li>\n"
+        if self.britishrecord > 0:
+            tally += f"<li>British Records: {self.britishrecord}</li>\n"
+        tally += "</ul>"
+
+        res = res.replace("RECORDHOLDERS", top10)
+        res = res.replace("RECORDTALLY", tally)
         return res
 
     def print_record(self, stroke, dist, age, course, gender):
         """Print a record."""
+
+        # pylint: disable=too-many-arguments
         lookup = f"{gender} {age} {dist} {stroke} {course}"
-        
+
         if lookup in self.records:
             record = self.records[lookup]
             xtime = record[S_TIMESTR]
             xdate = record[S_DATE]
             name = record[S_NAME]
-            loc = record[S_LOCATION]
-            
+            location = record[S_LOCATION]
+
             if name in self.swimmers:
                 self.swimmers[name] += 1
             else:
                 self.swimmers[name] = 1
-                
+
+            if re.search("world record", location, re.IGNORECASE):
+                self.worldrecord += 1
+
+            if re.search("european record", location, re.IGNORECASE):
+                self.europeanrecord += 1
+
+            if re.search("british record", location, re.IGNORECASE):
+                self.britishrecord += 1
+
+            location = re.sub(r"19\d\d", "", location)  # get rid of date
+            location = re.sub(r"20\d\d", "", location)
+            location = re.sub(r"\(25m\)", "", location)
+            location = re.sub("25m", "", location)
+            location = re.sub("50m", "", location)
+
             if xtime:
                 opt = "\n  <div class=divTableRow>\n"
                 opt += f"  <div class=divTableCell>{xtime} ({COURSE[course]})</div>\n"
                 opt += f"  <div class=divTableCell>{xdate}</div>\n"
                 opt += f"  <div class=divTableCell>{name}</div>\n"
-                opt += f"  <div class=divTableCell>{loc}</div>\n"
+                opt += f"  <div class=divTableCell>{location}</div>\n"
                 opt += "  </div>\n"
                 return opt
         return ""

@@ -1,12 +1,8 @@
 """Process club relay records - place holder.   May merge"""
 import csv
-import ntpath
 import os
-import re
-from pathlib import Path
 
-from scm_helper.config import C_RECORDS, CONFIG_DIR, FILE_READ, RECORDS_DIR, get_config
-from scm_helper.files import Files
+from scm_helper.config import FILE_READ
 from scm_helper.notify import notify
 
 R_EVENT = "Event"
@@ -43,47 +39,8 @@ TAG_INNER_EVEN = "name=record-inner-even"
 TAG_INNER_ODD = "name=record-inner-odd"
 
 
-class Records:
-    """Read and process record files."""
-
-    def __init__(self):
-        """Initialise."""
-        self.scm = None
-        self.records = []
-
-    def read_baselines(self, scm):
-        """Read each file."""
-        self.scm = scm
-
-        home = str(Path.home())
-        mydir = os.path.join(home, CONFIG_DIR, RECORDS_DIR)
-
-        cfg = get_config(scm, C_RECORDS)
-        if cfg:
-            for record in cfg:
-                data = Record()
-                filename = os.path.join(mydir, record)
-                res = data.read_baseline(filename, scm)
-                if res:
-                    self.records.append(data)
-                else:
-                    return False
-            return True
-        return False
-
-    def create_html(self):
-        """Create HTML files for records."""
-        for record in self.records:
-            print(record.create_html())
-
-    def delete(self):
-        """Delete."""
-        for record in self.records:
-            del record
-
-
-class Record:
-    """Manage a records file."""
+class RelayRecord:
+    """Manage a relay records file."""
 
     def __init__(self):
         """Initilaise Records handling."""
@@ -97,21 +54,18 @@ class Record:
         self._filename = filename
         self.scm = scm
 
-        shortfile = ntpath.basename(filename)
-
         try:
             count = 0
             with open(filename, newline="") as csvfile:
-                dialect = csv.Sniffer().sniff(csvfile.read(1024))
-                csvfile.seek(0)
-                csv_reader = csv.DictReader(csvfile, dialect=dialect)
+                csv_reader = csv.DictReader(csvfile)
 
                 for row in csv_reader:
-                    count += 1
                     if count == 0:
+                        count = 1
                         continue
+                    count += 1
                     self.csv.append(row)
-                    # TODO  split and tidy!
+
                     event = row[R_EVENT].split()
                     if RELAY_GENDER.get(event[0], None) is None:
                         notify(f"Line {count}: unknown gender '{event[0]}'\n")
@@ -131,9 +85,15 @@ class Record:
                     if R_COURSE.get(event[4], None) is None:
                         notify(f"Line {count}: unknown course '{event[4]}'\n")
 
-                    self.records[" ".join(event)] = row
+                    jevent = " ".join(event)
 
-            notify(f"Read {filename}...\n")
+                    if jevent in self.records:
+                        notify(f"Line {count}: duplicate '{jevent}'\n")
+                        continue
+
+                    self.records[jevent] = row
+
+            notify(f"Read {filename} ({count})...\n")
             return True
 
         except EnvironmentError:
@@ -149,9 +109,14 @@ class Record:
 
     def create_html(self):
         """create a records file."""
+
+        # pylint: disable=too-many-locals
+        # pylint: disable=too-many-branches
+        # pylint: disable=too-many-nested-blocks
+
         # Get prefix
         header = os.path.splitext(self._filename)[0]
-        header += ".header"
+        header += "_header.txt"
 
         with open(header, FILE_READ) as file:
             prefix = file.read()
@@ -175,14 +140,14 @@ class Record:
                         opt_lc = self.print_record(stroke, dist, age, "50", gender)
 
                         if opt_sc or opt_lc:
-                            opt += "                <div class=divTable><div class=divTableBody>\n"
+                            opt += " <div class=divTable><div class=divTableBody>\n"
                             if opt_sc:
                                 opt += opt_sc
                             if opt_lc:
                                 opt += opt_lc
-                            opt += "                </div></div>\n"
+                            opt += " </div></div>\n"
                         else:
-                            opt += "                -\n"
+                            opt += " -\n"
 
                         if tag == TAG_INNER_EVEN:
                             tag = TAG_INNER_ODD
@@ -228,6 +193,10 @@ class Record:
 
     def print_record(self, stroke, dist, age, course, gender):
         """Print a record."""
+
+        # pylint: disable=too-many-arguments
+        # pylint: disable=too-many-locals
+
         lookup = f"{gender} {age} {dist} {stroke} {course}"
         if lookup in self.records:
             record = self.records[lookup]
@@ -238,14 +207,16 @@ class Record:
             swimmer2 = record[R_SWIMMER2]
             swimmer3 = record[R_SWIMMER3]
             swimmer4 = record[R_SWIMMER4]
+            swimmers = f"{swimmer1}, {swimmer2}, {swimmer3}, {swimmer4}"
             if xtime:
-                opt = "\n                   <div class=divTableRow>\n"
-                opt += f"                   <div class=divTableCell>{xtime} ({R_COURSE[course]})</div>\n"
-                opt += f"                   <div class=divTableCell>{xdate}</div>\n"
-                opt += f"                   <div class=divTable><div class=divTableBody><div class=divTableRow>\n"
-                opt += f"                      <div class=divTableCell>{loc}</div>\n"
-                opt += f"                   </div><div class=divTableRow>\n"
-                opt += f"                      <div class=divTableCell>{swimmer1}, {swimmer2}, {swimmer3}, {swimmer4}</div>\n"
-                opt += "                    </div></div></div></div>\n"
+                opt = "\n <div class=divTableRow>\n"
+                opt += f" <div class=divTableCell>{xtime} ({R_COURSE[course]})</div>\n"
+                opt += f" <div class=divTableCell>{xdate}</div>\n"
+                opt += " <div class=divTable><div class=divTableBody>"
+                opt += "<div class=divTableRow>\n"
+                opt += f"  <div class=divTableCell>{loc}</div>\n"
+                opt += " </div><div class=divTableRow>\n"
+                opt += f" <div class=divTableCell>{swimmers}</div>\n"
+                opt += " </div></div></div></div>\n"
                 return opt
         return ""

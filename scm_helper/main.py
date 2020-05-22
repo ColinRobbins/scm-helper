@@ -39,6 +39,7 @@ Where <options> are:
    --password <password> = supply the password - useful for scripting.
    -q, --quiet = quiet mode
    --records = process records
+   --newtimes <csvfile> = process new swim times into records
    --report <report> = which reports to run
    --restore <type> = restore an entity of <type> (need -archive as well)
    --to <email> = Who to send the emial to (used with --email)
@@ -66,6 +67,7 @@ LONG_OPTS = [
     "lists",
     "member",
     "newstarter",
+    "newtimes=",
     "notes",
     "password",
     "quiet",
@@ -226,8 +228,9 @@ def cmd(argv=None):
         record = Records()
         if record.read_baseline(scm) is False:
             sys.exit(2)
-        if record.read_newtimes() is False:
-            sys.exit(2)
+        if scm.option("--newtimes"):
+            if record.read_newtimes(scm.option("--newtimes")) is False:
+                sys.exit(2)
         record.create_html()
         sys.exit()
 

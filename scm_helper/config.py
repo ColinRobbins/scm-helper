@@ -165,6 +165,7 @@ C_PRIORITY = "priority"
 C_PSEUDO = "pseudo"
 C_RECORDS = "records"
 C_REGISTER = "register"
+C_RELAY = "relay"
 C_ROLE = "role"
 C_ROLES = "roles"
 C_SEND_TO = "send_to"
@@ -185,8 +186,6 @@ C_USERNAME = "username"
 C_VERIFY = "verify"
 C_VOLUNTEER = "volunteer"
 
-C_BASELINE = "baseline"
-C_SWIMTIMES = "swimtimes"
 
 CTYPE_COACH = "coach"
 CTYPE_COMMITTEE = "committee"
@@ -384,7 +383,7 @@ SCHEMA = Schema(
             },
         },
         Optional(C_FACEBOOK): [str],
-        Optional(C_RECORDS): {C_BASELINE: str, C_SWIMTIMES: str,},
+        Optional(C_RECORDS): {Optional(C_RELAY): bool},
     }
 )
 
