@@ -4,12 +4,15 @@ import datetime
 import os
 import re
 from pathlib import Path
+from shutil import copyfile
+
 
 from scm_helper.config import (
     C_RECORDS,
     C_RELAY,
     CONFIG_DIR,
     FILE_READ,
+    FILE_WRITE,
     RECORDS_DIR,
     SCM_CSV_DATE_FORMAT,
     get_config,
@@ -25,6 +28,10 @@ STROKES = {
     "Medley": "Individual Medley",
 }
 
+RELAY_STROKES = {
+    "Free": "Freestyle",
+    "Medley": "Medley",
+}
 
 DISTANCE = [
     "50m",
@@ -42,6 +49,9 @@ STROKE_DISTANCE = {
     "Fly": ["50m", "100m", "200m"],
     "Medley": ["100m", "200m", "400m"],
 }
+
+RELAY_DISTANCE = {"200": 200, "400": 400, "800": 800}
+PRINT_DISTANCE = {"200": "4 x 50", "400": "4 x 100", "800": "4 x 200"}
 
 AGES = {
     "6-7": 0,
@@ -68,27 +78,6 @@ AGES = {
     "95-99": 0,
 }
 
-GENDER = {"M": "Male", "F": "Female"}
-
-COURSE = {"25": "SC", "50": "LC"}
-
-R_EVENT = "event"
-R_SWIMMER1 = "swimmer 1"
-R_SWIMMER2 = "swimmer 2"
-R_SWIMMER3 = "swimmer 3"
-R_SWIMMER4 = "swimmer 4"
-R_TIME = "time"
-R_LOCATION = "location"
-R_DATE = "date"
-
-RELAY_STROKES = {
-    "Free": "Freestyle",
-    "Medley": "Medley",
-}
-
-# A list would do, but this allows a lookup
-RELAY_DISTANCE = {"200": 200, "400": 400, "800": 800}
-PRINT_DISTANCE = {"200": "4 x 50", "400": "4 x 100", "800": "4 x 200"}
 RELAY_AGES = {
     "72": "72+",
     "100": "100-119",
@@ -98,7 +87,19 @@ RELAY_AGES = {
     "240": "240-279",
     "280": "280+",
 }
+
+GENDER = {"M": "Male", "F": "Female"}
 RELAY_GENDER = {"M": "Male", "F": "Female", "Mixed": "Mixed"}
+
+COURSE = {"25": "SC", "50": "LC"}
+
+R_SWIMMER1 = "swimmer 1"
+R_SWIMMER2 = "swimmer 2"
+R_SWIMMER3 = "swimmer 3"
+R_SWIMMER4 = "swimmer 4"
+R_TIME = "time"
+R_LOCATION = "location"
+R_DATE = "date"
 
 TAG_INNER_EVEN = "name=record-inner-even"
 TAG_INNER_ODD = "name=record-inner-odd"
@@ -115,6 +116,8 @@ F_BASELINE = "records.csv"
 F_RECORDS = "records.html"
 F_RELAY_BASELINE = "relay_records.csv"
 F_RELAY_RECORDS = "relay_records.html"
+
+HEADER = "_header.txt"
 
 INNER_WRAP = """
 <div class=divTableRow XX_TAG_XX>
@@ -155,27 +158,48 @@ WRAP_TABLE_CLOSE = " </div></div>\n"
 class Records:
     """Read and process record files."""
 
-    def __init__(self):
+    def __init__(self, scm):
         """Initialise."""
-        self.scm = None
+        self.scm = scm
         self.records = None
         self.relay = None
 
-    def read_baseline(self, scm):
+        try:
+            home = str(Path.home())
+            mydir = os.path.join(home, CONFIG_DIR, RECORDS_DIR)
+
+            if os.path.exists(mydir) is False:
+                os.mkdir(mydir)
+
+            filename = os.path.join(mydir, F_BASELINE)
+            if os.path.isfile(filename) is False:
+                with open(filename, FILE_WRITE) as file:
+                    file.write(DEFAULT_RECORDS)
+
+            filename = os.path.splitext(filename)[0]
+            filename += HEADER
+
+            if os.path.isfile(filename) is False:
+                with open(filename, FILE_WRITE) as file:
+                    file.write(DEFAULT_HEADER)
+
+        except EnvironmentError as error:
+            notify(f"Cannot create default records:\n{error}\n")
+
+    def read_baseline(self):
         """Read baseline."""
-        self.scm = scm
 
         home = str(Path.home())
         mydir = os.path.join(home, CONFIG_DIR, RECORDS_DIR)
 
         self.records = Record()
         filename = os.path.join(mydir, F_BASELINE)
-        res = self.records.read_baseline(filename, scm)
+        res = self.records.read_baseline(filename, self.scm)
 
         if res and get_config(self.scm, C_RECORDS, C_RELAY):
             self.relay = RelayRecord()
             filename = os.path.join(mydir, F_RELAY_BASELINE)
-            res = self.relay.read_baseline(filename, scm)
+            res = self.relay.read_baseline(filename, self.scm)
 
         return res
 
@@ -184,6 +208,10 @@ class Records:
 
         times = SwimTimes(self.records)
         res = times.merge_times(filename, self.scm)
+        if self.records.newrecords:
+            notify(self.records.newrecords)
+            self.records.write_records()
+
         del times
         return res
 
@@ -195,15 +223,29 @@ class Records:
 
         res = self.records.create_html(GENDER, STROKES, AGES, False)
         filename = os.path.join(mydir, F_RECORDS)
-        with open(filename, "w") as htmlfile:
-            htmlfile.write(res)
+
+        try:
+            with open(filename, FILE_WRITE) as htmlfile:
+                htmlfile.write(res)
+
+        except EnvironmentError as error:
+            notify(f"Cannot create HTML file: {filename}\n{error}\n")
+            return
+
         notify(f"Created {filename}...\n")
 
         if self.relay:
             res = self.relay.create_html(RELAY_GENDER, RELAY_STROKES, RELAY_AGES, True)
             filename = os.path.join(mydir, F_RELAY_RECORDS)
-            with open(filename, "w") as htmlfile:
-                htmlfile.write(res)
+
+            try:
+                with open(filename, FILE_WRITE) as htmlfile:
+                    htmlfile.write(res)
+
+            except EnvironmentError as error:
+                notify(f"Cannot create HTML file: {filename}\n{error}\n")
+                return
+
             notify(f"Created {filename}...\n")
 
     def delete(self):
@@ -236,8 +278,6 @@ class SwimTimes:
 
                 for row in csv_reader:
                     count += 1
-                    if count == 1:
-                        continue
 
                     if (int(count / 1000)) == (count / 1000):
                         notify(f"{count} ")
@@ -250,8 +290,8 @@ class SwimTimes:
             notify(f"\nRead {filename}...\n")
             return True
 
-        except EnvironmentError:
-            notify(f"Cannot open swim time file: {filename}\n")
+        except EnvironmentError as error:
+            notify(f"Cannot open swim time file: {filename}\n{error}\n")
             return False
 
         except csv.Error as error:
@@ -363,12 +403,17 @@ class SwimTimes:
 class Record:
     """Manage a records file."""
 
+    # pylint: disable=too-many-instance-attributes
+
     def __init__(self):
         """Initilaise Records handling."""
+
         self._filename = None
         self.scm = None
         self.records = {}
         self.swimmers = {}
+        self.newrecords = ""
+        self.fieldnames = None
 
         self.worldrecord = 0
         self.europeanrecord = 0
@@ -381,11 +426,14 @@ class Record:
             if swim[S_FTIME] >= event[S_FTIME]:
                 return
 
-        self.records[swim[R_EVENT]] = swim
+        self.records[swim[S_EVENT]] = swim
+
+        newrec = f"New record: {swim[S_EVENT]}, {swim[S_NAME]}\n"
+        self.newrecords += newrec
 
     def check_row(self, row, count):
         """Check a row from the records file."""
-        event = row[R_EVENT]
+        event = row[S_EVENT]
         test = event.split()
 
         if GENDER.get(test[0], None) is None:
@@ -424,20 +472,18 @@ class Record:
         try:
             count = 0
             with open(filename, newline="") as csvfile:
-                csv_reader = csv.DictReader(csvfile)
+                csv_reader = csv.DictReader(csvfile, skipinitialspace=True)
+                self.fieldnames = csv_reader.fieldnames
 
                 for row in csv_reader:
-                    if count == 0:
-                        count = 1
-                        continue
                     count += 1
                     self.check_row(row, count)
 
             notify(f"Read {filename} ({count})...\n")
             return True
 
-        except EnvironmentError:
-            notify(f"Cannot open records file: {filename}\n")
+        except EnvironmentError as error:
+            notify(f"Cannot open records file: {filename}\n{error}\n")
             return False
 
         except csv.Error as error:
@@ -446,6 +492,44 @@ class Record:
 
         notify("Unknown error\n")
         return False
+
+    def write_records(self):
+        """Write the new reords, and backup old."""
+
+        try:
+            home = str(Path.home())
+            today = datetime.datetime.now()
+            str_today = today.strftime("%y%m%d-%H%M%S")
+            filename = f"records-{str_today}.csv"
+
+            mybackupdir = os.path.join(home, CONFIG_DIR, RECORDS_DIR, "backup")
+
+            if os.path.exists(mybackupdir) is False:
+                os.mkdir(mybackupdir)
+
+            backupfile = os.path.join(home, mybackupdir, filename)
+            copyfile(self._filename, backupfile)
+
+        except EnvironmentError as error:
+            notify(f"Error creating records backup file: {backupfile}\n{error}\n")
+            return
+
+        try:
+            with open(self._filename, "w", newline="") as file:
+                writer = csv.DictWriter(file, self.fieldnames, extrasaction="ignore")
+                writer.writeheader()
+                for record in sorted(self.records):
+                    writer.writerow(self.records[record])
+
+        except EnvironmentError as error:
+            notify(f"Cannot open records file to update: {self._filename}\n{error}\n")
+            return
+
+        except csv.Error as error:
+            notify(f"Error in writing records file: {self._filename}\n{error}\n")
+            return
+
+        notify(f"Updated records file: {self._filename}\n")
 
     def create_html(self, arg_gender, arg_strokes, arg_ages, arg_relay):
         """create a records file."""
@@ -457,10 +541,15 @@ class Record:
         # pylint: disable=too-many-statements
 
         header = os.path.splitext(self._filename)[0]
-        header += "_header.txt"
+        header += HEADER
 
-        with open(header, FILE_READ) as file:
-            prefix = file.read()
+        try:
+            with open(header, FILE_READ) as file:
+                prefix = file.read()
+
+        except EnvironmentError as error:
+            notify(f"records header file not found: {header}\n{error}\n")
+            prefix = ""
 
         res = prefix
 
@@ -558,8 +647,8 @@ class Record:
             tally += f"<li>British Records: {self.britishrecord}</li>\n"
         tally += "</ul>"
 
-        res = res.replace("RECORDHOLDERS", top10)
-        res = res.replace("RECORDTALLY", tally)
+        res = res.replace("##RECORDHOLDERS##", top10)
+        res = res.replace("##RECORDTALLY##", tally)
         return res
 
     def print_record(self, stroke, dist, age, course, gender):
@@ -613,7 +702,7 @@ class RelayRecord(Record):
     def check_row(self, row, count):
         """Check a row from the records file."""
 
-        event = row[R_EVENT].split()
+        event = row[S_EVENT].split()
         if RELAY_GENDER.get(event[0], None) is None:
             notify(f"Line {count}: unknown gender '{event[0]}'\n")
         if RELAY_AGES.get(event[1], None) is None:
@@ -684,3 +773,241 @@ def convert_time(xtime):
     else:
         res = float(hms[0])
     return res
+
+
+DEFAULT_RECORDS = """
+event,name,time,location,date
+"""
+
+DEFAULT_HEADER = """
+<style>
+
+input[type=radio],
+input[type=checkbox] {
+  display: none;
+}
+
+input[type=radio]+label,
+input[type=checkbox]+label {
+  display: inline-block;
+  margin: -2px;
+  padding: 4px 1em;
+  margin-bottom: 0;
+  font-size: 12px;
+  line-height: 19px;
+  color: #333;
+  text-align: center;
+  vertical-align: middle;
+  cursor: pointer;
+  background-color: #f5f5f5;
+  background-image: -moz-linear-gradient(top, #fff, #e6e6e6);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#fff), to(#e6e6e6));
+  background-image: -webkit-linear-gradient(top, #fff, #e6e6e6);
+  background-image: -o-linear-gradient(top, #fff, #e6e6e6);
+  background-image: linear-gradient(to bottom, #fff, #e6e6e6);
+  background-repeat: repeat-x;
+  border: 1px solid #ccc;
+  border-color: #e6e6e6 #e6e6e6 #bfbfbf;
+  border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+  border-bottom-color: #b3b3b3;
+  filter: progid: DXImageTransform.Microsoft.gradient(startColorstr='#ffffffff',
+            endColorstr='#ffe6e6e6', GradientType=0);
+  filter: progid: DXImageTransform.Microsoft.gradient(enabled=false);
+  -webkit-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2),
+           0 1px 2px rgba(0, 0, 0, 0.05);
+  -moz-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2),
+           0 1px 2px rgba(0, 0, 0, 0.05);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2),
+           0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+input[type=radio]:checked+label,
+input[type=checkbox]:checked+label {
+  background-image: none;
+  outline: 0;
+  -webkit-box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15),
+              0 1px 2px rgba(0, 0, 0, 0.05);
+  -moz-box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15),
+              0 1px 2px rgba(0, 0, 0, 0.05);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15), 0 1px 2px rgba(0, 0, 0, 0.05);
+  background-color: #4CAF50;
+  color: white;
+}
+
+
+.divTable{
+  display: table;
+}
+.divTableRow {
+  display: table-row;
+}
+
+.divTableCell {
+  display: table-cell;
+  border: 0px;
+  font-size: 12px;
+  display: table-cell;
+  padding: 3px 10px;
+  vertical-align: middle
+}
+
+[name=record-inner-even] .divTableCell {
+  display: table-cell;
+  background-color: #83c983;
+  color: black;
+}
+[name=record-inner-odd] .divTableCell {
+  display: table-cell;
+  background-color: #b8e0b8;
+  color: black;
+}
+
+.divTableBody {
+  display: table-row-group;
+}
+
+</style>
+
+
+<script>
+
+function SetBlock(block, state) {
+
+    var elms = document.querySelectorAll(block);
+    for (var i = 0; i < elms.length; i++) {
+        elms[i].style.display = state;
+    }
+}
+
+function ClearRecord() {
+
+    SetBlock('[name="record-medley"]', "none")
+    SetBlock('[name="record-free"]', "none")
+    SetBlock('[name="record-fly"]', "none")
+    SetBlock('[name="record-breast"]', "none")
+    SetBlock('[name="record-back"]', "none")
+    SetBlock('[name="record-male"]', "none")
+    SetBlock('[name="record-female"]', "none")
+
+}
+
+function ShowBlock(block) {
+
+    var str = document.querySelector(block).value;
+
+    var target = '[name=\"' + str + '\"]'
+    var elms = document.querySelectorAll(target);
+    for (var i = 0; i < elms.length; i++) {
+
+        if (elms[i].style.display === "none") {
+            elms[i].style.display = "block";
+        } else {
+            elms[i].style.display = "none";
+        }
+    }
+}
+
+
+function ShowRecord() {
+
+    ClearRecord();
+
+    ShowBlock('input[name="record-stroke"]:checked')
+    ShowBlock('input[name="record-gender"]:checked')
+
+}
+
+
+function docReady(fn) {
+
+    // see if DOM is already available
+    if (document.readyState === "complete" || document.readyState === "interactive") {
+        // call on next available tick
+        setTimeout(fn, 1);
+    } else {
+        document.addEventListener("DOMContentLoaded", fn);
+    }
+}
+
+function SetButton(btn) {
+    var h = document.getElementById(btn);
+    h.onchange = function() {
+        ShowRecord()
+    };
+}
+
+
+docReady(function() {
+
+    ClearRecord();
+
+    SetBlock('[name="record-free"]', 'block')
+    SetBlock('[name="record-male"]', 'block')
+
+    SetButton('btn-free')
+    SetButton('btn-back')
+    SetButton('btn-breast')
+    SetButton('btn-fly')
+    SetButton('btn-medley')
+    SetButton('btn-male')
+    SetButton('btn-female')
+
+
+});
+
+
+</script>
+
+<h3>Swimming Records</h3>
+
+<div class="row clearfix">
+<div class="column two-third">
+
+<p>Rules: Must have been a Club member at the time of the swim.
+Age as of December 31st in the year of the swim.</p>
+
+##RECORDTALLY##
+</div>
+<div class="column third">
+##RECORDHOLDERS##
+</div>
+</div>
+
+
+<h2>Records</h2>
+<p>Event:
+  <input checked="checked" class="radio-group" id="btn-free"
+  name="record-stroke" type="radio" value="record-free" />
+  <label for="btn-free">Freestyle</label>
+
+   <input class="radio-group" id="btn-fly" name="record-stroke"
+   type="radio" value="record-fly" />
+  <label for="btn-fly">Fly</label>
+
+   <input class="radio-group" id="btn-back" name="record-stroke"
+   type="radio" value="record-back" />
+  <label for="btn-back">Back</label>
+
+   <input class="radio-group" id="btn-breast" name="record-stroke"
+   type="radio" value="record-breast" />
+  <label for="btn-breast">Breast</label>
+
+  <input class="radio-group" id="btn-medley" name="record-stroke"
+  type="radio" value="record-medley" />
+  <label for="btn-medley">Individual Medley</label>
+</p>
+
+<p>Gender:
+  <input checked="checked" class="radio-group" id="btn-male" name="record-gender"
+  type="radio" value="record-male" />
+  <label for="btn-male">Male</label>
+
+  <input class="radio-group" id="btn-female" name="record-gender"
+  type="radio" value="record-female" />
+  <label for="btn-female">Female</label>
+</p>
+
+
+<!-- Text below script generated. -->
+
+"""

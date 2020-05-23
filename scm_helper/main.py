@@ -225,8 +225,8 @@ def cmd(argv=None):
         sys.exit()
 
     if scm.option("--records"):
-        record = Records()
-        if record.read_baseline(scm) is False:
+        record = Records(scm)
+        if record.read_baseline() is False:
             sys.exit(2)
         if scm.option("--newtimes"):
             if record.read_newtimes(scm.option("--newtimes")) is False:
