@@ -1,6 +1,5 @@
 """Interface to SCM API."""
 import os.path
-import platform
 from datetime import date, datetime
 from pathlib import Path
 from shutil import copyfile
@@ -37,6 +36,7 @@ from scm_helper.config import (
     verify_schema,
     verify_schema_data,
 )
+from scm_helper.crypto import Crypto
 from scm_helper.default import create_default_config
 from scm_helper.entity import Entities
 from scm_helper.groups import Groups
@@ -74,7 +74,6 @@ class API:
         self.issue_handler = issues
         self.fixable = []
         self.crypto = None
-        self.ipad = False
 
         self.today = datetime.now()
         q_month = (int((self.today.month - 1) / 3) * 3) + 1
@@ -82,9 +81,6 @@ class API:
         self.eoy = datetime(int(q_year), 12, 31)
         offset = datetime(int(q_year), int(q_month), 1)
         self.q_offset = (self.today - offset).days
-
-        if "iPad" in platform.machine():
-            self.ipad = True
 
     def get_config_file(self):
         """Read configuration file."""
@@ -119,22 +115,12 @@ class API:
             if self.get_config_file() is False:
                 return False
 
-        if self.ipad:
-            from scm_helper.ipad import Crypto
-            #pylint: disable=import-outside-toplevel
-
-            self.crypto = Crypto(self._config[C_CLUB], password)  # Salt
-        else:
-            #pylint: disable=import-outside-toplevel
-            from scm_helper.crypto import Crypto
-
-            self.crypto = Crypto(self._config[C_CLUB], password)  # Salt
+        self.crypto = Crypto(self._config[C_CLUB], password)  # Salt
 
         home = str(Path.home())
 
         keyfile = os.path.join(home, CONFIG_DIR, KEYFILE)
         self._key = self.crypto.read_key(keyfile)
-
         if self._key is None:
             return False
 
@@ -147,10 +133,6 @@ class API:
 
     def initialise(self, password):
         """Initialise."""
-
-        if self.ipad:
-            password = "dummy"  # Can't to crypto on iPad
-
         if self.get_config(password) is False:
             return False
 
@@ -215,6 +197,10 @@ class API:
         """Get member data."""
         self.members.get_data()
 
+    def se_check(self):
+        """Get member data."""
+        self.members.se_check()
+        
     def linkage(self):
         """Set up cross reference links between Entities."""
         notify("Linking...\n")
@@ -243,11 +229,6 @@ class API:
 
     def restore(self, xclass):
         """Restore data..."""
-
-        if self.ipad:
-            notify("Not implemented on Ipad")
-            return False
-
         xclass = xclass.lower()
         if xclass in self.class_byname:
             item = self.class_byname[xclass]
@@ -258,10 +239,6 @@ class API:
 
     def dump(self, xclass):
         """Dump data..."""
-        if self.ipad:
-            notify("Not implemented on Ipad")
-            return False
-
         f_csv = "CSV"
         f_json = "JSON"
         xlist = [f_json, f_csv]
@@ -301,10 +278,6 @@ class API:
 
     def backup_data(self):
         """Backup."""
-        if self.ipad:
-            notify("Not implemented on Ipad")
-            return False
-
         if self.get_data(True) is False:
             return False
 
@@ -332,10 +305,6 @@ class API:
 
     def decrypt(self, xdate):
         """Decrypt file."""
-        if self.ipad:
-            notify("Not implemented on Ipad")
-            return False
-
         restore = self.classes + self.backup_classes
 
         for aclass in restore:

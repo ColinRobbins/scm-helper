@@ -11,6 +11,7 @@ from scm_helper.config import (
 from scm_helper.entity import Entities
 from scm_helper.issue import E_DUPLICATE, debug, issue
 from scm_helper.member import Member
+from scm_helper.se import se_check
 
 
 class Members(Entities):
@@ -29,6 +30,7 @@ class Members(Entities):
         self.by_guid = {}
         self.by_name = {}
         self.knownas = {}
+        self.by_asa = {}
         self._name = name
         self._url = url
         self._raw_data = []
@@ -81,6 +83,8 @@ class Members(Entities):
             self.by_guid[data.guid] = data
             self.by_name[data.name] = data
             self.knownas[data.knownas] = data
+            if data.asa_number:
+                self.by_asa[data.asa_number] = data
             if data.facebook:
                 for face in data.facebook:
                     self.facebook[face] = data
@@ -129,7 +133,14 @@ class Members(Entities):
         for member in self.entities:
             res += member.print_notes()
         return res
-
+        
+    def se_check(self):
+        """Check agaisnt an SE online."""
+        res = ""
+        for member in self.entities:
+            res += se_check(member)
+        return res
+        
     def print_summary(self):
         """Print a summary."""
         name = get_config(self.scm, C_TYPES, CTYPE_SYNCHRO, C_NAME)
