@@ -654,6 +654,15 @@ class Member(Entity):
         return f"{firstname} {lastname}"
 
     @property
+    def knownas_only(self):
+        """Known as."""
+        firstname = self.data[A_FIRSTNAME]
+        if A_KNOWNAS in self.data:
+            if self.data[A_KNOWNAS]:
+                firstname = self.data[A_KNOWNAS]
+        return firstname
+
+    @property
     def newstarter(self):
         """Is the member a new stater."""
         grace = get_config(self.scm, C_MEMBERS, C_NEWSTARTER, C_GRACE)

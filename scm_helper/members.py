@@ -136,10 +136,7 @@ class Members(Entities):
         
     def se_check(self):
         """Check agaisnt an SE online."""
-        res = ""
-        for member in self.entities:
-            res += se_check(member)
-        return res
+        return se_check(self.scm, self.entities)
         
     def print_summary(self):
         """Print a summary."""
