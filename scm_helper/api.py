@@ -200,7 +200,7 @@ class API:
     def se_check(self):
         """Get member data."""
         self.members.se_check()
-        
+
     def linkage(self):
         """Set up cross reference links between Entities."""
         notify("Linking...\n")

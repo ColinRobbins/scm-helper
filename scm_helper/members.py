@@ -1,4 +1,5 @@
 """SCM Members."""
+from scm_helper.browser import se_check
 from scm_helper.config import (
     A_ACTIVE,
     A_FIRSTNAME,
@@ -11,7 +12,6 @@ from scm_helper.config import (
 from scm_helper.entity import Entities
 from scm_helper.issue import E_DUPLICATE, debug, issue
 from scm_helper.member import Member
-from scm_helper.browser import se_check
 
 
 class Members(Entities):
@@ -133,11 +133,11 @@ class Members(Entities):
         for member in self.entities:
             res += member.print_notes()
         return res
-        
+
     def se_check(self):
         """Check agaisnt an SE online."""
         return se_check(self.scm, self.entities)
-        
+
     def print_summary(self):
         """Print a summary."""
         name = get_config(self.scm, C_TYPES, CTYPE_SYNCHRO, C_NAME)
