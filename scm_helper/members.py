@@ -11,7 +11,7 @@ from scm_helper.config import (
 from scm_helper.entity import Entities
 from scm_helper.issue import E_DUPLICATE, debug, issue
 from scm_helper.member import Member
-from scm_helper.se import se_check
+from scm_helper.browser import se_check
 
 
 class Members(Entities):

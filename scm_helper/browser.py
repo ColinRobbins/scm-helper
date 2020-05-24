@@ -1,25 +1,21 @@
 """Check SE file."""
 
-import pickle
+import json
 import requests
 import os.path
 import selenium
 from datetime import date
 from pathlib import Path
 
-from scm_helper.config import USER_AGENT, CONFIG_DIR
+from scm_helper.config import USER_AGENT, CONFIG_DIR, C_SELENIUM, C_BROWSER,  C_WEB_DRIVER,  C_SWIM_ENGLAND,  C_BASE_URL,  C_CHECK_URL,  C_TEST_ID, get_config
 from scm_helper.issue import debug
 from scm_helper.notify import interact_yesno, notify
 
 from selenium.webdriver.common.keys import Keys
 
-SE_COOKIES = "se_cookies.pkl"
-WRITE_BINARY = "wb"
-READ_BINARY = "rb"
-WEB_DRIVER = "C:\Program Files (x86)\Python37-32\Scripts\chromedriver.exe"
-SE_BASE_URL = "https://www.swimmingresults.org/"
-SE_CHECK_URL = "https://www.swimmingresults.org/membershipcheck/member_details.php?myiref="
-SE_TEST_ID = 516115
+SE_COOKIES = "se_cookies.json"
+FILE_WRITE = "w"
+FILE_READ = "r"
 
 GENDER = {"M": "Male", "F": "Female"}
 
@@ -29,33 +25,51 @@ def se_check(scm, members):
     home = str(Path.home())
     cookiefile = os.path.join(home, CONFIG_DIR, SE_COOKIES)
     
-    browser = start_browser()
+    browser = start_browser(scm)
         
     if browser is None:
-        return
+        return None
     
-    read_cookies(browser, cookiefile, SE_BASE_URL)
+    base_url = get_config(scm, C_SWIM_ENGLAND, C_BASE_URL)
+    if base_url is False:
+        notify ("Swim England config missing\n")
+        return None
+
+    read_cookies(browser, cookiefile, base_url)
     
-    browser.get(f"{SE_CHECK_URL}{SE_TEST_ID}")
-    resp = interact_yesno("Loaded")
+    check_url = get_config(scm, C_SWIM_ENGLAND, C_CHECK_URL)
+    test_id_url = get_config(scm, C_SWIM_ENGLAND, C_TEST_ID)
+
+    browser.get(f"{check_url}{test_id_url}")
+    try:
+        name = browser.find_element_by_xpath("//table[1]/tbody/tr[2]/td[2]").text
+
+    except selenium.common.exceptions.NoSuchElementException:
+        resp = interact_yesno("Please solve the 'I am not a robot', and then press enter here.")
 
     write_cookies(browser, cookiefile)
          
+    res = ""
     for member in members:
         if member.is_active is False:
             continue
         if member.asa_number is None:
             continue
             
-        url = f"{SE_CHECK_URL}{member.asa_number}"
+        url = f"{check_url}{member.asa_number}"
         browser.get(url)
         
-        check_member(browser, member)
+        res += check_member(browser, member)
 
+    write_cookies(browser, cookiefile)
     browser.close()
+    
+    return res
     
 def check_member(browser, member):
     """Check a member."""
+    
+    notify(f"Checking {member.name}...\n")
     
     try:
         name = browser.find_element_by_xpath("//table[1]/tbody/tr[2]/td[2]").text
@@ -66,8 +80,7 @@ def check_member(browser, member):
         
     except selenium.common.exceptions.NoSuchElementException:
         res = f"{member.name} ({member.asa_number}) does not exist in SE database.\n"
-        print (res)
-        return
+        return res
     
     res = ""
     if name != member.name:
@@ -88,16 +101,26 @@ def check_member(browser, member):
 
     if res:
         res = f"{member.name} ({member.asa_number}) mismatch:\n" + res
-        print (res)
-
-def start_browser():
-    """Start Browser."""
     
+    return res
+
+def start_browser(scm):
+    """Start Browser."""
+
+    web_driver = get_config(scm, C_SELENIUM, C_WEB_DRIVER)
+    client = get_config(scm, C_SELENIUM, C_BROWSER)
+
+    if client is False:
+        notify ("Selenium config missing\n")
+        return None
+
+    browser = getattr(selenium.webdriver,client)
+
     try:
-        return selenium.webdriver.Chrome(WEB_DRIVER)
+        return browser(web_driver)
             
     except selenium.common.exceptions.WebDriverException as error:
-        notify(f"Failed to open browser {WEB_DRIVER}\n{error}\n")
+        notify(f"Failed to open {client} browser with: {web_driver}\n{error}\n")
         return None
 
 def read_cookies(browser, cookiefile, url):
@@ -106,10 +129,10 @@ def read_cookies(browser, cookiefile, url):
     if os.path.isfile(cookiefile):
         browser.get(url)
         try:
-            with open(cookiefile, READ_BINARY) as file:
-                cookies = pickle.load(file)
+            with open(cookiefile, FILE_READ) as file:
+                data = file.read()
+                cookies = json.loads(data)
                 for cookie in cookies:
-                    print (cookie)
                     browser.add_cookie(cookie)
                     
         except EnvironmentError as error:
@@ -121,8 +144,9 @@ def write_cookies(browser, cookiefile):
     cookies = browser.get_cookies()
     if cookies:
         try:
-            with open(cookiefile, WRITE_BINARY) as file:
-                pickle.dump(cookies, file)
+            with open(cookiefile, FILE_WRITE) as file:
+                opt = json.dumps(cookies)
+                file.write(opt)
             
         except EnvironmentError as error:
             notify(f"Failed to write {cookiefile}\n{error}\n")
