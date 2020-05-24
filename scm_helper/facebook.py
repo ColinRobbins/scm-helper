@@ -4,7 +4,8 @@ import os
 import re
 from pathlib import Path
 
-from scm_helper.config import C_FACEBOOK, CONFIG_DIR, FILE_READ, get_config
+from scm_helper.browser import fb_read_url
+from scm_helper.config import C_FACEBOOK, CONFIG_DIR, FILE_READ, get_config, C_FILES, C_GROUPS
 from scm_helper.files import Files
 from scm_helper.notify import notify
 
@@ -29,10 +30,10 @@ class Facebook:
         home = str(Path.home())
         mydir = os.path.join(home, CONFIG_DIR)
 
-        cfg = get_config(scm, C_FACEBOOK)
+        cfg = get_config(scm, C_FACEBOOK, C_FILES)
         if cfg:
             for facebook in cfg:
-                face = FacebookPage()
+                face = FacebookFile()
                 filename = os.path.join(mydir, facebook)
                 res = face.readfile(filename, scm)
                 if res:
@@ -42,6 +43,19 @@ class Facebook:
                 else:
                     return False
             return True
+        
+        cfg = get_config(scm, C_FACEBOOK, C_GROUPS)
+        if cfg:
+            for facebook in cfg:
+                face = FacebookURL()
+                res = face.readpage(facebook, scm)
+                if res:
+                    self.facebook.append(face)
+                else:
+                    return False
+            
+            return True
+
         return False
 
     def analyse(self):
@@ -65,7 +79,7 @@ class Facebook:
             del facebook
 
 
-class FacebookPage(Files):
+class FacebookFile(Files):
     """Manage a facebook file."""
 
     def __init__(self):
@@ -143,3 +157,62 @@ class FacebookPage(Files):
                 self.file_error(user, "Facebook user is inactive in SCM (resigned?)")
             else:
                 self.file_error(user, "Facebook user not in SCM")
+
+class FacebookURL():
+    """Manage facebook via URL."""
+
+    def __init__(self):
+        """Initilaise Facebook."""
+        self.scm = None
+        self.data = None
+        self.users = []
+        self.url = None
+        self.errors = ""
+
+    def readpage(self, url, scm):
+        """Read Facebook page."""
+        self.url = url
+        self.scm = scm
+
+        res = fb_read_url(scm, url)
+        
+        if res == None:
+            return False
+        
+        self.users = res
+        return True
+
+    def analyse(self):
+        """Analyse Facebook file."""
+        members = self.scm.members.by_name
+        knownas = self.scm.members.knownas
+        facebook = self.scm.members.facebook
+
+        for user in self.users:
+            print (user)
+            inactive = False
+            if user in members:
+                if members[user].is_active:
+                    continue
+                inactive = True
+
+            if user in knownas:
+                if knownas[user].is_active:
+                    continue
+                inactive = True
+
+            if user in facebook:  # NB this can override inactive = True above
+                # could be active in a different entry (eg parent)
+                if facebook[user].is_active:
+                    continue
+                inactive = True
+
+            if inactive:
+                self.errors += f"{user} is inactive in SCM (resigned?)"
+            else:
+                self.errors += f"{user} is not in SCM"
+
+    def print_errors(self):
+        """Print facebook errors."""
+        res = f"{self.url}:\n {self.errors}\n"
+        return res

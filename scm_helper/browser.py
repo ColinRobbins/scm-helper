@@ -4,6 +4,7 @@ import json
 import os.path
 from pathlib import Path
 import selenium
+import time
 
 from scm_helper.config import (
     C_BASE_URL,
@@ -17,12 +18,15 @@ from scm_helper.config import (
     get_config,
 )
 from scm_helper.notify import interact_yesno, notify
-
+from selenium.webdriver.common.keys import Keys
 
 SE_COOKIES = "se_cookies.json"
 FB_COOKIES = "fb_cookies.json"
 FILE_WRITE = "w"
 FILE_READ = "r"
+
+MEMBERS_SUFFIX = "members/"
+SCROLL_PAUSE_TIME = 2
 
 GENDER = {"M": "Male", "F": "Female"}
 
@@ -71,11 +75,100 @@ def se_check(scm, members):
 
         res += check_member(browser, member)
 
-    write_cookies(browser, cookiefile)
     browser.close()
 
     return res
+    
+def fb_read_url (scm,url):
+    """Read Facebook Group members."""
+    
+    users = []
+    
+    home = str(Path.home())
+    cookiefile = os.path.join(home, CONFIG_DIR, FB_COOKIES)
 
+    url += MEMBERS_SUFFIX
+
+    browser = start_browser(scm)
+
+    if browser is None:
+        return None
+
+    read_cookies(browser, cookiefile, url)
+    
+    M_XPATH = '//*[@id="groupsMemberBrowserContent"]'
+    M_ITEREATE = "/div[3]/div[2]/div/div/div/div/div[2]/"
+    M_NAME = "/div/div[2]/div/div[2]/div[1]"
+
+    browser.get(url)
+    try:
+        browser.find_element_by_xpath (M_XPATH)
+    except selenium.common.exceptions.NoSuchElementException:
+        interact_yesno("Please logon to Facebook and then press enter here.")
+        browser.get(url)
+        
+    write_cookies(browser, cookiefile)
+    scroll(browser)
+    browser.get(url)
+
+    gcount = 1
+    count = 1
+    while True:
+        xpath = f"{M_XPATH}{M_ITEREATE}ul/div[{count}]{M_NAME}/a"
+        try:
+            name = browser.find_element_by_xpath(xpath).text
+            users.append(name)
+            count += 1
+            gcount += 1
+        except selenium.common.exceptions.NoSuchElementException:
+            print (xpath)
+            break
+
+    # After scroling there is an extra div per scroll...
+    loop = 1
+    while True:
+        count = 1
+        while True:
+            xpath = f"{M_XPATH}{M_ITEREATE}div[{loop}]/ul/div[{count}]{M_NAME}/a"
+            try:
+                name = browser.find_element_by_xpath(xpath).text
+                users.append(name)
+                count += 1
+                gcount += 1
+            except selenium.common.exceptions.NoSuchElementException:
+                print (xpath)
+                break
+            loop += 1
+        if count == 1:   # nothing new added
+            break
+            
+    notify(f"Read {gcount} names\n")
+    browser.close()
+
+    return users
+
+def scroll(browser):
+    """Scroll to end of page."""
+    
+    # Get scroll height
+    last_height = browser.execute_script("return document.body.scrollHeight")
+    
+    notify("Scrolling")
+    
+    while True:
+        # Scroll down to bottom
+        browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+    
+        # Wait to load page
+        time.sleep(SCROLL_PAUSE_TIME)
+        notify(".")
+    
+        # Calculate new scroll height and compare with last scroll height
+        new_height = browser.execute_script("return document.body.scrollHeight")
+        if new_height == last_height:
+            notify("Done\n")
+            return
+        last_height = new_height
 
 def check_member(browser, member):
     """Check a member."""
@@ -127,7 +220,7 @@ def start_browser(scm):
         return None
 
     browser = getattr(selenium.webdriver, client)
-
+    
     try:
         return browser(web_driver)
 
@@ -146,6 +239,8 @@ def read_cookies(browser, cookiefile, url):
                 data = file.read()
                 cookies = json.loads(data)
                 for cookie in cookies:
+                    if 'expiry' in cookie:
+                        del cookie['expiry']
                     browser.add_cookie(cookie)
 
         except EnvironmentError as error:
@@ -163,4 +258,4 @@ def write_cookies(browser, cookiefile):
                 file.write(opt)
 
         except EnvironmentError as error:
-            notify(f"Failed to write {cook
+            notify(f"Failed to write {cookiefile}\n{error}\n")
