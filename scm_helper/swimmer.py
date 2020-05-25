@@ -217,9 +217,8 @@ def check_parents(swimmer):
         mandatory = get_config(swimmer.scm, C_SWIMMERS, C_PARENT, C_MANDATORY)
         if mandatory and max_age:
             if swimmer.age and (swimmer.age <= max_age):
-                issue(
-                    swimmer, E_NO_PARENT, f"{swimmer.first_group}, Age: {swimmer.age}"
-                )
+                msg = f"{swimmer.first_group}, Age: {swimmer.age}"
+                issue(swimmer, E_NO_PARENT, msg)
 
     if count > 2:
         issue(swimmer, E_NUM_PARENTS)
