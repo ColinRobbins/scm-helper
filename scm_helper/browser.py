@@ -28,6 +28,13 @@ FILE_READ = "r"
 MEMBERS_SUFFIX = "members/"
 SCROLL_PAUSE_TIME = 2
 
+FACEBOOK= "https://www.facebook.com"
+M_XPATH = '//*[@id="groupsMemberSection_all_members"]'
+M_ENTRY = '//ul//div/div[2]/div/div[2]/div[1]'
+M_ELEMENTS =  M_XPATH + M_ENTRY + '/a'
+M_ELEMENTS2 =  M_XPATH + M_ENTRY + '/span'
+
+
 GENDER = {"M": "Male", "F": "Female"}
 
 
@@ -57,11 +64,9 @@ def se_check(scm, members):
         browser.find_element_by_xpath("//table[1]/tbody/tr[2]/td[2]")
 
     except selenium.common.exceptions.NoSuchElementException:
-        interact_yesno(
-            "Please solve the 'I am not a robot', and then press enter here."
-        )
-
-    write_cookies(browser, cookiefile)
+        msg = "Please solve the 'I am not a robot', and then press enter here."
+        interact_yesno(msg)
+        write_cookies(browser, cookiefile)
 
     res = ""
     for member in members:
@@ -79,7 +84,7 @@ def se_check(scm, members):
 
     return res
     
-def fb_read_url (scm,url):
+def fb_read_url (scm, url):
     """Read Facebook Group members."""
     
     users = []
@@ -94,55 +99,26 @@ def fb_read_url (scm,url):
     if browser is None:
         return None
 
-    read_cookies(browser, cookiefile, url)
+    read_cookies(browser, cookiefile, FACEBOOK)
     
-    M_XPATH = '//*[@id="groupsMemberBrowserContent"]'
-    M_ITEREATE = "/div[3]/div[2]/div/div/div/div/div[2]/"
-    M_NAME = "/div/div[2]/div/div[2]/div[1]"
-
     browser.get(url)
     try:
         browser.find_element_by_xpath (M_XPATH)
     except selenium.common.exceptions.NoSuchElementException:
         interact_yesno("Please logon to Facebook and then press enter here.")
+        write_cookies(browser, cookiefile)
         browser.get(url)
-        
-    write_cookies(browser, cookiefile)
+    
     scroll(browser)
-    browser.get(url)
 
-    gcount = 1
-    count = 1
-    while True:
-        xpath = f"{M_XPATH}{M_ITEREATE}ul/div[{count}]{M_NAME}/a"
-        try:
-            name = browser.find_element_by_xpath(xpath).text
-            users.append(name)
+    count = 0
+    for path in [M_ELEMENTS, M_ELEMENTS2]:
+        elements = browser.find_elements_by_xpath(path)
+        for element in elements:
             count += 1
-            gcount += 1
-        except selenium.common.exceptions.NoSuchElementException:
-            print (xpath)
-            break
+            users.append(element.text)
 
-    # After scroling there is an extra div per scroll...
-    loop = 1
-    while True:
-        count = 1
-        while True:
-            xpath = f"{M_XPATH}{M_ITEREATE}div[{loop}]/ul/div[{count}]{M_NAME}/a"
-            try:
-                name = browser.find_element_by_xpath(xpath).text
-                users.append(name)
-                count += 1
-                gcount += 1
-            except selenium.common.exceptions.NoSuchElementException:
-                print (xpath)
-                break
-            loop += 1
-        if count == 1:   # nothing new added
-            break
-            
-    notify(f"Read {gcount} names\n")
+    notify(f"Read {count} names from {url}\n")
     browser.close()
 
     return users

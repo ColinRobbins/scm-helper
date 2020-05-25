@@ -268,7 +268,7 @@ class ScmGui:
             return
 
         fbook = Facebook()
-        if fbook.readfiles(self.scm) is False:
+        if fbook.read_data(self.scm) is False:
             messagebox.showerror("Error", "Could not read facebook files")
             self.report_text.config(state=DISABLED)
             self.notify_text.config(state=DISABLED)
