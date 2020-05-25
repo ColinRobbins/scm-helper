@@ -78,12 +78,14 @@ def analyse_swimmer(swimmer):
 
     if swimmer.is_swimmer:
         check_parents(swimmer)
+        return
 
     if swimmer.is_synchro:
         if get_config(swimmer.scm, C_TYPES, CTYPE_SYNCHRO, C_PARENTS) is False:
             pass
         else:
             check_parents(swimmer)
+            return
 
     if swimmer.is_polo:
         if get_config(swimmer.scm, C_TYPES, CTYPE_POLO, C_PARENTS) is False:
