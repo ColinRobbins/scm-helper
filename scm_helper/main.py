@@ -152,7 +152,7 @@ def cmd(argv=None):
 
     if scm.option("--facebook"):
         fbook = Facebook()
-        if fbook.readfiles(scm) is False:
+        if fbook.read_data(scm) is False:
             sys.exit(2)
 
     if scm.option("--verify"):

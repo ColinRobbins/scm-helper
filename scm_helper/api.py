@@ -53,6 +53,7 @@ class API:
     """Main SCM object."""
 
     # pylint: disable=too-many-instance-attributes
+    # pylint: disable=too-many-public-methods
     # Need them all!
 
     def __init__(self, issues):
@@ -199,7 +200,7 @@ class API:
 
     def se_check(self):
         """Get member data."""
-        self.members.se_check()
+        return self.members.se_check()
 
     def linkage(self):
         """Set up cross reference links between Entities."""
