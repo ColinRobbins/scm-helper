@@ -1,4 +1,5 @@
 """SCM Members."""
+from scm_helper.browser import se_check
 from scm_helper.config import (
     A_ACTIVE,
     A_FIRSTNAME,
@@ -29,6 +30,7 @@ class Members(Entities):
         self.by_guid = {}
         self.by_name = {}
         self.knownas = {}
+        self.by_asa = {}
         self._name = name
         self._url = url
         self._raw_data = []
@@ -66,9 +68,9 @@ class Members(Entities):
             return
         if name in self.knownas:
             if member[A_ACTIVE] == "1" and self.knownas[name].is_active:
-                issue(self.by_name[name], E_DUPLICATE, name, "(Known as)")
+                issue(self.knownas[name], E_DUPLICATE, name, "(Known as)")
             else:
-                issue(self.by_name[name], E_DUPLICATE, "One is inactive (Known as)", -1)
+                issue(self.knownas[name], E_DUPLICATE, "One is inactive (Known as)", -1)
 
     def create_entities(self, entities):
         """Create a member objects."""
@@ -81,6 +83,8 @@ class Members(Entities):
             self.by_guid[data.guid] = data
             self.by_name[data.name] = data
             self.knownas[data.knownas] = data
+            if data.asa_number:
+                self.by_asa[data.asa_number] = data
             if data.facebook:
                 for face in data.facebook:
                     self.facebook[face] = data
@@ -129,6 +133,10 @@ class Members(Entities):
         for member in self.entities:
             res += member.print_notes()
         return res
+
+    def se_check(self):
+        """Check agaisnt an SE online."""
+        return se_check(self.scm, self.entities)
 
     def print_summary(self):
         """Print a summary."""

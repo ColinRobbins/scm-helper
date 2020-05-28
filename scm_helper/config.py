@@ -51,7 +51,6 @@ BACKUP_URLS = [
     [MEETS, URL_MEETS],
     [TRIALS, URL_TRIALS],
     [WAITINGLIST, URL_WAITINGLIST],
-    [WHO, URL_WHO],
     [NOTICE, URL_NOTICE],
 ]
 
@@ -102,10 +101,13 @@ C_AGE = "age"
 C_ALIGN_QUARTER = "align_quarter"
 C_ALLOW_GROUP = "allow_group"
 C_ALLOW_UPDATE = "allow_update"
+C_BASE_URL = "base_url"
+C_BROWSER = "browser"
 C_CHECK_DBS = "check_dbs"
 C_CHECK_PERMISSIONS = "check_permissions"
 C_CHECK_RESTRICTIONS = "check_restrictions"
 C_CHECK_SE_NUMBER = "check_se_number"
+C_CHECK_URL = "check_url"
 C_CHILD = "child"
 C_CLASS = "class"
 C_CLUB = "club"
@@ -160,18 +162,20 @@ C_PARENT = "parent"
 C_PARENTS = "parents"
 C_PASSWORD = "password"
 C_PRIORITY = "priority"
-C_PSEUDO = "pseudo"
 C_REGISTER = "register"
 C_ROLE = "role"
 C_ROLES = "roles"
+C_SELENIUM = "selenium"
 C_SEND_TO = "send_to"
 C_SESSION = "session"
 C_SESSIONS = "sessions"
 C_SMTP_PORT = "smtp_port"
 C_SMTP_SERVER = "smtp_server"
 C_SUFFIX = "suffix"
+C_SWIM_ENGLAND = "swim_england"
 C_SWIMMER = "swimmer"
 C_SWIMMERS = "swimmers"
+C_TEST_ID = "test_id"
 C_TIME = "time"
 C_TLS = "tls"
 C_TYPE = "type"
@@ -181,6 +185,7 @@ C_UNUSED = "unused"
 C_USERNAME = "username"
 C_VERIFY = "verify"
 C_VOLUNTEER = "volunteer"
+C_WEB_DRIVER = "web_driver"
 
 CTYPE_COACH = "coach"
 CTYPE_COMMITTEE = "committee"
@@ -351,7 +356,6 @@ SCHEMA = Schema(
                 Optional(C_IGNORE_COACH): bool,
                 Optional(C_IGNORE_COMMITTEE): bool,
                 Optional(C_NAME): str,
-                Optional(C_PSEUDO): [group],
                 Optional(C_JOBTITLE): bool,
                 Optional(C_GROUPS): [group],
                 Optional(C_PARENTS): bool,
@@ -377,7 +381,9 @@ SCHEMA = Schema(
                 }
             },
         },
-        Optional(C_FACEBOOK): [str],
+        Optional(C_FACEBOOK): {Optional(C_FILES): [str], Optional(C_GROUPS): [str],},
+        Optional(C_SELENIUM): {C_BROWSER: str, C_WEB_DRIVER: str,},
+        Optional(C_SWIM_ENGLAND): {C_BASE_URL: str, C_CHECK_URL: str, C_TEST_ID: int,},
     }
 )
 

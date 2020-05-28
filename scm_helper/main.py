@@ -37,6 +37,7 @@ Where <options> are:
    -q, --quiet = quiet mode
    --report <report> = which reports to run
    --restore <type> = restore an entity of <type> (need -archive as well)
+   --se = Check against SE database
    --to <email> = Who to send the emial to (used with --email)
    --verify <date> = use archive backup
 
@@ -67,6 +68,7 @@ LONG_OPTS = [
     "quiet",
     "report=",
     "restore=",
+    "se",
     "to=",
     "verify=",
 ]
@@ -150,7 +152,7 @@ def cmd(argv=None):
 
     if scm.option("--facebook"):
         fbook = Facebook()
-        if fbook.readfiles(scm) is False:
+        if fbook.read_data(scm) is False:
             sys.exit(2)
 
     if scm.option("--verify"):
@@ -204,6 +206,14 @@ def cmd(argv=None):
         output = csv.print_errors()
         if scm.option("--email"):
             send_email(scm, output, "SCM: CSV Analysis")
+        else:
+            print(output)
+        sys.exit()
+
+    if scm.option("--se"):
+        output = scm.se_check()
+        if scm.option("--email"):
+            send_email(scm, output, "SCM: SE Analysis")
         else:
             print(output)
         sys.exit()
@@ -269,7 +279,7 @@ def main():
         sys.exit()
 
     try:
-        #pylint: disable=import-outside-toplevel
+        # pylint: disable=import-outside-toplevel
         from tkinter import TclError, Tk
     except ImportError:
         cmd()
@@ -281,7 +291,7 @@ def main():
         cmd()
         sys.exit()
 
-    #pylint: disable=import-outside-toplevel
+    # pylint: disable=import-outside-toplevel
     from scm_helper.gui import ScmGui
 
     ScmGui(root)
