@@ -6,7 +6,6 @@ import re
 from pathlib import Path
 from shutil import copyfile
 
-
 from scm_helper.config import (
     C_RECORDS,
     C_RELAY,
@@ -773,6 +772,8 @@ def convert_time(xtime):
     else:
         res = float(hms[0])
     return res
+
+# pylint: disable=too-many-lines
 
 
 DEFAULT_RECORDS = """

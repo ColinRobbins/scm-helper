@@ -5,7 +5,14 @@ import re
 from pathlib import Path
 
 from scm_helper.browser import fb_read_url
-from scm_helper.config import C_FACEBOOK, CONFIG_DIR, FILE_READ, get_config, C_FILES, C_GROUPS
+from scm_helper.config import (
+    C_FACEBOOK,
+    C_FILES,
+    C_GROUPS,
+    CONFIG_DIR,
+    FILE_READ,
+    get_config,
+)
 from scm_helper.files import Files
 from scm_helper.notify import notify
 
@@ -43,7 +50,7 @@ class Facebook:
                 else:
                     return False
             return True
-        
+
         cfg = get_config(scm, C_FACEBOOK, C_GROUPS)
         if cfg:
             for facebook in cfg:
@@ -53,7 +60,7 @@ class Facebook:
                     self.facebook.append(face)
                 else:
                     return False
-            
+
             return True
 
         return False
@@ -111,18 +118,18 @@ class FacebookPage(Files):
 
     def readurl(self, url, scm):
         """Read Facebook page."""
-        self._filename = url.rstrip('/')   # Remove '/' for result printing
-        
+        self._filename = url.rstrip("/")  # Remove '/' for result printing
+
         self.scm = scm
-        
+
         res = fb_read_url(scm, url)
-        
-        if res == None:
+
+        if res is None:
             return False
-        
+
         self.users = res
         return True
-        
+
     def parse(self):
         """Parse file to find strings."""
         users = FACEBOOK_RE.findall(self.data)
@@ -171,6 +178,3 @@ class FacebookPage(Files):
                 self.file_error(user, "Facebook user is inactive in SCM (resigned?)")
             else:
                 self.file_error(user, "Facebook user not in SCM")
-
-
-        

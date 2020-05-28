@@ -402,10 +402,11 @@ class Who(Entities):
         if data is None:
             return False
         count = self.create_entities(data)
-        self._raw_data = data   # This line is subtly different, as data is already a list in Who's who.
+        # line below is subtly different, whos who data is already a list.
+        self._raw_data = data
 
         notify(f"{count}\n")
         if count != 1:
-            debug ("Who's who assumption failure", 0)
-            
+            debug("Who's who assumption failure", 0)
+
         return True

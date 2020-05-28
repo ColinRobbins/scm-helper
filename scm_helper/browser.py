@@ -2,10 +2,10 @@
 
 import json
 import os.path
-from pathlib import Path
-import selenium
 import time
+from pathlib import Path
 
+import selenium
 from scm_helper.config import (
     C_BASE_URL,
     C_BROWSER,
@@ -28,11 +28,11 @@ FILE_READ = "r"
 MEMBERS_SUFFIX = "members/"
 SCROLL_PAUSE_TIME = 2
 
-FACEBOOK= "https://www.facebook.com"
+FACEBOOK = "https://www.facebook.com"
 M_XPATH = '//*[@id="groupsMemberSection_all_members"]'
-M_ENTRY = '//ul//div/div[2]/div/div[2]/div[1]'
-M_ELEMENTS =  M_XPATH + M_ENTRY + '/a'
-M_ELEMENTS2 =  M_XPATH + M_ENTRY + '/span'
+M_ENTRY = "//ul//div/div[2]/div/div[2]/div[1]"
+M_ELEMENTS = M_XPATH + M_ENTRY + "/a"
+M_ELEMENTS2 = M_XPATH + M_ENTRY + "/span"
 
 
 GENDER = {"M": "Male", "F": "Female"}
@@ -83,12 +83,13 @@ def se_check(scm, members):
     browser.close()
 
     return res
-    
-def fb_read_url (scm, url):
+
+
+def fb_read_url(scm, url):
     """Read Facebook Group members."""
-    
+
     users = []
-    
+
     home = str(Path.home())
     cookiefile = os.path.join(home, CONFIG_DIR, FB_COOKIES)
 
@@ -100,15 +101,15 @@ def fb_read_url (scm, url):
         return None
 
     read_cookies(browser, cookiefile, FACEBOOK)
-    
+
     browser.get(url)
     try:
-        browser.find_element_by_xpath (M_XPATH)
+        browser.find_element_by_xpath(M_XPATH)
     except selenium.common.exceptions.NoSuchElementException:
         interact_yesno("Please logon to Facebook and then press enter here.")
         write_cookies(browser, cookiefile)
         browser.get(url)
-    
+
     scroll(browser)
 
     count = 0
@@ -123,28 +124,30 @@ def fb_read_url (scm, url):
 
     return users
 
+
 def scroll(browser):
     """Scroll to end of page."""
-    
+
     # Get scroll height
     last_height = browser.execute_script("return document.body.scrollHeight")
-    
+
     notify("Scrolling")
-    
+
     while True:
         # Scroll down to bottom
         browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-    
+
         # Wait to load page
         time.sleep(SCROLL_PAUSE_TIME)
         notify(".")
-    
+
         # Calculate new scroll height and compare with last scroll height
         new_height = browser.execute_script("return document.body.scrollHeight")
         if new_height == last_height:
             notify("Done\n")
             return
         last_height = new_height
+
 
 def check_member(browser, member):
     """Check a member."""
@@ -196,7 +199,7 @@ def start_browser(scm):
         return None
 
     browser = getattr(selenium.webdriver, client)
-    
+
     try:
         return browser(web_driver)
 
@@ -215,8 +218,8 @@ def read_cookies(browser, cookiefile, url):
                 data = file.read()
                 cookies = json.loads(data)
                 for cookie in cookies:
-                    if 'expiry' in cookie:
-                        del cookie['expiry']
+                    if "expiry" in cookie:
+                        del cookie["expiry"]
                     browser.add_cookie(cookie)
 
         except EnvironmentError as error:

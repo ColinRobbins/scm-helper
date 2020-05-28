@@ -228,7 +228,6 @@ class Member(Entity):
 
         self._first_group = self.set_first_group()
 
-
     def find_session_substr(self, substring):
         """Find a session containing substring."""
         for session in self.sessions:

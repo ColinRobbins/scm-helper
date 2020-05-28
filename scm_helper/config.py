@@ -164,11 +164,7 @@ C_PARENT = "parent"
 C_PARENTS = "parents"
 C_PASSWORD = "password"
 C_PRIORITY = "priority"
-<<<<<<< HEAD
-=======
-C_PSEUDO = "pseudo"
 C_RECORDS = "records"
->>>>>>> records
 C_REGISTER = "register"
 C_RELAY = "relay"
 C_ROLE = "role"
@@ -390,9 +386,9 @@ SCHEMA = Schema(
                 }
             },
         },
-        Optional(C_FACEBOOK): {Optional(C_FILES): [str], Optional(C_GROUPS): [str],},
-        Optional(C_SELENIUM): {C_BROWSER: str, C_WEB_DRIVER: str,},
-        Optional(C_SWIM_ENGLAND): {C_BASE_URL: str, C_CHECK_URL: str, C_TEST_ID: int,},
+        Optional(C_FACEBOOK): {Optional(C_FILES): [str], Optional(C_GROUPS): [str]},
+        Optional(C_SELENIUM): {C_BROWSER: str, C_WEB_DRIVER: str},
+        Optional(C_SWIM_ENGLAND): {C_BASE_URL: str, C_CHECK_URL: str, C_TEST_ID: int},
         Optional(C_RECORDS): {Optional(C_RELAY): bool},
     }
 )
