@@ -386,3 +386,26 @@ def print_all(xlist):
         grp = "None"
 
     return grp
+
+
+class Who(Entities):
+    """Subclass for Who's who."""
+
+    # pylint: disable=too-many-instance-attributes
+    # Need them all!
+
+    def get_data(self):
+        """Get data."""
+        notify(f"{self._name}... ")
+
+        data = self.scm.api_read(self._url, 1)
+        if data is None:
+            return False
+        count = self.create_entities(data)
+        self._raw_data = data   # This line is subtly different, as data is already a list in Who's who.
+
+        notify(f"{count}\n")
+        if count != 1:
+            debug ("Who's who assumption failure", 0)
+            
+        return True
