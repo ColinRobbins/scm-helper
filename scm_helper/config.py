@@ -162,7 +162,6 @@ C_PARENT = "parent"
 C_PARENTS = "parents"
 C_PASSWORD = "password"
 C_PRIORITY = "priority"
-C_PSEUDO = "pseudo"
 C_REGISTER = "register"
 C_ROLE = "role"
 C_ROLES = "roles"
@@ -357,7 +356,6 @@ SCHEMA = Schema(
                 Optional(C_IGNORE_COACH): bool,
                 Optional(C_IGNORE_COMMITTEE): bool,
                 Optional(C_NAME): str,
-                Optional(C_PSEUDO): [group],
                 Optional(C_JOBTITLE): bool,
                 Optional(C_GROUPS): [group],
                 Optional(C_PARENTS): bool,

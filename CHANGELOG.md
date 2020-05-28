@@ -4,7 +4,13 @@
 ????
 
 * Fix - config errors not showing after editing via the GUI
+* Fix - Who's who not backing up correctly
+* Fix - bug in handling inactive members
 * Added support for iPad (Command line only)
+* Added feature to manage swimming records
+* Added feature to connect directly to Swim England database to check membership details
+* Added feature to connect directly to Facebook to check group membership
+
 
 ## 1.1
 02/05/2020

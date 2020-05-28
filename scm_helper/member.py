@@ -36,7 +36,6 @@ from scm_helper.config import (
     C_NAME,
     C_NEWSTARTER,
     C_PRIORITY,
-    C_PSEUDO,
     C_TIME,
     C_TYPES,
     CTYPE_COACH,
@@ -119,8 +118,6 @@ class Member(Entity):
         self._lastseen = None
         self._in_coach_role = False
         self._no_session_ok = False
-        self._pseudo_synchro = False
-        self._pseudo_polo = False
 
         self._dob = None
         self._date_joined = None
@@ -231,22 +228,6 @@ class Member(Entity):
 
         self._first_group = self.set_first_group()
 
-        # pylint: disable=fixme
-        # HACK - use a group to artificially set is_synchro
-        # as this is not returned via API
-        # Same needed for open water, but don't care right now.
-        # TODO.
-        cfg = get_config(self.scm, C_TYPES, CTYPE_SYNCHRO, C_PSEUDO)
-        if cfg:
-            for grp in cfg:
-                if self.find_group(grp):
-                    self._pseudo_synchro = True
-
-        cfg = get_config(self.scm, C_TYPES, CTYPE_POLO, C_PSEUDO)
-        if cfg:
-            for grp in cfg:
-                if self.find_group(grp):
-                    self._pseudo_polo = True
 
     def find_session_substr(self, substring):
         """Find a session containing substring."""
@@ -802,12 +783,18 @@ class Member(Entity):
     @property
     def is_synchro(self):
         """Is it a syncro swimmer."""
-        return self._pseudo_synchro
+        isa = self.check_attribute("SynchronisedSwimming")
+        if isa == "1":
+            return True
+        return False
 
     @property
     def is_polo(self):
         """Is it a polo player."""
-        return self._pseudo_polo
+        isa = self.check_attribute("WaterPolo")
+        if isa == "1":
+            return True
+        return False
 
     @property
     def is_committee_member(self):
