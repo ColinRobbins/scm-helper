@@ -255,7 +255,11 @@ sessions:
 ################################################################
 
 # facebook:
+#   files:
 #     - "Nottingham Leander Swimmers.html"
+#   groups:
+#     - https://www.facebook.com/groups/NottinghamLeander/
+#     - https://www.facebook.com/groups/LeanderMasters/
 
 ################################################################
 # Lists

@@ -1,11 +1,13 @@
 # Changelog
 
-## ???
+## 1.2
 ????
 
 * Fix - config errors not showing after editing via the GUI
 * Fix - Who's who not backing up correctly
+* Fix - Error in reporting number of entries read
 * Fix - bug in handling inactive members
+* Fix - polo / syncho type now work correctly (Align with SCM Bug #6555 and #6545)
 * Added support for iPad (Command line only)
 * Added feature to manage swimming records
 * Added feature to connect directly to Swim England database to check membership details
