@@ -9,8 +9,10 @@ from shutil import copyfile
 from scm_helper.config import (
     C_RECORDS,
     C_RELAY,
+    C_AGE_EOY,
     CONFIG_DIR,
     FILE_READ,
+    C_VERIFY,
     FILE_WRITE,
     RECORDS_DIR,
     SCM_CSV_DATE_FORMAT,
@@ -317,6 +319,11 @@ class SwimTimes:
         timestr = row["Time"]
         relay = row["Relay"]
         location = row["Location"]
+        gender = row["Gender"]
+        
+        swimage = None
+        if row["Age"]:
+            swimage = int(row["Age"])
 
         if "DQ" in timestr:
             return
@@ -346,20 +353,30 @@ class SwimTimes:
             debug(f"Line {count}: Unknown stroke {stroke}", 1)
             return
 
-        if asa not in self.scm.members.by_asa:
+        verify = get_config(self.scm, C_RECORDS, C_VERIFY)
+        age_eoy = get_config(self.scm, C_RECORDS, C_AGE_EOY)
+
+        member = None
+        if  asa not in self.scm.members.by_asa:
             debug(f"Line {count}: No SE Number {swimmer}", 2)
-            return
+            # We can't check, so go with it...
+            verify = False
+            age_eoy = False
+        else:
+            member = self.scm.members.by_asa[asa]
+            swimmer = member.name  # for consistency of spelling
 
-        member = self.scm.members.by_asa[asa]
+        if member and age_eoy:
+            yob = member.dob.year
+            swimdate = datetime.datetime.strptime(xdate, SCM_CSV_DATE_FORMAT)
+            swimyear = swimdate.year
+            swimage = swimyear - yob
 
-        yob = member.dob.year
-
-        swimdate = datetime.datetime.strptime(xdate, SCM_CSV_DATE_FORMAT)
-        swimyear = swimdate.year
-        swimage = swimyear - yob
-
-        if member.date_joined and (swimdate < member.date_joined):
+        if verify and member and member.date_joined and (swimdate < member.date_joined):
             debug(f"Line {count}: Ignored, not a member at time of swim", 2)
+            return
+        
+        if swimage is None:
             return
 
         if swimage < 18:
@@ -380,14 +397,12 @@ class SwimTimes:
         agegroup = f"{start_age}-{end_age}"
         AGES[agegroup] += 1
 
-        gender = member.gender
-
         event = f"{gender} {agegroup} {dist} {stroke} {pool}"
 
         swim = {
             S_EVENT: event,
             S_ASA: asa,
-            S_NAME: member.name,
+            S_NAME: swimmer,
             S_TIMESTR: timestr,
             S_FTIME: convert_time(timestr),
             S_LOCATION: location,
@@ -765,13 +780,18 @@ class RelayRecord(Record):
 
 def convert_time(xtime):
     """Convert a time to a number of seconds."""
-
-    hms = xtime.split(":")
-    if len(hms) == 2:
-        res = float(hms[0]) * 60 + float(hms[1])
-    else:
-        res = float(hms[0])
-    return res
+    
+    # xtime = re.sub (r" \(split time\)", "",xtime)
+    try:
+        hms = xtime.split(":")
+        if len(hms) == 2:
+            res = float(hms[0]) * 60 + float(hms[1])
+        else:
+            res = float(hms[0])
+        return res
+    except ValueError:
+        debug (f"invalid time {xtime} ", 0)
+        return 999999
 
 # pylint: disable=too-many-lines
 
