@@ -9,6 +9,7 @@ from scm_helper.facebook import Facebook
 from scm_helper.file import Csv
 from scm_helper.issue import REPORTS, IssueHandler
 from scm_helper.notify import notify, set_notify
+from scm_helper.records import Records
 from scm_helper.sendmail import send_email
 from scm_helper.version import VERSION
 
@@ -35,6 +36,8 @@ Where <options> are:
    --notes = print notes
    --password <password> = supply the password - useful for scripting.
    -q, --quiet = quiet mode
+   --records = process records
+   --newtimes <csvfile> = process new swim times into records
    --report <report> = which reports to run
    --restore <type> = restore an entity of <type> (need -archive as well)
    --se = Check against SE database
@@ -63,9 +66,11 @@ LONG_OPTS = [
     "lists",
     "member",
     "newstarter",
+    "newtimes=",
     "notes",
     "password=",
     "quiet",
+    "records",
     "report=",
     "restore=",
     "se",
@@ -225,6 +230,16 @@ def cmd(argv=None):
             send_email(scm, output, "SCM: Facebook Report")
         else:
             print(output)
+        sys.exit()
+
+    if scm.option("--records"):
+        record = Records(scm)
+        if record.read_baseline() is False:
+            sys.exit(2)
+        if scm.option("--newtimes"):
+            if record.read_newtimes(scm.option("--newtimes")) is False:
+                sys.exit(2)
+        record.create_html()
         sys.exit()
 
     scm.analyse()
