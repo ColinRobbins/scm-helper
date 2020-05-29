@@ -4,7 +4,7 @@ import sys
 try:
     from tkinter import END, messagebox, simpledialog
 except ImportError:
-    pass  # ignore it, we'll be runnig commmand line only
+    pass  # ignore it, we'll be running command line only
 
 
 WHERE = None

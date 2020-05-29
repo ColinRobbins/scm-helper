@@ -85,10 +85,9 @@ class API:
         self.eoy = datetime(int(q_year), 12, 31)
         offset = datetime(int(q_year), int(q_month), 1)
         self.q_offset = (self.today - offset).days
-        
+
         if "iPad" in platform.machine():
             self.ipad = True
-
 
     def get_config_file(self):
         """Read configuration file."""
@@ -119,17 +118,16 @@ class API:
 
     def get_config(self, password):
         """Get API key."""
+        # pylint: disable=import-outside-toplevel
         if self._config is None:
             if self.get_config_file() is False:
                 return False
 
         if self.ipad:
             from scm_helper.ipad import Crypto
-            #pylint: disable=import-outside-toplevel
 
             self.crypto = Crypto(self._config[C_CLUB], password)  # Salt
         else:
-            #pylint: disable=import-outside-toplevel
             from scm_helper.crypto import Crypto
 
             self.crypto = Crypto(self._config[C_CLUB], password)  # Salt

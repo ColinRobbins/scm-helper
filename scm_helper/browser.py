@@ -18,6 +18,7 @@ from scm_helper.config import (
     get_config,
 )
 from scm_helper.notify import interact_yesno, notify
+# pylint: disable=unused-import   #it is used!!!
 from selenium.webdriver.common.keys import Keys
 
 SE_COOKIES = "se_cookies.json"
@@ -48,7 +49,7 @@ def se_check(scm, members):
     if base_url is False:
         notify("Swim England config missing\n")
         return None
-        
+
     notify(f"Opening browser for {base_url}...\n")
 
     browser = start_browser(scm)

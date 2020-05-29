@@ -124,10 +124,10 @@ class FacebookPage(Files):
         if self.scm.ipad:
             notify("Not implemented on iPad")
             return False
-        
+
+        # pylint: disable=import-outside-toplevel
         from scm_helper.browser import fb_read_url
-        #pylint: disable=import-outside-toplevel
-        
+
         res = fb_read_url(scm, url)
 
         if res is None:

@@ -343,7 +343,7 @@ issues:
 #selenium:
 #    browser: "Chrome"
 #    web_driver: "C:\\Program Files (x86)\\Python37-32\\Scripts\\chromedriver.exe"
-    
+
 ################################################################
 
 # Debug level, set to 0 for no debug info

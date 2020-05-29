@@ -13,7 +13,7 @@ READ_BINARY = "r"
 
 
 class Crypto:
-    """Encryption class copyed from crypto - but does nothing."""
+    """Encryption class copied from crypto - but does nothing."""
 
     def __init__(self, salt, password):
         """Initialise."""

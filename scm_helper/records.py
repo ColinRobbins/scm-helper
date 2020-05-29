@@ -7,12 +7,12 @@ from pathlib import Path
 from shutil import copyfile
 
 from scm_helper.config import (
+    C_AGE_EOY,
     C_RECORDS,
     C_RELAY,
-    C_AGE_EOY,
+    C_VERIFY,
     CONFIG_DIR,
     FILE_READ,
-    C_VERIFY,
     FILE_WRITE,
     RECORDS_DIR,
     SCM_CSV_DATE_FORMAT,
@@ -248,9 +248,9 @@ class Records:
                 return False
 
             notify(f"Created {filename}...\n")
-        
+
         return filename
-        
+
     def delete(self):
         """Delete."""
         del self.records
@@ -276,7 +276,7 @@ class SwimTimes:
 
         try:
             count = 0
-            with open(filename, newline="", encoding='utf-8-sig') as csvfile:
+            with open(filename, newline="", encoding="utf-8-sig") as csvfile:
                 csv_reader = csv.DictReader(csvfile)
 
                 for row in csv_reader:
@@ -322,7 +322,7 @@ class SwimTimes:
         relay = row["Relay"]
         location = row["Location"]
         gender = row["Gender"]
-        
+
         swimage = None
         if row["Age"]:
             swimage = int(row["Age"])
@@ -359,7 +359,7 @@ class SwimTimes:
         age_eoy = get_config(self.scm, C_RECORDS, C_AGE_EOY)
 
         member = None
-        if  asa not in self.scm.members.by_asa:
+        if asa not in self.scm.members.by_asa:
             debug(f"Line {count}: No SE Number {swimmer}", 2)
             # We can't check, so go with it...
             verify = False
@@ -377,7 +377,7 @@ class SwimTimes:
         if verify and member and member.date_joined and (swimdate < member.date_joined):
             debug(f"Line {count}: Ignored, not a member at time of swim", 2)
             return
-        
+
         if swimage is None:
             return
 
@@ -782,7 +782,7 @@ class RelayRecord(Record):
 
 def convert_time(xtime):
     """Convert a time to a number of seconds."""
-    
+
     try:
         hms = xtime.split(":")
         if len(hms) == 2:
@@ -791,8 +791,9 @@ def convert_time(xtime):
             res = float(hms[0])
         return res
     except ValueError:
-        debug (f"invalid time {xtime} ", 3)
+        debug(f"invalid time {xtime} ", 3)
         return 999999
+
 
 # pylint: disable=too-many-lines
 

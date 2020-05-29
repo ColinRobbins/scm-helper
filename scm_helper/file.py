@@ -61,7 +61,7 @@ class Csv(Files):
 
         try:
             count = 0
-            with open(file, newline="", encoding='utf-8-sig') as csvfile:
+            with open(file, newline="", encoding="utf-8-sig") as csvfile:
                 csv_reader = csv.DictReader(csvfile)
 
                 for row in csv_reader:

@@ -40,10 +40,10 @@ from scm_helper.config import (
 )
 from scm_helper.facebook import Facebook
 from scm_helper.file import Csv
-from scm_helper.records import Records
 from scm_helper.issue import REPORTS, IssueHandler, debug
 from scm_helper.license import LICENSE
 from scm_helper.notify import set_notify
+from scm_helper.records import Records
 from scm_helper.version import VERSION
 
 NSEW = N + S + E + W
@@ -156,23 +156,23 @@ class ScmGui:
         cmd.add_command(label="Analyse Facebook", command=self.facebook, state=DISABLED)
         self.menus.append([cmd, "Analyse Facebook"])
 
-        label="Analyse Swim England File"
+        label = "Analyse Swim England File"
         cmd.add_command(label=label, command=self.swim_england, state=DISABLED)
         self.menus.append([cmd, label])
-        
-        label="Analyse Swim England Registrations Online"
+
+        label = "Analyse Swim England Registrations Online"
         cmd.add_command(label=label, command=self.swim_england_online, state=DISABLED)
         self.menus.append([cmd, label])
 
         cmd.add_command(label="List Coaches", command=self.coaches, state=DISABLED)
         self.menus.append([cmd, "List Coaches"])
 
-        label="Show Not-confirmed Emails"
+        label = "Show Not-confirmed Emails"
         cmd.add_command(label=label, command=self.confirm, state=DISABLED)
         self.menus.append([cmd, label])
 
         menubar.add_cascade(label="Reports", menu=cmd)
-        
+
         record = Menu(menubar, tearoff=0)
 
         record.add_command(label="Process Records", command=self.process_records)
@@ -285,7 +285,7 @@ class ScmGui:
 
         if self.prep_report(False) is False:
             return
-            
+
         self.thread = SwimEnglandThread(self).start()
 
     def facebook(self):
@@ -514,7 +514,7 @@ class ScmGui:
     def set_normal(self):
         """Set GUI to normal state after processing."""
         self.set_buttons(NORMAL)
-        
+
     def new_times(self):
         """Add new time and process."""
         self.process_records(True)
@@ -641,7 +641,6 @@ class BackupThread(threading.Thread):
         self.gui.thread = None
 
 
-
 class FacebookThread(threading.Thread):
     """Thread for Facebook."""
 
@@ -660,13 +659,13 @@ class FacebookThread(threading.Thread):
             self.gui.report_text.config(state=DISABLED)
             self.gui.notify_text.config(state=DISABLED)
             return
-    
+
         wrap(None, fbook.analyse)
         output = wrap(None, fbook.print_errors)
 
-        if self.gui.prep_report(True,False) is False:
+        if self.gui.prep_report(True, False) is False:
             return
-                
+
         wrap(None, fbook.delete)
         del fbook
         self.gui.report_text.insert(END, output)
@@ -702,7 +701,7 @@ class RecordThread(threading.Thread):
         dir_opt["title"] = "Locate new swim times CSV file from SCM"
         dir_opt["parent"] = self.gui.master
         dir_opt["defaultextension"] = ".csv"
-        
+
         if self.newtimes:
             filename = filedialog.askopenfilename(**dir_opt)
             output = wrap(None, record.read_newtimes, filename)
@@ -735,9 +734,9 @@ class SwimEnglandThread(threading.Thread):
         """Process a Swim England online report."""
         output = wrap(None, self.scm.se_check)
 
-        if self.gui.prep_report(True,False) is False:
+        if self.gui.prep_report(True, False) is False:
             return
-                
+
         self.gui.report_text.insert(END, output)
         self.gui.report_text.config(state=DISABLED)
         self.gui.notify_text.config(state=DISABLED)

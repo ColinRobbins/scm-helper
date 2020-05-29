@@ -11,6 +11,7 @@ from scm_helper.config import (
 from scm_helper.entity import Entities
 from scm_helper.issue import E_DUPLICATE, debug, issue
 from scm_helper.member import Member
+from scm_helper.notify import notify
 
 
 class Members(Entities):
@@ -134,13 +135,13 @@ class Members(Entities):
         return res
 
     def se_check(self):
-        """Check agaisnt an SE online."""
+        """Check against an SE online."""
         if self.scm.ipad:
             notify("Not implemented on iPad")
             return False
-        
+
+        # pylint: disable=import-outside-toplevel
         from scm_helper.browser import se_check
-        #pylint: disable=import-outside-toplevel
 
         return se_check(self.scm, self.entities)
 
