@@ -342,11 +342,15 @@ conduct:
 # Facebook Correlations
 #############################################
 facebook:
-    - "Nottingham Leander Swimmers.html"
-    - "Nottingham Leander Masters.html"
-    - "Nottingham Leander Water Polo.html"
+#  files:
+#    - "Nottingham Leander Swimmers.html"
+#    - "Nottingham Leander Masters.html"
+#    - "Nottingham Leander Water Polo.html"
+  groups:
+    - https://www.facebook.com/groups/NottinghamLeander/
+    - https://www.facebook.com/groups/LeanderMasters/
+    - https://www.facebook.com/groups/NottinghamLeanderWaterPolo/
     
-
 #############################################
 # Lists
 #
@@ -453,8 +457,26 @@ issues:
     E_NOT_CONFIRMED:
         ignore_error: true
 
+
+#############################################
+# Swim England Correlations
+#############################################
+swim_england:
+  base_url: "https://www.swimmingresults.org/"
+  check_url: "https://www.swimmingresults.org/membershipcheck/member_details.php?myiref="
+  test_id: 516115
+  
+##################################################
+# Selenium
+# Used for Swim England and Facebook checking
+##################################################
+
+selenium:
+    browser: "Chrome"
+    web_driver: "C:\\Program Files (x86)\\Python37-32\\Scripts\\chromedriver.exe"
+  
 # Debug level
 # Set to 0 for no debug info
 # A setting of 1 is recommended while getting it working!
-debug_level: 1
+debug_level: 0
 

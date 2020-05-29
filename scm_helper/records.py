@@ -366,7 +366,7 @@ class SwimTimes:
             age_eoy = False
         else:
             member = self.scm.members.by_asa[asa]
-            swimmer = member.name  # for consistency of spelling
+            swimmer = member.knownas  # for consistency of spelling
 
         if member and age_eoy:
             yob = member.dob.year
@@ -783,7 +783,6 @@ class RelayRecord(Record):
 def convert_time(xtime):
     """Convert a time to a number of seconds."""
     
-    # xtime = re.sub (r" \(split time\)", "",xtime)
     try:
         hms = xtime.split(":")
         if len(hms) == 2:
@@ -792,7 +791,7 @@ def convert_time(xtime):
             res = float(hms[0])
         return res
     except ValueError:
-        debug (f"invalid time {xtime} ", 0)
+        debug (f"invalid time {xtime} ", 3)
         return 999999
 
 # pylint: disable=too-many-lines
