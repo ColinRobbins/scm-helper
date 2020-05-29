@@ -44,14 +44,16 @@ def se_check(scm, members):
     home = str(Path.home())
     cookiefile = os.path.join(home, CONFIG_DIR, SE_COOKIES)
 
-    browser = start_browser(scm)
-
-    if browser is None:
-        return None
-
     base_url = get_config(scm, C_SWIM_ENGLAND, C_BASE_URL)
     if base_url is False:
         notify("Swim England config missing\n")
+        return None
+        
+    notify(f"Opening browser for {base_url}...\n")
+
+    browser = start_browser(scm)
+
+    if browser is None:
         return None
 
     read_cookies(browser, cookiefile, base_url)
@@ -92,6 +94,8 @@ def fb_read_url(scm, url):
 
     home = str(Path.home())
     cookiefile = os.path.join(home, CONFIG_DIR, FB_COOKIES)
+
+    notify(f"Opening browser for {url}...\n")
 
     url += MEMBERS_SUFFIX
 

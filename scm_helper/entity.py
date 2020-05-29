@@ -176,9 +176,7 @@ class Entity:
         if (A_MEMBERS in self.data) and (len(self.data[A_MEMBERS]) > 0):
             for swimmer in self.data[A_MEMBERS]:
                 if swimmer[A_GUID] not in members.by_guid:
-                    msg = (
-                        f"GUID {swimmer[A_GUID]} missing in list - email address only?"
-                    )
+                    msg = f"GUID {swimmer[A_GUID]} missing in list - email address only?"
                     debug(msg, 7)
                     continue
                 guid = members.by_guid[swimmer[A_GUID]]

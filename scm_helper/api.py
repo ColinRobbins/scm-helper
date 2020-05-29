@@ -103,7 +103,7 @@ class API:
         except EnvironmentError:
             notify(f"Cannot open configuration file: {cfg}\n")
             return False
-        except yaml.scanner.ScannerError as error:
+        except (yaml.scanner.ScannerError, yaml.parser.ParserError) as error:
             notify(f"Error in configuration file: {error}\n")
             return False
 

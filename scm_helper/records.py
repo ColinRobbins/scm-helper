@@ -231,7 +231,7 @@ class Records:
 
         except EnvironmentError as error:
             notify(f"Cannot create HTML file: {filename}\n{error}\n")
-            return
+            return False
 
         notify(f"Created {filename}...\n")
 
@@ -245,10 +245,12 @@ class Records:
 
             except EnvironmentError as error:
                 notify(f"Cannot create HTML file: {filename}\n{error}\n")
-                return
+                return False
 
             notify(f"Created {filename}...\n")
-
+        
+        return filename
+        
     def delete(self):
         """Delete."""
         del self.records
@@ -274,8 +276,8 @@ class SwimTimes:
 
         try:
             count = 0
-            with open(filename, newline="") as csvfile:
-                csv_reader = csv.DictReader(csvfile, dialect="excel")
+            with open(filename, newline="", encoding='utf-8-sig') as csvfile:
+                csv_reader = csv.DictReader(csvfile)
 
                 for row in csv_reader:
                     count += 1
@@ -442,7 +444,7 @@ class Record:
 
         self.records[swim[S_EVENT]] = swim
 
-        newrec = f"New record: {swim[S_EVENT]}, {swim[S_NAME]}\n"
+        newrec = f"New record: {swim[S_EVENT]}, {swim[S_NAME]}, {swim[S_FTIME]}\n"
         self.newrecords += newrec
 
     def check_row(self, row, count):
@@ -796,12 +798,10 @@ def convert_time(xtime):
 # pylint: disable=too-many-lines
 
 
-DEFAULT_RECORDS = """
-event,name,time,location,date
+DEFAULT_RECORDS = """event,name,time,location,date
 """
 
-DEFAULT_HEADER = """
-<style>
+DEFAULT_HEADER = """<style>
 
 input[type=radio],
 input[type=checkbox] {

@@ -40,6 +40,7 @@ from scm_helper.config import (
 )
 from scm_helper.facebook import Facebook
 from scm_helper.file import Csv
+from scm_helper.records import Records
 from scm_helper.issue import REPORTS, IssueHandler, debug
 from scm_helper.license import LICENSE
 from scm_helper.notify import set_notify
@@ -155,20 +156,32 @@ class ScmGui:
         cmd.add_command(label="Analyse Facebook", command=self.facebook, state=DISABLED)
         self.menus.append([cmd, "Analyse Facebook"])
 
-        cmd.add_command(
-            label="Analyse Swim England File", command=self.swim_england, state=DISABLED
-        )
-        self.menus.append([cmd, "Analyse Swim England File"])
+        label="Analyse Swim England File"
+        cmd.add_command(label=label, command=self.swim_england, state=DISABLED)
+        self.menus.append([cmd, label])
+        
+        label="Analyse Swim England Registrations Online"
+        cmd.add_command(label=label, command=self.swim_england_online, state=DISABLED)
+        self.menus.append([cmd, label])
 
         cmd.add_command(label="List Coaches", command=self.coaches, state=DISABLED)
         self.menus.append([cmd, "List Coaches"])
 
-        cmd.add_command(
-            label="Show Not-confirmed Emails", command=self.confirm, state=DISABLED
-        )
-        self.menus.append([cmd, "Show Not-confirmed Emails"])
+        label="Show Not-confirmed Emails"
+        cmd.add_command(label=label, command=self.confirm, state=DISABLED)
+        self.menus.append([cmd, label])
 
         menubar.add_cascade(label="Reports", menu=cmd)
+        
+        record = Menu(menubar, tearoff=0)
+
+        record.add_command(label="Process Records", command=self.process_records)
+
+        label = "Read New Swim Times"
+        record.add_command(label=label, command=self.new_times, state=DISABLED)
+        self.menus.append([record, label])
+
+        menubar.add_cascade(label="Records", menu=record)
 
         about = Menu(menubar, tearoff=0)
         about.add_command(label="About...", command=xabout)
@@ -200,19 +213,22 @@ class ScmGui:
 
         return False
 
-    def prep_report(self):
+    def prep_report(self, create=True, delete=True):
         """Prepare for a report."""
         if self.gotdata is False:
-            messagebox.showerror("Error", "Run analyse first to colect data")
+            messagebox.showerror("Error", "Run analyse first to collect data")
             return False
 
-        if self.report_window is None:
+        if create and (self.report_window is None):
             self.create_report_window()
 
-        self.report_text.delete("1.0", END)
-        self.notify_text.delete("1.0", END)
-        self.report_text.config(state=NORMAL)
+        if self.report_window:
+            self.report_text.config(state=NORMAL)
+            self.report_text.delete("1.0", END)
+
         self.notify_text.config(state=NORMAL)
+        if delete:
+            self.notify_text.delete("1.0", END)
 
         return True
 
@@ -237,7 +253,7 @@ class ScmGui:
         cfg = os.path.join(home, CONFIG_DIR)
 
         dir_opt = {}
-        dir_opt["title"] = "Find Swim Enngland File"
+        dir_opt["title"] = "Find Swim England File"
         dir_opt["initialdir"] = cfg
         dir_opt["parent"] = self.report_window
         dir_opt["defaultextension"] = ".csv"
@@ -262,27 +278,25 @@ class ScmGui:
         self.notify_text.config(state=DISABLED)
         self.report_window.lift()
 
+    def swim_england_online(self):
+        """Window for reports."""
+        if self.thread:
+            return  # already running
+
+        if self.prep_report(False) is False:
+            return
+            
+        self.thread = SwimEnglandThread(self).start()
+
     def facebook(self):
-        """Process a Facebook report."""
-        if self.prep_report() is False:
+        """Window for reports."""
+        if self.thread:
+            return  # already running
+
+        if self.prep_report(False) is False:
             return
 
-        fbook = Facebook()
-        if fbook.read_data(self.scm) is False:
-            messagebox.showerror("Error", "Could not read facebook files")
-            self.report_text.config(state=DISABLED)
-            self.notify_text.config(state=DISABLED)
-            return
-
-        wrap(None, fbook.analyse)
-        output = wrap(None, fbook.print_errors)
-
-        wrap(None, fbook.delete)
-        del fbook
-        self.report_text.insert(END, output)
-        self.report_text.config(state=DISABLED)
-        self.notify_text.config(state=DISABLED)
-        self.report_window.lift()
+        self.thread = FacebookThread(self).start()
 
     def confirm(self):
         """Confirm email Report."""
@@ -500,6 +514,20 @@ class ScmGui:
     def set_normal(self):
         """Set GUI to normal state after processing."""
         self.set_buttons(NORMAL)
+        
+    def new_times(self):
+        """Add new time and process."""
+        self.process_records(True)
+
+    def process_records(self, newtimes=False):
+        """Process Records."""
+        if self.thread:
+            return  # already running
+
+        if self.scm_init() is False:
+            return
+
+        self.thread = RecordThread(self, newtimes).start()
 
 
 class AnalysisThread(threading.Thread):
@@ -611,6 +639,109 @@ class BackupThread(threading.Thread):
         self.gui.master.after(AFTER, self.gui.set_normal)
 
         self.gui.thread = None
+
+
+
+class FacebookThread(threading.Thread):
+    """Thread for Facebook."""
+
+    def __init__(self, gui):
+        """Initialise."""
+        threading.Thread.__init__(self)
+        self.gui = gui
+        self.scm = gui.scm
+
+    def run(self):
+        """Process a Facebook report."""
+
+        fbook = Facebook()
+        if fbook.read_data(self.scm) is False:
+            messagebox.showerror("Error", "Could not read facebook files")
+            self.gui.report_text.config(state=DISABLED)
+            self.gui.notify_text.config(state=DISABLED)
+            return
+    
+        wrap(None, fbook.analyse)
+        output = wrap(None, fbook.print_errors)
+
+        if self.gui.prep_report(True,False) is False:
+            return
+                
+        wrap(None, fbook.delete)
+        del fbook
+        self.gui.report_text.insert(END, output)
+        self.gui.report_text.config(state=DISABLED)
+        self.gui.notify_text.config(state=DISABLED)
+        self.gui.report_window.lift()
+
+
+class RecordThread(threading.Thread):
+    """Thread for Records."""
+
+    def __init__(self, gui, newtimes):
+        """Initialise."""
+        threading.Thread.__init__(self)
+        self.gui = gui
+        self.scm = gui.scm
+        self.newtimes = newtimes
+
+    def run(self):
+        """Process Records."""
+        self.gui.notify_text.config(state=NORMAL)
+        self.gui.notify_text.delete("1.0", END)
+
+        record = Records(self.scm)
+
+        output = wrap(None, record.read_baseline)
+        if output is False:
+            self.gui.notify_text.config(state=DISABLED)
+            messagebox.showerror("Error", "Cannot read records baseline")
+            return
+
+        dir_opt = {}
+        dir_opt["title"] = "Locate new swim times CSV file from SCM"
+        dir_opt["parent"] = self.gui.master
+        dir_opt["defaultextension"] = ".csv"
+        
+        if self.newtimes:
+            filename = filedialog.askopenfilename(**dir_opt)
+            output = wrap(None, record.read_newtimes, filename)
+            if output is False:
+                self.gui.notify_text.config(state=DISABLED)
+                messagebox.showerror("Error", "Cannot read new swim times")
+                return
+
+        output = wrap(None, record.create_html)
+        if output:
+            webbrowser.open_new(output)
+        else:
+            self.gui.notify_text.config(state=DISABLED)
+            messagebox.showerror("Error", "Cannot Create HTML")
+            return
+
+        self.gui.notify_text.config(state=DISABLED)
+
+
+class SwimEnglandThread(threading.Thread):
+    """Thread for SwimEngland."""
+
+    def __init__(self, gui):
+        """Initialise."""
+        threading.Thread.__init__(self)
+        self.gui = gui
+        self.scm = gui.scm
+
+    def run(self):
+        """Process a Swim England online report."""
+        output = wrap(None, self.scm.se_check)
+
+        if self.gui.prep_report(True,False) is False:
+            return
+                
+        self.gui.report_text.insert(END, output)
+        self.gui.report_text.config(state=DISABLED)
+        self.gui.notify_text.config(state=DISABLED)
+        self.gui.report_window.lift()
 
 
 class UpdateThread(threading.Thread):
