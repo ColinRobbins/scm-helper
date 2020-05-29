@@ -13,6 +13,32 @@
 * Added feature to connect directly to Swim England database to check membership details
 * Added feature to connect directly to Facebook to check group membership
 
+Version 1.2 requires the following to be added to your configuration file, and modified appropriately.
+```
+##################################################
+# Swim England Correlations
+##################################################
+swim_england:
+  base_url: "https://www.swimmingresults.org/"
+  check_url: "https://www.swimmingresults.org/membershipcheck/member_details.php?myiref="
+  test_id: 516115
+  
+##################################################
+# Facebook Correlations
+##################################################
+facebook:
+  groups:
+    - https://www.facebook.com/groups/NottinghamLeander/
+    
+##################################################
+# Selenium
+# Used for Swim England and Facebook checking
+##################################################
+selenium:
+    browser: "Chrome"
+    web_driver: "C:\\Program Files (x86)\\Python37-32\\Scripts\\chromedriver.exe"
+
+```
 
 ## 1.1
 02/05/2020
