@@ -1,5 +1,4 @@
 """SCM Members."""
-from scm_helper.browser import se_check
 from scm_helper.config import (
     A_ACTIVE,
     A_FIRSTNAME,
@@ -136,6 +135,13 @@ class Members(Entities):
 
     def se_check(self):
         """Check agaisnt an SE online."""
+        if self.scm.ipad:
+            notify("Not implemented on iPad")
+            return False
+        
+        from scm_helper.browser import se_check
+        #pylint: disable=import-outside-toplevel
+
         return se_check(self.scm, self.entities)
 
     def print_summary(self):

@@ -4,7 +4,6 @@ import os
 import re
 from pathlib import Path
 
-from scm_helper.browser import fb_read_url
 from scm_helper.config import (
     C_FACEBOOK,
     C_FILES,
@@ -122,6 +121,13 @@ class FacebookPage(Files):
 
         self.scm = scm
 
+        if self.scm.ipad:
+            notify("Not implemented on iPad")
+            return False
+        
+        from scm_helper.browser import fb_read_url
+        #pylint: disable=import-outside-toplevel
+        
         res = fb_read_url(scm, url)
 
         if res is None:
