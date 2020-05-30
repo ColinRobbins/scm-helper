@@ -2,6 +2,7 @@
 
 import json
 import os.path
+import pickle
 import time
 from pathlib import Path
 
@@ -22,7 +23,7 @@ from scm_helper.notify import interact_yesno, notify
 from selenium.webdriver.common.keys import Keys
 
 SE_COOKIES = "se_cookies.json"
-FB_COOKIES = "fb_cookies.json"
+FB_COOKIES = "fb_cookies.json.enc"
 FILE_WRITE = "w"
 FILE_READ = "r"
 
@@ -57,7 +58,7 @@ def se_check(scm, members):
     if browser is None:
         return None
 
-    read_cookies(browser, cookiefile, base_url)
+    read_cookies(browser, cookiefile, base_url, None)
 
     check_url = get_config(scm, C_SWIM_ENGLAND, C_CHECK_URL)
     test_id_url = get_config(scm, C_SWIM_ENGLAND, C_TEST_ID)
@@ -69,7 +70,7 @@ def se_check(scm, members):
     except selenium.common.exceptions.NoSuchElementException:
         msg = "Please solve the 'I am not a robot', and then press enter here."
         interact_yesno(msg)
-        write_cookies(browser, cookiefile)
+        write_cookies(browser, cookiefile, None)
 
     res = ""
     for member in members:
@@ -105,14 +106,14 @@ def fb_read_url(scm, url):
     if browser is None:
         return None
 
-    read_cookies(browser, cookiefile, FACEBOOK)
+    read_cookies(browser, cookiefile, FACEBOOK, scm)
 
     browser.get(url)
     try:
         browser.find_element_by_xpath(M_XPATH)
     except selenium.common.exceptions.NoSuchElementException:
         interact_yesno("Please logon to Facebook and then press enter here.")
-        write_cookies(browser, cookiefile)
+        write_cookies(browser, cookiefile, scm)
         browser.get(url)
 
     scroll(browser)
@@ -213,29 +214,42 @@ def start_browser(scm):
         return None
 
 
-def read_cookies(browser, cookiefile, url):
+def read_cookies(browser, cookiefile, url, scm):
     """Read cookies."""
 
     if os.path.isfile(cookiefile):
         browser.get(url)
-        try:
-            with open(cookiefile, FILE_READ) as file:
-                data = file.read()
-                cookies = json.loads(data)
-                for cookie in cookies:
-                    if "expiry" in cookie:
-                        del cookie["expiry"]
-                    browser.add_cookie(cookie)
+        
+        if scm:
+            data = scm.crypto.decrypt_file (cookiefile)
+            if data:
+                cookies = pickle.loads(data)
+        else:
+            try:
+                with open(cookiefile, FILE_READ) as file:
+                    data = file.read()
+                    cookies = json.loads(data)
+                    
+            except EnvironmentError as error:
+                notify(f"Failed to read {cookiefile}\n{error}\n")
+                    
+        for cookie in cookies:
+            if "expiry" in cookie:
+                del cookie["expiry"]
+            browser.add_cookie(cookie)
 
-        except EnvironmentError as error:
-            notify(f"Failed to read {cookiefile}\n{error}\n")
 
-
-def write_cookies(browser, cookiefile):
+def write_cookies(browser, cookiefile, scm):
     """Write cookies."""
 
     cookies = browser.get_cookies()
+
     if cookies:
+        if scm:
+            data = pickle.dumps(cookies)
+            scm.crypto.encrypt_file (cookiefile, data)
+            return
+        
         try:
             with open(cookiefile, FILE_WRITE) as file:
                 opt = json.dumps(cookies)

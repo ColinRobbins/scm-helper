@@ -30,11 +30,28 @@ class Crypto:
 
         self.__key = self.get_encryption_key(self.__password)
 
-    def encrypt_file(self, name, data):
+    def encrypt_file(self, filename, data):
         """Encrypt file."""
         try:
             fernet = Fernet(self.__key)
 
+            encrypted_data = fernet.encrypt(data)
+            with open(filename, WRITE_BINARY) as file:
+                file.write(encrypted_data)
+
+            notify(f"Encrypted {filename}\n")
+            return True
+
+        except OSError as error:
+            notify(f"Cannot open/write file: {error}\n")
+            return False
+        except InvalidToken:
+            notify("Cannot encrypt file - token error?\n")
+            return False
+            
+    def encrypt_backup(self, name, data):
+        """Encrypt file."""
+        try:
             today = date.today()
             home = str(Path.home())
 
@@ -48,44 +65,45 @@ class Crypto:
                 os.mkdir(directory)
 
             filename = os.path.join(directory, f"{name}.enc")
-
-            encrypted_data = fernet.encrypt(data.encode("utf-8"))
-            with open(filename, WRITE_BINARY) as file:
-                file.write(encrypted_data)
-
-            notify(f"Encrypted {filename}\n")
-            file.close()
-            return True
+            
+            return self.encrypt_file(filename, data.encode("utf-8"))
 
         except OSError as error:
             notify(f"Cannot open/write file: {error}\n")
             return False
-        except InvalidToken:
-            notify("Cannot encrypt file - token error?\n")
-            return False
 
-    def decrypt_file(self, name, xdate):
+    def decrypt_file(self, filename):
         """Decrypt file."""
         try:
             fernet = Fernet(self.__key)
-
-            home = str(Path.home())
-            backup = os.path.join(home, CONFIG_DIR, BACKUP_DIR)
-
-            filename = os.path.join(backup, xdate, f"{name}.enc")
 
             with open(filename, READ_BINARY) as file:
                 data = file.read()
             file.close()
 
             decrypted = fernet.decrypt(data)
-            return json.loads(decrypted.decode())
+            return decrypted
 
         except OSError as error:
             notify(f"Cannot open file: {error}\n")
             return None
         except InvalidToken:
             notify("Cannot decrypt file - wrong password?\n")
+            return None
+
+    def decrypt_backup(self, name, xdate):
+        """Decrypt file."""
+        try:
+            home = str(Path.home())
+            backup = os.path.join(home, CONFIG_DIR, BACKUP_DIR)
+
+            filename = os.path.join(backup, xdate, f"{name}.enc")
+
+            data = self.decrypt_file(filename)
+            return json.loads(data.decode())
+            
+        except OSError as error:
+            notify(f"Cannot open file: {error}\n")
             return None
 
     def get_encryption_key(self, password):

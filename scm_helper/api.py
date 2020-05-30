@@ -320,7 +320,7 @@ class API:
 
         backup = self.classes + self.backup_classes
         for aclass in backup:
-            if self.crypto.encrypt_file(aclass.name, aclass.json) is False:
+            if self.crypto.encrypt_backup(aclass.name, aclass.json) is False:
                 return False
 
         # Backup config file too.
@@ -349,7 +349,7 @@ class API:
         restore = self.classes + self.backup_classes
 
         for aclass in restore:
-            decrypted = self.crypto.decrypt_file(aclass.name, xdate)
+            decrypted = self.crypto.decrypt_backup(aclass.name, xdate)
             if decrypted is None:
                 return False
             aclass.parse_data(decrypted)

@@ -27,6 +27,14 @@ class Crypto:
         """Decrypt file."""
         notify("Not implemented on iPad\n")
 
+    def encrypt_backup(self, name, data):
+        """Encrypt file."""
+        notify("Not implemented on iPad\n")
+
+    def decrypt_backup(self, name, xdate):
+        """Decrypt file."""
+        notify("Not implemented on iPad\n")
+
     def read_key(self, filename):
         """Read API key."""
         home = str(Path.home())
