@@ -48,7 +48,7 @@ class Crypto:
         except InvalidToken:
             notify("Cannot encrypt file - token error?\n")
             return False
-            
+
     def encrypt_backup(self, name, data):
         """Encrypt file."""
         try:
@@ -65,7 +65,7 @@ class Crypto:
                 os.mkdir(directory)
 
             filename = os.path.join(directory, f"{name}.enc")
-            
+
             return self.encrypt_file(filename, data.encode("utf-8"))
 
         except OSError as error:
@@ -101,7 +101,7 @@ class Crypto:
 
             data = self.decrypt_file(filename)
             return json.loads(data.decode())
-            
+
         except OSError as error:
             notify(f"Cannot open file: {error}\n")
             return None

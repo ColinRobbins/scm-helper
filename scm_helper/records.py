@@ -441,7 +441,7 @@ class Record:
         self.worldrecord = 0
         self.europeanrecord = 0
         self.britishrecord = 0
-        
+
         self.date = None
 
     def check_swim(self, swim):
@@ -696,7 +696,7 @@ class Record:
             xdate = record[S_DATE]
             name = record[S_NAME]
             location = record[S_LOCATION]
-    
+
             swimmer = name.split(",")
             if len(swimmer) == 2:
                 name = f"{swimmer[1]} {swimmer[0]}"

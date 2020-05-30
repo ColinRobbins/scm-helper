@@ -477,7 +477,7 @@ class API:
             res += f"{fix.name}: {fix.fixmsg}\n"
 
         return res
-        
+
     def option(self, option):
         """Options."""
         if option in self._options:

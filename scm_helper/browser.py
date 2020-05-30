@@ -19,6 +19,7 @@ from scm_helper.config import (
     get_config,
 )
 from scm_helper.notify import interact_yesno, notify
+
 # pylint: disable=unused-import   #it is used!!!
 from selenium.webdriver.common.keys import Keys
 
@@ -219,9 +220,9 @@ def read_cookies(browser, cookiefile, url, scm):
 
     if os.path.isfile(cookiefile):
         browser.get(url)
-        
+
         if scm:
-            data = scm.crypto.decrypt_file (cookiefile)
+            data = scm.crypto.decrypt_file(cookiefile)
             if data:
                 cookies = pickle.loads(data)
         else:
@@ -229,10 +230,10 @@ def read_cookies(browser, cookiefile, url, scm):
                 with open(cookiefile, FILE_READ) as file:
                     data = file.read()
                     cookies = json.loads(data)
-                    
+
             except EnvironmentError as error:
                 notify(f"Failed to read {cookiefile}\n{error}\n")
-                    
+
         for cookie in cookies:
             if "expiry" in cookie:
                 del cookie["expiry"]
@@ -247,9 +248,9 @@ def write_cookies(browser, cookiefile, scm):
     if cookies:
         if scm:
             data = pickle.dumps(cookies)
-            scm.crypto.encrypt_file (cookiefile, data)
+            scm.crypto.encrypt_file(cookiefile, data)
             return
-        
+
         try:
             with open(cookiefile, FILE_WRITE) as file:
                 opt = json.dumps(cookies)
