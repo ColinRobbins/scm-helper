@@ -2,15 +2,14 @@
 """SCM support tools."""
 import getopt
 import sys
-from tkinter import TclError, Tk
 
 from scm_helper.api import API
 from scm_helper.config import HELPURL
 from scm_helper.facebook import Facebook
 from scm_helper.file import Csv
-from scm_helper.gui import ScmGui
 from scm_helper.issue import REPORTS, IssueHandler
 from scm_helper.notify import notify, set_notify
+from scm_helper.records import Records
 from scm_helper.sendmail import send_email
 from scm_helper.version import VERSION
 
@@ -37,8 +36,11 @@ Where <options> are:
    --notes = print notes
    --password <password> = supply the password - useful for scripting.
    -q, --quiet = quiet mode
+   --records = process records
+   --newtimes <csvfile> = process new swim times into records
    --report <report> = which reports to run
    --restore <type> = restore an entity of <type> (need -archive as well)
+   --se = Check against SE database
    --to <email> = Who to send the emial to (used with --email)
    --verify <date> = use archive backup
 
@@ -64,11 +66,14 @@ LONG_OPTS = [
     "lists",
     "member",
     "newstarter",
+    "newtimes=",
     "notes",
-    "password",
+    "password=",
     "quiet",
+    "records",
     "report=",
     "restore=",
+    "se",
     "to=",
     "verify=",
 ]
@@ -152,7 +157,7 @@ def cmd(argv=None):
 
     if scm.option("--facebook"):
         fbook = Facebook()
-        if fbook.readfiles(scm) is False:
+        if fbook.read_data(scm) is False:
             sys.exit(2)
 
     if scm.option("--verify"):
@@ -210,6 +215,14 @@ def cmd(argv=None):
             print(output)
         sys.exit()
 
+    if scm.option("--se"):
+        output = scm.se_check()
+        if scm.option("--email"):
+            send_email(scm, output, "SCM: SE Analysis")
+        else:
+            print(output)
+        sys.exit()
+
     if scm.option("--facebook"):
         fbook.analyse()
         output = fbook.print_errors()
@@ -217,6 +230,16 @@ def cmd(argv=None):
             send_email(scm, output, "SCM: Facebook Report")
         else:
             print(output)
+        sys.exit()
+
+    if scm.option("--records"):
+        record = Records(scm)
+        if record.read_baseline() is False:
+            sys.exit(2)
+        if scm.option("--newtimes"):
+            if record.read_newtimes(scm.option("--newtimes")) is False:
+                sys.exit(2)
+        record.create_html()
         sys.exit()
 
     scm.analyse()
@@ -271,10 +294,20 @@ def main():
         sys.exit()
 
     try:
+        # pylint: disable=import-outside-toplevel
+        from tkinter import TclError, Tk
+    except ImportError:
+        cmd()
+        sys.exit()
+
+    try:
         root = Tk()
     except TclError:
         cmd()
         sys.exit()
+
+    # pylint: disable=import-outside-toplevel
+    from scm_helper.gui import ScmGui
 
     ScmGui(root)
     root.mainloop()

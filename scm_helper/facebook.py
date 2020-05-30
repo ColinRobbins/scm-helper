@@ -4,7 +4,14 @@ import os
 import re
 from pathlib import Path
 
-from scm_helper.config import C_FACEBOOK, CONFIG_DIR, FILE_READ, get_config
+from scm_helper.config import (
+    C_FACEBOOK,
+    C_FILES,
+    C_GROUPS,
+    CONFIG_DIR,
+    FILE_READ,
+    get_config,
+)
 from scm_helper.files import Files
 from scm_helper.notify import notify
 
@@ -22,14 +29,14 @@ class Facebook:
         self.scm = None
         self.facebook = []
 
-    def readfiles(self, scm):
+    def read_data(self, scm):
         """Read each file."""
         self.scm = scm
 
         home = str(Path.home())
         mydir = os.path.join(home, CONFIG_DIR)
 
-        cfg = get_config(scm, C_FACEBOOK)
+        cfg = get_config(scm, C_FACEBOOK, C_FILES)
         if cfg:
             for facebook in cfg:
                 face = FacebookPage()
@@ -42,6 +49,19 @@ class Facebook:
                 else:
                     return False
             return True
+
+        cfg = get_config(scm, C_FACEBOOK, C_GROUPS)
+        if cfg:
+            for facebook in cfg:
+                face = FacebookPage()
+                res = face.readurl(facebook, scm)
+                if res:
+                    self.facebook.append(face)
+                else:
+                    return False
+
+            return True
+
         return False
 
     def analyse(self):
@@ -94,6 +114,27 @@ class FacebookPage(Files):
         except EnvironmentError:
             notify(f"Cannot open facebook file: {filename}\n")
             return False
+
+    def readurl(self, url, scm):
+        """Read Facebook page."""
+        self._filename = url.rstrip("/")  # Remove '/' for result printing
+
+        self.scm = scm
+
+        if self.scm.ipad:
+            notify("Not implemented on iPad")
+            return False
+
+        # pylint: disable=import-outside-toplevel
+        from scm_helper.browser import fb_read_url
+
+        res = fb_read_url(scm, url)
+
+        if res is None:
+            return False
+
+        self.users = res
+        return True
 
     def parse(self):
         """Parse file to find strings."""

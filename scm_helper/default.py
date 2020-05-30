@@ -102,6 +102,14 @@ files:
 #           - 'Resignations'
 
 
+#############################################
+# Swim England Correlations
+#############################################
+swim_england:
+    base_url: "https://www.swimmingresults.org/"
+    check_url: "https://www.swimmingresults.org/membershipcheck/member_details.php?myiref="
+    test_id: 516115
+
 ################################################################
 # Configure Swimmer Checks
 ################################################################
@@ -255,7 +263,11 @@ sessions:
 ################################################################
 
 # facebook:
+#   files:
 #     - "Nottingham Leander Swimmers.html"
+#   groups:
+#     - https://www.facebook.com/groups/NottinghamLeander/
+#     - https://www.facebook.com/groups/LeanderMasters/
 
 ################################################################
 # Lists
@@ -322,6 +334,15 @@ issues:
     E_CONFIRMATION_EXPIRED:
         ignore_error: true
         message: "Confirmation expired"
+
+##################################################
+# Selenium
+# Used for Swim England and Facebook checking
+##################################################
+
+#selenium:
+#    browser: "Chrome"
+#    web_driver: "C:\\Program Files (x86)\\Python37-32\\Scripts\\chromedriver.exe"
 
 ################################################################
 

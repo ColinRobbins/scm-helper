@@ -48,14 +48,14 @@ class Entities:
         loop = 100
         page = 1
         count = 0
-        while ((int(loop / 100) * 100) == loop) and loop != 0:  # returns pages of 100
+        while loop == 100:
             if count != 0:
                 notify(f"{count} ")
             data = self.scm.api_read(self._url, page)
             if data is None:
                 return False
-            self._raw_data += data
             loop = self.create_entities(data)
+            self._raw_data += data
             page += 1
             count += loop
 
@@ -70,6 +70,7 @@ class Entities:
 
     def create_entities(self, entities):
         """Create entities."""
+        i = 0
         for entity in entities:
             data = self.new_entity(entity)
             if data:
@@ -79,8 +80,8 @@ class Entities:
                 self.by_name[data.name] = data
                 if data.is_active:
                     self.count += 1
-
-        return self.count
+            i += 1
+        return i
 
     def new_entity(self, entity):
         """Create a new entity - OVERRIDE expected."""
@@ -385,3 +386,27 @@ def print_all(xlist):
         grp = "None"
 
     return grp
+
+
+class Who(Entities):
+    """Subclass for Who's who."""
+
+    # pylint: disable=too-many-instance-attributes
+    # Need them all!
+
+    def get_data(self):
+        """Get data."""
+        notify(f"{self._name}... ")
+
+        data = self.scm.api_read(self._url, 1)
+        if data is None:
+            return False
+        count = self.create_entities(data)
+        # line below is subtly different, who's who data is already a list.
+        self._raw_data = data
+
+        notify(f"{count}\n")
+        if count != 1:
+            debug("Who's who assumption failure", 0)
+
+        return True

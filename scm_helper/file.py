@@ -61,10 +61,8 @@ class Csv(Files):
 
         try:
             count = 0
-            with open(file, newline="") as csvfile:
-                dialect = csv.Sniffer().sniff(csvfile.read(1024))
-                csvfile.seek(0)
-                csv_reader = csv.DictReader(csvfile, dialect=dialect)
+            with open(file, newline="", encoding="utf-8-sig") as csvfile:
+                csv_reader = csv.DictReader(csvfile)
 
                 for row in csv_reader:
                     count += 1

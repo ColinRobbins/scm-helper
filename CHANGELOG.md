@@ -1,5 +1,45 @@
 # Changelog
 
+## 1.2
+01/06/2020
+
+* Added support for iPad (Command line only)
+* Added feature to manage [swimming records](Records)
+* Added feature to connect directly to [Swim England](Swim_England) database to check membership details
+* Added feature to connect directly to [Facebook](Facebook) to check group membership
+* Fix - config errors not showing after editing via the GUI
+* Fix - Who's who not backing up correctly
+* Fix - Error in reporting number of entries read
+* Fix - bug in handling inactive members
+* Fix - polo / syncho type now work correctly (Align with SCM Bug #6555 and #6545)
+
+Version 1.2 requires the following to be added to your configuration file, and modified appropriately.
+```
+##################################################
+# Swim England Correlations
+##################################################
+swim_england:
+  base_url: "https://www.swimmingresults.org/"
+  check_url: "https://www.swimmingresults.org/membershipcheck/member_details.php?myiref="
+  test_id: 516115
+  
+##################################################
+# Facebook Correlations
+##################################################
+facebook:
+  groups:
+    - https://www.facebook.com/groups/NottinghamLeander/
+    
+##################################################
+# Selenium
+# Used for Swim England and Facebook checking
+##################################################
+selenium:
+    browser: "Chrome"
+    web_driver: "C:\\Program Files (x86)\\Python37-32\\Scripts\\chromedriver.exe"
+
+```
+
 ## 1.1
 02/05/2020
 * Fix for bug #6 (printing self.name rather than entity name)

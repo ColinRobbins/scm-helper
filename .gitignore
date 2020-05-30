@@ -8,3 +8,4 @@ files/*
 backups/*
 *.csv
 *.spec
+debug.log

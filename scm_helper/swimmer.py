@@ -78,12 +78,14 @@ def analyse_swimmer(swimmer):
 
     if swimmer.is_swimmer:
         check_parents(swimmer)
+        return
 
     if swimmer.is_synchro:
         if get_config(swimmer.scm, C_TYPES, CTYPE_SYNCHRO, C_PARENTS) is False:
             pass
         else:
             check_parents(swimmer)
+            return
 
     if swimmer.is_polo:
         if get_config(swimmer.scm, C_TYPES, CTYPE_POLO, C_PARENTS) is False:
@@ -217,9 +219,8 @@ def check_parents(swimmer):
         mandatory = get_config(swimmer.scm, C_SWIMMERS, C_PARENT, C_MANDATORY)
         if mandatory and max_age:
             if swimmer.age and (swimmer.age <= max_age):
-                issue(
-                    swimmer, E_NO_PARENT, f"{swimmer.first_group}, Age: {swimmer.age}"
-                )
+                msg = f"{swimmer.first_group}, Age: {swimmer.age}"
+                issue(swimmer, E_NO_PARENT, msg)
 
     if count > 2:
         issue(swimmer, E_NUM_PARENTS)
