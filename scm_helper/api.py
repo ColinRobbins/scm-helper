@@ -377,7 +377,8 @@ class API:
 
         length = len(self.fixable)
         if length > 0:
-            output += f"\n{length} fixable errors."
+            output += f"\n{length} fixable errors...\n"
+            output += self.list_fixes()
 
         output += "\n"
         return output
@@ -465,6 +466,18 @@ class API:
         self.fixable = []
         return True
 
+    def list_fixes(self):
+        """List any fixes."""
+        if len(self.fixable) == 0:
+            notify("Nothing to fix\n")
+            return False
+
+        res = ""
+        for fix in self.fixable:
+            res += f"{fix.name}: {fix.fixmsg}\n"
+
+        return res
+        
     def option(self, option):
         """Options."""
         if option in self._options:
