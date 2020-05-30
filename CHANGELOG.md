@@ -11,7 +11,7 @@
 * Fix - Who's who not backing up correctly
 * Fix - Error in reporting number of entries read
 * Fix - bug in handling inactive members
-* Fix - polo / syncho type now work correctly (Align with SCM Bug #6555 and #6545)
+* Fix - polo / synchro type now work correctly (Align with SCM Bug #6555 and #6545)
 
 Version 1.2 requires the following to be added to your configuration file, and modified appropriately.
 ```
