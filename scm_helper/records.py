@@ -453,7 +453,7 @@ class Record:
 
         self.records[swim[S_EVENT]] = swim
 
-        newrec = f"New record: {swim[S_EVENT]}, {swim[S_NAME]}, {swim[S_FTIME]}\n"
+        newrec = f"New record: {swim[S_EVENT]}, {swim[S_NAME]}, {swim[S_TIMESTR]}\n"
         self.newrecords += newrec
 
     def check_row(self, row, count):
@@ -696,6 +696,10 @@ class Record:
             xdate = record[S_DATE]
             name = record[S_NAME]
             location = record[S_LOCATION]
+    
+            swimmer = name.split(",")
+            if len(swimmer) == 2:
+                name = f"{swimmer[1]} {swimmer[0]}"
 
             if name in self.swimmers:
                 self.swimmers[name] += 1
