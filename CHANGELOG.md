@@ -5,7 +5,7 @@
 
 * Added support for iPad (Command line only)
 * Added feature to manage [swimming records](Records)
-* Added feature to connect directly to [Swim England](Swim England) database to check membership details
+* Added feature to connect directly to [Swim England](Swim_England) database to check membership details
 * Added feature to connect directly to [Facebook](Facebook) to check group membership
 * Fix - config errors not showing after editing via the GUI
 * Fix - Who's who not backing up correctly
