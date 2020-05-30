@@ -3,6 +3,7 @@ import csv
 import datetime
 import os
 import re
+import time
 from pathlib import Path
 from shutil import copyfile
 
@@ -14,6 +15,7 @@ from scm_helper.config import (
     CONFIG_DIR,
     FILE_READ,
     FILE_WRITE,
+    PRINT_DATE_FORMAT,
     RECORDS_DIR,
     SCM_CSV_DATE_FORMAT,
     get_config,
@@ -119,6 +121,11 @@ F_RELAY_BASELINE = "relay_records.csv"
 F_RELAY_RECORDS = "relay_records.html"
 
 HEADER = "_header.txt"
+FOOTER = """<p>
+Records page created using
+<a href="https://github.com/ColinRobbins/scm-helper">SCM Helper</a>.
+</p>
+"""
 
 INNER_WRAP = """
 <div class=divTableRow XX_TAG_XX>
@@ -434,6 +441,8 @@ class Record:
         self.worldrecord = 0
         self.europeanrecord = 0
         self.britishrecord = 0
+        
+        self.date = None
 
     def check_swim(self, swim):
         """Check a swim time to see if it as a record."""
@@ -487,6 +496,9 @@ class Record:
 
         try:
             count = 0
+            fdate = os.path.getmtime(filename)
+            self.date = time.strftime(PRINT_DATE_FORMAT, time.localtime(fdate))
+
             with open(filename, newline="") as csvfile:
                 csv_reader = csv.DictReader(csvfile, skipinitialspace=True)
                 self.fieldnames = csv_reader.fieldnames
@@ -516,6 +528,8 @@ class Record:
             home = str(Path.home())
             today = datetime.datetime.now()
             str_today = today.strftime("%y%m%d-%H%M%S")
+            self.date = today.strftime(PRINT_DATE_FORMAT)
+
             filename = f"records-{str_today}.csv"
 
             mybackupdir = os.path.join(home, CONFIG_DIR, RECORDS_DIR, "backup")
@@ -665,6 +679,8 @@ class Record:
 
         res = res.replace("##RECORDHOLDERS##", top10)
         res = res.replace("##RECORDTALLY##", tally)
+        res = res.replace("##RECORDUPDATE##", self.date)
+        res += FOOTER
         return res
 
     def print_record(self, stroke, dist, age, course, gender):
@@ -746,7 +762,9 @@ class RelayRecord(Record):
         self.records[jevent] = row
 
     def print_extra(self, res):
-        """Some extra printing (none for relay..."""
+        """Some extra printing."""
+        res = res.replace("##RECORDUPDATE##", self.date)
+        res += FOOTER
         return res
 
     def print_record(self, stroke, dist, age, course, gender):
@@ -996,6 +1014,7 @@ Age as of December 31st in the year of the swim.</p>
 
 
 <h2>Records</h2>
+<p>Last Update: ##RECORDUPDATE##</p>
 <p>Event:
   <input checked="checked" class="radio-group" id="btn-free"
   name="record-stroke" type="radio" value="record-free" />

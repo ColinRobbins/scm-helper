@@ -1,7 +1,7 @@
 # Changelog
 
 ## 1.2
-????
+01/06/2020
 
 * Fix - config errors not showing after editing via the GUI
 * Fix - Who's who not backing up correctly
@@ -9,9 +9,9 @@
 * Fix - bug in handling inactive members
 * Fix - polo / syncho type now work correctly (Align with SCM Bug #6555 and #6545)
 * Added support for iPad (Command line only)
-* Added feature to manage swimming records
-* Added feature to connect directly to Swim England database to check membership details
-* Added feature to connect directly to Facebook to check group membership
+* Added feature to manage [swimming records](Records)
+* Added feature to connect directly to [Swim England](Swim England) database to check membership details
+* Added feature to connect directly to [Facebook](Facebook) to check group membership
 
 Version 1.2 requires the following to be added to your configuration file, and modified appropriately.
 ```
