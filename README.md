@@ -3,7 +3,7 @@ Helper tool for [Swim Club Manager](https://www.swimclubmanager.co.uk/).
 
 Download latest [Windows Version](https://github.com/ColinRobbins/scm-helper/raw/master/download/scm.zip).
 # Features
-* Works on Windows, Linux or Apple devices
+* Works on [Windows](https://github.com/ColinRobbins/scm-helper/wiki/Windows-Installation), [Linux](https://github.com/ColinRobbins/scm-helper/wiki/Linux-Installation) or [Apple](https://github.com/ColinRobbins/scm-helper/wiki/Apple-Installation) devices
 * [Backup and Restore](https://github.com/ColinRobbins/scm-helper/wiki/Backup-and-Restore) of SCM data
 * Verification of member details
 * Check session and group consistency
