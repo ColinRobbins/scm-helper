@@ -344,8 +344,19 @@ issues:
 #    browser: "Chrome"
 #    web_driver: "C:\\Program Files (x86)\\Python37-32\\Scripts\\chromedriver.exe"
 
-################################################################
 
+##################################################
+# Records
+##################################################
+
+#records:
+#    relay: false
+#    age_eoy: true   # Calculate age at EOY, not age from SCM export file (where possible)
+#    verify: true  # Check a club member at time of swim (where possible)
+#    se_only: false
+    
+    
+    
 # Debug level, set to 0 for no debug info
 debug_level: 0
 

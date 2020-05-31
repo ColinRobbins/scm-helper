@@ -172,6 +172,7 @@ C_ROLE = "role"
 C_ROLES = "roles"
 C_SELENIUM = "selenium"
 C_SEND_TO = "send_to"
+C_SE_ONLY = "se_only"
 C_SESSION = "session"
 C_SESSIONS = "sessions"
 C_SMTP_PORT = "smtp_port"
@@ -394,6 +395,7 @@ SCHEMA = Schema(
             Optional(C_RELAY): bool,
             Optional(C_AGE_EOY): bool,
             Optional(C_VERIFY): bool,
+            Optional(C_SE_ONLY): bool,
         },
     }
 )

@@ -11,6 +11,7 @@ from scm_helper.config import (
     C_AGE_EOY,
     C_RECORDS,
     C_RELAY,
+    C_SE_ONLY,
     C_VERIFY,
     CONFIG_DIR,
     FILE_READ,
@@ -219,7 +220,8 @@ class Records:
         if self.records.newrecords:
             for record in sorted(self.records.newrecords):
                 notify(self.records.newrecords[record])
-                self.records.write_records()
+                
+            self.records.write_records()
 
         del times
         return res
@@ -320,8 +322,13 @@ class SwimTimes:
         # pylint: disable=too-many-branches
         # pylint: disable=too-many-statements
 
-        asa = row["SE Number"]
+        if "Swimmer" not in row:
+            if count == 1:
+                notify ("Is the header line missing in the CSV?\n")
+            return
+        
         swimmer = row["Swimmer"]
+        asa = row["SE Number"]
         xdate = row["Date"]
         pool = row["Pool Size"]
         dist = row["Swim Distance"]
@@ -368,11 +375,14 @@ class SwimTimes:
 
         verify = get_config(self.scm, C_RECORDS, C_VERIFY)
         age_eoy = get_config(self.scm, C_RECORDS, C_AGE_EOY)
+        se_only = get_config(self.scm, C_RECORDS, C_SE_ONLY)
 
         member = None
         if asa not in self.scm.members.by_asa:
             debug(f"Line {count}: No SE Number {swimmer}", 2)
             # We can't check, so go with it...
+            if se_only:
+                return
             verify = False
             age_eoy = False
         else:
