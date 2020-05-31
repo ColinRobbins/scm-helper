@@ -1,5 +1,9 @@
 # Changelog
 
+## ??
+
+* Fix for Record time processing
+
 ## 1.2
 01/06/2020
 
@@ -48,7 +52,7 @@ selenium:
 * Fix for bug #9 (analyse looping)
 * Fix issue #10 - Fire up GUI on an Apple Mac
 * Fix for bug #11 (Handling inactive member with no lastmodified attribute)
-* Tidied Facebook report 
+* Tidied Facebook report
 * Better exception handling in GUI
 * Tidied debug messages
 

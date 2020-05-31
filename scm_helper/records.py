@@ -217,8 +217,9 @@ class Records:
         times = SwimTimes(self.records)
         res = times.merge_times(filename, self.scm)
         if self.records.newrecords:
-            notify(self.records.newrecords)
-            self.records.write_records()
+            for record in sorted(self.records.newrecords):
+                notify(self.records.newrecords[record])
+                self.records.write_records()
 
         del times
         return res
@@ -329,6 +330,7 @@ class SwimTimes:
         relay = row["Relay"]
         location = row["Location"]
         gender = row["Gender"]
+        gala = row["Gala"]
 
         swimage = None
         if row["Age"]:
@@ -349,7 +351,9 @@ class SwimTimes:
         if pool not in ("50", "25"):
             return
 
-        if location:
+        if gala:
+            location = gala
+        elif location:
             pass
         else:
             location = "Unknown"
@@ -435,7 +439,7 @@ class Record:
         self.scm = None
         self.records = {}
         self.swimmers = {}
-        self.newrecords = ""
+        self.newrecords = {}
         self.fieldnames = None
 
         self.worldrecord = 0
@@ -453,8 +457,8 @@ class Record:
 
         self.records[swim[S_EVENT]] = swim
 
-        newrec = f"New record: {swim[S_EVENT]}, {swim[S_NAME]}, {swim[S_TIMESTR]}\n"
-        self.newrecords += newrec
+        newrec = f"New record: {swim[S_EVENT]}, {swim[S_NAME]}, {swim[S_TIMESTR]}, {swim[S_LOCATION]}\n"
+        self.newrecords[swim[S_EVENT]] = newrec
 
     def check_row(self, row, count):
         """Check a row from the records file."""
