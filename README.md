@@ -10,7 +10,7 @@ Download latest [Windows Version](https://github.com/ColinRobbins/scm-helper/raw
 * Check consistency of [Swim England](https://github.com/ColinRobbins/scm-helper/wiki/Swim-England) registrations
 * Check [Facebook](https://github.com/ColinRobbins/scm-helper/wiki/Facebook) group members are club members
 * Automatic [fixing](https://github.com/ColinRobbins/scm-helper/wiki/Fixing) of some errors
-* Generation of swimming [records](Records)
+* Generation of [swimming records](https://github.com/ColinRobbins/scm-helper/wiki/Records)
 * Generation of [email lists](https://github.com/ColinRobbins/scm-helper/wiki/Email-Lists) based on group/class/gender/age
 * Report on DBS and Safeguarding issue
 * Report on swimmers not attending

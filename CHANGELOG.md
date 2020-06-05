@@ -2,8 +2,8 @@
 
 ## 1.2.1
 
-* Fix for Record time processing
-* New config & options for Record time processing
+* Fix for record time processing
+* New [config & options](https://github.com/ColinRobbins/scm-helper/wiki/Records) for record time processing
 
 ```
 records:
@@ -16,9 +16,9 @@ records:
 01/06/2020
 
 * Added support for iPad (Command line only)
-* Added feature to manage [swimming records](Records)
-* Added feature to connect directly to [Swim England](Swim_England) database to check membership details
-* Added feature to connect directly to [Facebook](Facebook) to check group membership
+* Added feature to manage [swimming records](https://github.com/ColinRobbins/scm-helper/wiki/Records)
+* Added feature to connect directly to [Swim England](https://github.com/ColinRobbins/scm-helper/wiki/Swim-England) database to check membership details
+* Added feature to connect directly to [Facebook](https://github.com/ColinRobbins/scm-helper/wiki/Facebook) to check group membership
 * Fix - config errors not showing after editing via the GUI
 * Fix - Who's who not backing up correctly
 * Fix - Error in reporting number of entries read
