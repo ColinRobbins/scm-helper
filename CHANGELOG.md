@@ -1,8 +1,16 @@
 # Changelog
 
-## ??
+## 1.2.1
 
 * Fix for Record time processing
+* New config & options for Record time processing
+
+```
+records:
+    se_only: false
+    all_ages_u18: false
+    overall_fastest: false
+```
 
 ## 1.2
 01/06/2020
