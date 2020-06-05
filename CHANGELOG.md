@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.2.1
+
+* Fix for Record time processing
+* New config & options for Record time processing
+
+```
+records:
+    se_only: false
+    all_ages_u18: false
+    overall_fastest: false
+```
+
 ## 1.2
 01/06/2020
 
@@ -11,7 +23,7 @@
 * Fix - Who's who not backing up correctly
 * Fix - Error in reporting number of entries read
 * Fix - bug in handling inactive members
-* Fix - polo / syncho type now work correctly (Align with SCM Bug #6555 and #6545)
+* Fix - polo / synchro type now work correctly (Align with SCM Bug #6555 and #6545)
 
 Version 1.2 requires the following to be added to your configuration file, and modified appropriately.
 ```
@@ -48,7 +60,7 @@ selenium:
 * Fix for bug #9 (analyse looping)
 * Fix issue #10 - Fire up GUI on an Apple Mac
 * Fix for bug #11 (Handling inactive member with no lastmodified attribute)
-* Tidied Facebook report 
+* Tidied Facebook report
 * Better exception handling in GUI
 * Tidied debug messages
 
