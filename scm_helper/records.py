@@ -9,6 +9,8 @@ from shutil import copyfile
 
 from scm_helper.config import (
     C_AGE_EOY,
+    C_ALL_AGES,
+    C_OVERALL_FASTEST,
     C_RECORDS,
     C_RELAY,
     C_SE_ONLY,
@@ -56,8 +58,10 @@ STROKE_DISTANCE = {
 
 RELAY_DISTANCE = {"200": 200, "400": 400, "800": 800}
 PRINT_DISTANCE = {"200": "4 x 50", "400": "4 x 100", "800": "4 x 200"}
+OVERALL = "Overall"
 
 AGES = {
+    OVERALL: 1,
     "6-7": 0,
     "8-9": 0,
     "10-11": 0,
@@ -65,6 +69,39 @@ AGES = {
     "14-15": 0,
     "16-17": 0,
     "18-24": 0,
+    "25-29": 0,
+    "30-34": 0,
+    "35-39": 0,
+    "40-44": 0,
+    "45-49": 0,
+    "50-54": 0,
+    "55-59": 0,
+    "60-64": 0,
+    "65-69": 0,
+    "70-74": 0,
+    "75-79": 0,
+    "80-84": 0,
+    "85-89": 0,
+    "90-94": 0,
+    "95-99": 0,
+}
+
+ALL_AGES = {
+    OVERALL: 1,
+    "6": 0,
+    "7": 0,
+    "8": 0,
+    "9": 0,
+    "10": 0,
+    "11": 0,
+    "12": 0,
+    "13": 0,
+    "14": 0,
+    "15": 0,
+    "16": 0,
+    "17": 0,
+    "18": 0,
+    "19-24": 0,
     "25-29": 0,
     "30-34": 0,
     "35-39": 0,
@@ -220,7 +257,7 @@ class Records:
         if self.records.newrecords:
             for record in sorted(self.records.newrecords):
                 notify(self.records.newrecords[record])
-                
+
             self.records.write_records()
 
         del times
@@ -232,7 +269,12 @@ class Records:
         home = str(Path.home())
         mydir = os.path.join(home, CONFIG_DIR, RECORDS_DIR)
 
-        res = self.records.create_html(GENDER, STROKES, AGES, False)
+        if get_config(self.scm, C_RECORDS, C_ALL_AGES):
+            ages = ALL_AGES
+        else:
+            ages = AGES
+
+        res = self.records.create_html(GENDER, STROKES, ages, False)
         filename = os.path.join(mydir, F_RECORDS)
 
         try:
@@ -324,9 +366,9 @@ class SwimTimes:
 
         if "Swimmer" not in row:
             if count == 1:
-                notify ("Is the header line missing in the CSV?\n")
+                notify("Is the header line missing in the CSV?\n")
             return
-        
+
         swimmer = row["Swimmer"]
         asa = row["SE Number"]
         xdate = row["Date"]
@@ -376,6 +418,7 @@ class SwimTimes:
         verify = get_config(self.scm, C_RECORDS, C_VERIFY)
         age_eoy = get_config(self.scm, C_RECORDS, C_AGE_EOY)
         se_only = get_config(self.scm, C_RECORDS, C_SE_ONLY)
+        all_ages = get_config(self.scm, C_RECORDS, C_ALL_AGES)
 
         member = None
         if asa not in self.scm.members.by_asa:
@@ -388,6 +431,9 @@ class SwimTimes:
         else:
             member = self.scm.members.by_asa[asa]
             swimmer = member.knownas  # for consistency of spelling
+
+        if swimage and swimage >= 25:
+            age_eoy = True  # Masters are always EOY
 
         if member and age_eoy:
             yob = member.dob.year
@@ -418,7 +464,13 @@ class SwimTimes:
                 end_age = start_age + 4
 
         agegroup = f"{start_age}-{end_age}"
-        AGES[agegroup] += 1
+
+        if all_ages:
+            if swimage < 18:
+                agegroup = str(swimage)
+            ALL_AGES[agegroup] += 1
+        else:
+            AGES[agegroup] += 1
 
         event = f"{gender} {agegroup} {dist} {stroke} {pool}"
 
@@ -460,15 +512,30 @@ class Record:
 
     def check_swim(self, swim):
         """Check a swim time to see if it as a record."""
-        if swim[S_EVENT] in self.records:
-            event = self.records[swim[S_EVENT]]
+        check_event = swim[S_EVENT]
+        if check_event in self.records:
+            event = self.records[check_event]
             if swim[S_FTIME] >= event[S_FTIME]:
                 return
 
-        self.records[swim[S_EVENT]] = swim
+        self.records[check_event] = swim
 
-        newrec = f"New record: {swim[S_EVENT]}, {swim[S_NAME]}, {swim[S_TIMESTR]}, {swim[S_LOCATION]}\n"
-        self.newrecords[swim[S_EVENT]] = newrec
+        sloc = swim[S_LOCATION]
+        newrec = f"New record: {check_event}, {swim[S_NAME]}, {swim[S_TIMESTR]}, {sloc}\n"
+        self.newrecords[check_event] = newrec
+
+        if get_config(self.scm, C_RECORDS, C_OVERALL_FASTEST):
+            split_event = swim[S_EVENT].split()
+            split_event[1] = OVERALL
+            o_event = " ".join(str(item) for item in split_event)
+            if o_event in self.records:
+                event = self.records[o_event]
+                if swim[S_FTIME] >= event[S_FTIME]:
+                    return
+
+            o_swim = swim.copy()
+            o_swim[S_EVENT] = o_event
+            self.records[o_event] = o_swim
 
     def check_row(self, row, count):
         """Check a row from the records file."""
@@ -479,7 +546,12 @@ class Record:
             notify(f"Line {count}: unknown gender '{test[0]}'\n")
             return
 
-        if AGES.get(test[1], None) is None:
+        if get_config(self.scm, C_RECORDS, C_ALL_AGES):
+            ages = ALL_AGES
+        else:
+            ages = AGES
+
+        if ages.get(test[1], None) is None:
             notify(f"Line {count}: unknown age '{test[1]}'\n")
             return
 
@@ -499,7 +571,7 @@ class Record:
             notify(f"Line {count}: duplicate '{event}'\n")
             return
 
-        AGES[test[1]] += 1
+        ages[test[1]] += 1
         row[S_FTIME] = convert_time(row[S_TIMESTR])
         self.records[event] = row
 
@@ -597,6 +669,8 @@ class Record:
 
         res = prefix
 
+        overall = get_config(self.scm, C_RECORDS, C_OVERALL_FASTEST)
+
         for gender in arg_gender:
             o_gender = ""
             for stroke in arg_strokes:
@@ -611,6 +685,10 @@ class Record:
                     o_age = ""
                     tag = TAG_INNER_ODD
                     for age in arg_ages:
+
+                        if overall is False:
+                            if age == OVERALL:
+                                continue
 
                         if (arg_relay is False) and (arg_ages[age] == 0):
                             continue

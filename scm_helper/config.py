@@ -104,6 +104,7 @@ C_AGE_EOY = "age_eoy"
 C_ALIGN_QUARTER = "align_quarter"
 C_ALLOW_GROUP = "allow_group"
 C_ALLOW_UPDATE = "allow_update"
+C_ALL_AGES = "all_ages_u18"
 C_BASE_URL = "base_url"
 C_BROWSER = "browser"
 C_CHECK_DBS = "check_dbs"
@@ -161,6 +162,7 @@ C_NEWSTARTER = "newstarter"
 C_NO_CLUB_SESSIONS = "no_club_sessions"
 C_NO_SESSION_ALLOWED = "no_session_allowed"
 C_NO_SESSIONS = "no_sessions"
+C_OVERALL_FASTEST = "overall_fastest"
 C_PARENT = "parent"
 C_PARENTS = "parents"
 C_PASSWORD = "password"
@@ -396,6 +398,8 @@ SCHEMA = Schema(
             Optional(C_AGE_EOY): bool,
             Optional(C_VERIFY): bool,
             Optional(C_SE_ONLY): bool,
+            Optional(C_ALL_AGES): bool,
+            Optional(C_OVERALL_FASTEST): bool,
         },
     }
 )
