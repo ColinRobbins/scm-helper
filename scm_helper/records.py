@@ -670,6 +670,9 @@ class Record:
         res = prefix
 
         overall = get_config(self.scm, C_RECORDS, C_OVERALL_FASTEST)
+        if overall is None:
+            print ("XXXX FALSE")
+            overall = False
 
         for gender in arg_gender:
             o_gender = ""
@@ -687,7 +690,9 @@ class Record:
                     for age in arg_ages:
 
                         if overall is False:
+                            print ("YYYY FALSE")
                             if age == OVERALL:
+                                print ("ZZZ FALSE")
                                 continue
 
                         if (arg_relay is False) and (arg_ages[age] == 0):
