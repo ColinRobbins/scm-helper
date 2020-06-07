@@ -435,9 +435,10 @@ class SwimTimes:
         if swimage and swimage >= 25:
             age_eoy = True  # Masters are always EOY
 
+        swimdate = datetime.datetime.strptime(xdate, SCM_CSV_DATE_FORMAT)
+
         if member and age_eoy:
             yob = member.dob.year
-            swimdate = datetime.datetime.strptime(xdate, SCM_CSV_DATE_FORMAT)
             swimyear = swimdate.year
             swimage = swimyear - yob
 
