@@ -452,13 +452,19 @@ class SwimTimes:
             start_age = int(swimage / 2) * 2
             end_age = start_age + 1
         elif swimage in (18, 19):
-            start_age = 18
+            if all_ages:
+                start_age = 19
+            else:
+                start_age = 18
             end_age = 24
         else:
             start_age = int(swimage / 5) * 5
             # round it
             if start_age == 20:
-                start_age = 18
+                if all_ages:
+                    start_age = 19
+                else:
+                    start_age = 18
                 end_age = 24
             else:
                 end_age = start_age + 4
@@ -466,7 +472,7 @@ class SwimTimes:
         agegroup = f"{start_age}-{end_age}"
 
         if all_ages:
-            if swimage < 18:
+            if swimage <= 18:
                 agegroup = str(swimage)
             ALL_AGES[agegroup] += 1
         else:
