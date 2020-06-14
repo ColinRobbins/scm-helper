@@ -3,6 +3,7 @@
 ## 1.2.1
 
 * Fix for record time processing
+* Fix for 18-24 bug
 * New [config & options](https://github.com/ColinRobbins/scm-helper/wiki/Records) for record time processing
 
 ```
