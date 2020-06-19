@@ -374,6 +374,7 @@ SCHEMA = Schema(
             C_SUFFIX: str,
             C_EDIT: bool,
             C_CONFIRMATION: bool,
+            Optional(C_CONDUCT): [conduct],
             Optional(C_LIST): {
                 str: {
                     Optional(C_GENDER): And(str, lambda s: s in ("male", "female")),

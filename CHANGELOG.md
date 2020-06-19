@@ -5,6 +5,7 @@
 * Fix for record time processing
 * Fix for 18-24 bug
 * New [config & options](https://github.com/ColinRobbins/scm-helper/wiki/Records) for record time processing
+* Added abilty to create a list for codes of conduct not signed
 
 ```
 records:

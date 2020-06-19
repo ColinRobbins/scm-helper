@@ -57,10 +57,11 @@ class Lists(Entities):
         lists = get_config(self.scm, C_LISTS, C_LIST)
         self._suffix = get_config(self.scm, C_LISTS, C_SUFFIX)
 
-        for xlist in lists:
-            newlist = NewList(self.scm, xlist, self._url)
-            self.newlists.append(newlist)
-            newlist.populate()
+        if lists:
+            for xlist in lists:
+                newlist = NewList(self.scm, xlist, self._url)
+                self.newlists.append(newlist)
+                newlist.populate()
 
         # Separate for loop, as add_to_list may have created some too
         for xlist in self.newlists:
