@@ -127,6 +127,14 @@ class Members(Entities):
             # TODO remove when API fixed.
             member.linkage2()
 
+    def fix_search(self):
+        """fix_search_index."""
+        for member in self.entities:
+            res = member.fix_search()
+            if res is False:
+                return False
+        return True
+        
     def print_notes(self):
         """Print the notes."""
         res = ""

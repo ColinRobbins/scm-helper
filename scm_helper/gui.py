@@ -149,6 +149,10 @@ class ScmGui:
         cmd.add_command(label="Fix Errors", command=self.fixit, state=DISABLED)
         self.menu_fixit = [cmd, "Fix Errors"]
 
+        label = "Fix Search index"
+        cmd.add_command(label=label, command=self.fix_search, state=DISABLED)
+        self.menus.append([cmd, label])
+        
         menubar.add_cascade(label="Edit", menu=cmd)
 
         cmd = Menu(menubar, tearoff=0)
@@ -347,6 +351,17 @@ class ScmGui:
             return
 
         self.thread = AnalysisThread(self, False).start()
+
+    def fix_search(self):
+        """Window for reports."""
+        if self.thread:
+            return  # already running
+
+        if self.gotdata is False:
+            messagebox.showerror("Error", "Analyse data first, before fixing (2)")
+            return
+            
+        self.thread = SearchThread(self).start()
 
     def fixit(self):
         """Window for reports."""
@@ -765,6 +780,27 @@ class UpdateThread(threading.Thread):
         self.gui.master.after(AFTER, self.gui.set_normal)
 
         self.gui.thread = None
+
+class SearchThread(threading.Thread):
+    """Thread to run Search fix."""
+
+    def __init__(self, gui):
+        """Initialise."""
+        threading.Thread.__init__(self)
+        self.gui = gui
+        self.scm = gui.scm
+
+    def run(self):
+        """Run analyser."""
+
+        self.gui.set_buttons(DISABLED)
+
+        if wrap(None, self.scm.fix_search) is False:
+            messagebox.showerror("Error", "fix search error")
+            self.gui.set_buttons(NORMAL)
+            return
+
+        self.gui.set_buttons(NORMAL)
 
 
 class Edit(Frame):  # pylint: disable=too-many-ancestors

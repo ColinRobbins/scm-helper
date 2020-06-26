@@ -452,6 +452,26 @@ class API:
         notify("\n")
         return None
 
+    def fix_search(self):
+        """fix_search_index."""
+        
+        home = str(Path.home())
+        cfg = os.path.join(home, CONFIG_DIR, "fixed_search.txt")
+        if os.path.isfile(cfg) is True:
+            notify("Not required - already fixed")
+            return False
+
+        res = self.members.fix_search()
+        if res is False:
+            return res
+            
+        with open(cfg, mode='w') as file:
+            file.write(f"Fixed index: {self.today}")
+            
+        notify("\nIndex recreated - wait two minutes before testing to allow SCM to process changes.\n")
+
+        return True
+        
     def apply_fixes(self):
         """Apply any fixes."""
         if len(self.fixable) == 0:

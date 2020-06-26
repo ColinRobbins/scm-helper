@@ -1,11 +1,14 @@
 # Changelog
 
-## 1.2.1
+## 1.3
+26/06/2020
 
+* Added abilty to create a list for codes of conduct not signed
+* Fix for codes of conduct processing for "ignored" types
+* Force re-index of items with a "Knownas" name
 * Fix for record time processing
 * Fix for 18-24 bug
 * New [config & options](https://github.com/ColinRobbins/scm-helper/wiki/Records) for record time processing
-* Added abilty to create a list for codes of conduct not signed
 
 ```
 records:

@@ -77,6 +77,7 @@ from scm_helper.issue import (
     debug_trace,
     issue,
 )
+from scm_helper.notify import notify
 from scm_helper.parent import analyse_parent
 from scm_helper.swimmer import analyse_swimmer
 
@@ -504,6 +505,38 @@ class Member(Entity):
             if get_config(self.scm, C_GROUPS, C_GROUP, group.name, C_IGNORE_UNKNOWN):
                 continue
             issue(self, E_UNKNOWN)
+
+
+    def fix_search(self):
+        """fix_search_index."""
+        if A_KNOWNAS in self.data:
+            if self.data[A_KNOWNAS]:
+
+                self.newdata = {}
+                self.newdata[A_GUID] = self.guid
+                notify(f"Deleting index for {self.name}...")
+                
+                self.newdata[A_KNOWNAS] = "XXX"
+        
+                res = self.scm.api_write(self, False)
+                if res is False:
+                    notify("Hit a snag!\n")
+                    return False
+        
+                notify(f"Recreating...")
+        
+                self.newdata[A_KNOWNAS] = self.data[A_KNOWNAS]
+        
+                res = self.scm.api_write(self, False)
+                if res is False:
+                    notify("Hit a snag - knowas ({self.data[A_KNOWNAS]}) deleted - oops sorry - restore manually)!\n")
+                    return False
+        
+                notify(f"Success.\n")
+        
+                return res
+    
+        return True
 
     def add_group(self, group):
         """Add a group to the swimmer."""
