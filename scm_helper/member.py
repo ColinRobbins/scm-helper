@@ -516,7 +516,7 @@ class Member(Entity):
                 self.newdata[A_GUID] = self.guid
                 notify(f"Deleting index for {self.name}...")
                 
-                self.newdata[A_KNOWNAS] = "XXX"
+                self.newdata[A_FIRSTNAME] = "XXX"
         
                 res = self.scm.api_write(self, False)
                 if res is False:
@@ -525,16 +525,16 @@ class Member(Entity):
         
                 notify(f"Recreating...")
         
-                self.newdata[A_KNOWNAS] = self.data[A_KNOWNAS]
+                self.newdata[A_FIRSTNAME] = self.data[A_FIRSTNAME]
         
                 res = self.scm.api_write(self, False)
                 if res is False:
-                    notify("Hit a snag - knowas ({self.data[A_KNOWNAS]}) deleted - oops sorry - restore manually)!\n")
+                    notify("Hit a snag - Firstname '{self.data[A_FIRSTNAME]}' deleted - oops sorry - restore manually)!\n")
                     return False
         
                 notify(f"Success.\n")
         
-                return res
+                return False
     
         return True
 
