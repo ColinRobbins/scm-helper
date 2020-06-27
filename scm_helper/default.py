@@ -280,6 +280,9 @@ lists:
     edit: False             # Allow script to modify generated lists
     confirmation: False     # Generate lists of non-confirmed and
                             # expired confirmation members
+#    conduct:               # Create a list of memebrs who have not signed the code of conduct
+#      - "Code of Conduct Name"
+
 #     list:
 #        "Swimmer: Development Only":
 #             group: "Development"

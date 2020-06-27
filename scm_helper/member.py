@@ -534,7 +534,7 @@ class Member(Entity):
         
                 notify(f"Success.\n")
         
-                return False
+                return False  ###TODO Remove when working
     
         return True
 
