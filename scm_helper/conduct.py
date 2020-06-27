@@ -143,6 +143,8 @@ def check_conduct(member, my_codes):
             continue
 
         types = get_config(member.scm, C_CONDUCT, code.name, C_TYPES)
+        if types is None:
+            return
 
         for atype in types:
             found = False

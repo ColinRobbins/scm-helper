@@ -566,7 +566,7 @@ class AnalysisThread(threading.Thread):
         self.gui.notify_text.delete("1.0", END)
 
         if self.scm.get_config_file() is False:
-            messagebox.showerror("Error", f"Error in config file.")
+            messagebox.showerror("Error", "Error in config file.")
             self.gui.set_buttons(NORMAL)
             return
 
