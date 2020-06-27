@@ -134,7 +134,7 @@ class Members(Entities):
             if res is False:
                 return False
         return True
-        
+
     def print_notes(self):
         """Print the notes."""
         res = ""
