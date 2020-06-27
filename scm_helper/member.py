@@ -534,15 +534,9 @@ class Member(Entity):
                     return False
 
                 notify(f"Success.\n")
-<<<<<<< HEAD
-        
+
                 return False  ###TODO Remove when working
-    
-=======
 
-                return False
-
->>>>>>> 1525fcdcd9a0b2025d2a0a87f6f1ed924f1046c7
         return True
 
     def add_group(self, group):
