@@ -506,7 +506,6 @@ class Member(Entity):
                 continue
             issue(self, E_UNKNOWN)
 
-
     def fix_search(self):
         """fix_search_index."""
         if A_KNOWNAS in self.data:
@@ -515,27 +514,29 @@ class Member(Entity):
                 self.newdata = {}
                 self.newdata[A_GUID] = self.guid
                 notify(f"Deleting index for {self.name}...")
-                
+
                 self.newdata[A_FIRSTNAME] = "XXX"
-        
+
                 res = self.scm.api_write(self, False)
                 if res is False:
                     notify("Hit a snag!\n")
                     return False
-        
+
                 notify(f"Recreating...")
-        
+
                 self.newdata[A_FIRSTNAME] = self.data[A_FIRSTNAME]
-        
+
                 res = self.scm.api_write(self, False)
                 if res is False:
-                    notify("Hit a snag - Firstname '{self.data[A_FIRSTNAME]}' deleted - oops sorry - restore manually)!\n")
+                    msg = "Hit a snag - Firstname"
+                    msg2 = "deleted - oops sorry - restore manually!\n"
+                    notify(f"{msg} '{self.data[A_FIRSTNAME]}' {msg2}")
                     return False
-        
+
                 notify(f"Success.\n")
-        
+
                 return False
-    
+
         return True
 
     def add_group(self, group):

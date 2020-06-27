@@ -116,6 +116,8 @@ class Conduct(Entity):
 # Outside of class
 def check_conduct(member, my_codes):
     """Analise a code of conduct."""
+    # pylint: disable=too-many-branches
+
     if get_config(member.scm, C_CONDUCT) is None:
         return
 
@@ -131,7 +133,7 @@ def check_conduct(member, my_codes):
 
     for code in codes:
         ignores = get_config(member.scm, C_CONDUCT, code.name, C_IGNORE_GROUP)
-        
+
         found_ignore = False
         if ignores:
             for ignore in ignores:

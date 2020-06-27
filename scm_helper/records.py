@@ -528,7 +528,9 @@ class Record:
         self.records[check_event] = swim
 
         sloc = swim[S_LOCATION]
-        newrec = f"New record: {check_event}, {swim[S_NAME]}, {swim[S_TIMESTR]}, {sloc}\n"
+        newrec = (
+            f"New record: {check_event}, {swim[S_NAME]}, {swim[S_TIMESTR]}, {sloc}\n"
+        )
         self.newrecords[check_event] = newrec
 
         if get_config(self.scm, C_RECORDS, C_OVERALL_FASTEST):

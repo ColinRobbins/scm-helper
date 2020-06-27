@@ -152,7 +152,7 @@ class ScmGui:
         label = "Fix Search index"
         cmd.add_command(label=label, command=self.fix_search, state=DISABLED)
         self.menus.append([cmd, label])
-        
+
         menubar.add_cascade(label="Edit", menu=cmd)
 
         cmd = Menu(menubar, tearoff=0)
@@ -360,7 +360,7 @@ class ScmGui:
         if self.gotdata is False:
             messagebox.showerror("Error", "Analyse data first, before fixing (2)")
             return
-            
+
         self.thread = SearchThread(self).start()
 
     def fixit(self):
@@ -780,6 +780,7 @@ class UpdateThread(threading.Thread):
         self.gui.master.after(AFTER, self.gui.set_normal)
 
         self.gui.thread = None
+
 
 class SearchThread(threading.Thread):
     """Thread to run Search fix."""
