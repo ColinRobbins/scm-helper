@@ -33,6 +33,8 @@ from scm_helper.issue import (
     debug_trace,
     issue,
 )
+from scm_helper.notify import notify
+
 
 A_GROUP_NAME = "GroupName"
 
@@ -106,7 +108,7 @@ class Group(Entity):
                 date = datetime.datetime.strptime(confirm, SCM_CSV_DATE_FORMAT)
                 confirm = date
             except ValueError as error:
-                notify(f"Error in date format in config file for groups config: {confirm}")
+                notify(f"Error in date format in config file for groups config: {confirm}\n")
                 confirm = None
 
         for member in self.members:
