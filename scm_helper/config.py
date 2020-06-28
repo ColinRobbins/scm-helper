@@ -313,6 +313,7 @@ SCHEMA = Schema(
             Optional(C_GROUP): {
                 group: {
                     Optional(C_CHECK_DBS): bool,
+                    Optional(C_CONFIRMATION): str,
                     Optional(C_IGNORE_GROUP): bool,
                     Optional(C_IGNORE_SWIMMER): bool,
                     Optional(C_IGNORE_UNKNOWN): bool,
@@ -494,8 +495,8 @@ def check_default(scm):
         msg += " - No Lists configured\n"
 
     if msg:
-        msg = "In your configuration file, you have:\n" + msg
-        msg += "By configuring these, SCM Helper can do a more for you!"
+        msg = "\nIn your configuration file, you have:\n" + msg
+        msg += "By configuring these, SCM Helper can do a more for you!\n\n"
     
     return msg
         

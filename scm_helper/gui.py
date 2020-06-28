@@ -85,14 +85,12 @@ class ScmGui:
         self.issues = IssueHandler()
         self.scm = API(self.issues)
         
-        cfgmsg = ""
         if self.scm.get_config_file() is False:
             msg = "Error in config file - see status window for details."
             messagebox.showerror("Error", msg, parent=self.master)
+            cfgmsg = ""
         else:
-            cfgmsg = "\n"
-            cfgmsg += check_default(self.scm)
-            cfgmsg += "\n\n"
+            cfgmsg = check_default(self.scm)
 
         self.api_init = False
 
