@@ -329,7 +329,7 @@ types:
 # Set ignore: true to ignore the message.
 #
 # For a list of issue codes see:
-# https://github.com/ColinRobbins/scm-helper/wiki/Configuration:-Issues
+# https://github.com/ColinRobbins/scm-helper/wiki/Configuration-Issues
 #
 ################################################################
 
