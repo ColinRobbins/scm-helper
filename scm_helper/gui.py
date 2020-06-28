@@ -37,6 +37,7 @@ from scm_helper.config import (
     FILE_READ,
     FILE_WRITE,
     HELPURL,
+    check_default,
 )
 from scm_helper.facebook import Facebook
 from scm_helper.file import Csv
@@ -83,13 +84,21 @@ class ScmGui:
         set_notify(self.notify_text)
         self.issues = IssueHandler()
         self.scm = API(self.issues)
+        
+        cfgmsg = ""
         if self.scm.get_config_file() is False:
             msg = "Error in config file - see status window for details."
             messagebox.showerror("Error", msg, parent=self.master)
+        else:
+            cfgmsg = "\n"
+            cfgmsg += check_default(self.scm)
+            cfgmsg += "\n\n"
 
         self.api_init = False
 
-        msg = "Welcome to SCM Helper by Colin Robbins.\nPlease enter your password.\n"
+        msg = "Welcome to SCM Helper by Colin Robbins.\n"
+        msg += cfgmsg
+        msg += "Please enter your password.\n"
         self.notify_text.insert(END, msg)
         self.notify_text.config(state=DISABLED)
 
