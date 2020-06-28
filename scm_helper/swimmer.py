@@ -58,7 +58,7 @@ def analyse_swimmer(swimmer):
     if swimmer.in_ignore_swimmer:
         return
 
-    if swimmer.groups is None:
+    if len(swimmer.groups) is 0:
         if swimmer.print_exception(EXCEPTION_NOGROUPS):
             issue(swimmer, E_NO_GROUP)
 

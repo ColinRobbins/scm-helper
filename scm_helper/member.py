@@ -407,6 +407,8 @@ class Member(Entity):
         """Check the member type check box config."""
         cfg = get_config(self.scm, C_TYPES, xtype, C_GROUPS)
         name = get_config(self.scm, C_TYPES, xtype, C_NAME)
+        if name is None:
+            name = xtype
         jobtitle = get_config(self.scm, C_TYPES, xtype, C_JOBTITLE)
         if cfg:
             found = False
@@ -415,7 +417,8 @@ class Member(Entity):
                     found = True
                     break
             if found is False:
-                issue(self, E_TYPE_GROUP, name)
+                if (self.in_ignore_group is False) and (self.in_ignore_swimmer is False):
+                    issue(self, E_TYPE_GROUP, name)
 
         if jobtitle:
             if self.jobtitle:
