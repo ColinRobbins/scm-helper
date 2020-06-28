@@ -335,7 +335,7 @@ types:
 
 issues:
     E_CONFIRMATION_EXPIRED:
-        ignore_error: true
+        ignore_error: False
         message: "Confirmation expired"
 
 ##################################################
