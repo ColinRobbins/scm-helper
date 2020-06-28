@@ -108,7 +108,7 @@ class Group(Entity):
                 date = datetime.datetime.strptime(confirm, SCM_CSV_DATE_FORMAT)
                 confirm = date
             except ValueError as error:
-                notify(f"Error in date format in config file for groups config: {confirm}\n")
+                notify(f"*** Error in date format in config file for groups config: {confirm} ***\n")
                 confirm = None
 
         for member in self.members:
