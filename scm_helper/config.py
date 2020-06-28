@@ -478,10 +478,11 @@ def verify_schema_data(scm):
     if error:
         return False
     return True
-    
+
+
 def check_default(scm):
     """Give warning if config not made."""
-    
+
     msg = ""
     if get_config(scm, C_ROLES, C_ROLE) is None:
         msg += " - No Roles configured\n"
@@ -497,7 +498,5 @@ def check_default(scm):
     if msg:
         msg = "\nIn your configuration file, you have:\n" + msg
         msg += "By configuring these, SCM Helper can do a more for you!\n\n"
-    
+
     return msg
-        
-                

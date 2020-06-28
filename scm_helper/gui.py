@@ -84,7 +84,7 @@ class ScmGui:
         set_notify(self.notify_text)
         self.issues = IssueHandler()
         self.scm = API(self.issues)
-        
+
         if self.scm.get_config_file() is False:
             msg = "Error in config file - see status window for details."
             messagebox.showerror("Error", msg, parent=self.master)

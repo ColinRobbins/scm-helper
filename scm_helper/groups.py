@@ -35,7 +35,6 @@ from scm_helper.issue import (
 )
 from scm_helper.notify import notify
 
-
 A_GROUP_NAME = "GroupName"
 
 
@@ -72,6 +71,8 @@ class Group(Entity):
     def analyse(self):
         """Analise the group."""
         # pylint: disable=too-many-branches
+        # pylint: disable=too-many-statements
+        # pylint: disable=too-many-locals
         no_session = False
         check_dbs = False
         wanted_session = None
@@ -107,8 +108,10 @@ class Group(Entity):
             try:
                 date = datetime.datetime.strptime(confirm, SCM_CSV_DATE_FORMAT)
                 confirm = date
-            except ValueError as error:
-                notify(f"*** Error in date format in config file for groups config: {confirm} ***\n")
+            except ValueError:
+                notify(
+                    f"*** Error in date format in config file for groups config: {confirm} ***\n"
+                )
                 confirm = None
 
         for member in self.members:
@@ -124,7 +127,7 @@ class Group(Entity):
                         err = True
                 else:
                     err = True
-                        
+
                 if err:
                     issue(member, E_CONFIRMATION_EXPIRED, f"Group: {self.name}")
                     msg = f"Confirmation Expired for Group: {member.name}"
@@ -132,7 +135,7 @@ class Group(Entity):
 
             if member.newstarter:
                 continue
-                
+
             if wanted_session:
                 for session in wanted_sessions:
                     if check_in_session(member, session, allowed) is False:
@@ -149,8 +152,6 @@ class Group(Entity):
                     if check_type(member, CTYPE_COACH) is False:
                         msg = f"Group: {self.name}, Type required: {xtype}"
                         issue(member, E_TYPE, msg)
-                        
-
 
     def check_age(self, swimmer):
         """Check in right age group."""

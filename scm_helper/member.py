@@ -417,8 +417,9 @@ class Member(Entity):
                     found = True
                     break
             if found is False:
-                if (self.in_ignore_group is False) and (self.in_ignore_swimmer is False):
-                    issue(self, E_TYPE_GROUP, name)
+                if self.in_ignore_group is False:
+                    if self.in_ignore_swimmer is False:
+                        issue(self, E_TYPE_GROUP, name)
 
         if jobtitle:
             if self.jobtitle:
