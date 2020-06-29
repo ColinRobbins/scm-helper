@@ -77,6 +77,7 @@ from scm_helper.issue import (
     debug_trace,
     issue,
 )
+from scm_helper.notify import notify
 from scm_helper.parent import analyse_parent
 from scm_helper.swimmer import analyse_swimmer
 
@@ -406,6 +407,8 @@ class Member(Entity):
         """Check the member type check box config."""
         cfg = get_config(self.scm, C_TYPES, xtype, C_GROUPS)
         name = get_config(self.scm, C_TYPES, xtype, C_NAME)
+        if name is None:
+            name = xtype
         jobtitle = get_config(self.scm, C_TYPES, xtype, C_JOBTITLE)
         if cfg:
             found = False
@@ -414,7 +417,9 @@ class Member(Entity):
                     found = True
                     break
             if found is False:
-                issue(self, E_TYPE_GROUP, name)
+                if self.in_ignore_group is False:
+                    if self.in_ignore_swimmer is False:
+                        issue(self, E_TYPE_GROUP, name)
 
         if jobtitle:
             if self.jobtitle:
@@ -504,6 +509,37 @@ class Member(Entity):
             if get_config(self.scm, C_GROUPS, C_GROUP, group.name, C_IGNORE_UNKNOWN):
                 continue
             issue(self, E_UNKNOWN)
+
+    def fix_search(self):
+        """fix_search_index."""
+        if A_KNOWNAS in self.data:
+            if self.data[A_KNOWNAS]:
+
+                self.newdata = {}
+                self.newdata[A_GUID] = self.guid
+                notify(f"Deleting index for {self.name}...")
+
+                self.newdata[A_FIRSTNAME] = "XXX"
+
+                res = self.scm.api_write(self, False)
+                if res is False:
+                    notify("Hit a snag!\n")
+                    return False
+
+                notify(f"Recreating...")
+
+                self.newdata[A_FIRSTNAME] = self.data[A_FIRSTNAME]
+
+                res = self.scm.api_write(self, False)
+                if res is False:
+                    msg = "Hit a snag - Firstname"
+                    msg2 = "deleted - oops sorry - restore manually!\n"
+                    notify(f"{msg} '{self.data[A_FIRSTNAME]}' {msg2}")
+                    return False
+
+                notify(f"Success.\n")
+
+        return True
 
     def add_group(self, group):
         """Add a group to the swimmer."""

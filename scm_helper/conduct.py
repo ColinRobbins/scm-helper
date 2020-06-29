@@ -4,6 +4,7 @@ from scm_helper.config import (
     A_MEMBERS,
     C_CONDUCT,
     C_IGNORE_GROUP,
+    C_LISTS,
     C_TYPES,
     CTYPE_COACH,
     CTYPE_COMMITTEE,
@@ -99,6 +100,12 @@ class Conduct(Entity):
             person = self.scm.members.by_guid[member[A_GUID]]
             if person.confirmed_date:  # Will get a not confirmed error later in not set
                 issue(person, E_NO_CONDUCT_DATE, self.name)
+                codes = get_config(self.scm, C_LISTS, C_CONDUCT)
+                if codes:
+                    for code in codes:
+                        if self.name == code:
+                            msg = f"{self.name} missing"
+                            self.scm.lists.add(msg, person)
 
     @property
     def name(self):
@@ -109,6 +116,8 @@ class Conduct(Entity):
 # Outside of class
 def check_conduct(member, my_codes):
     """Analise a code of conduct."""
+    # pylint: disable=too-many-branches
+
     if get_config(member.scm, C_CONDUCT) is None:
         return
 
@@ -124,12 +133,18 @@ def check_conduct(member, my_codes):
 
     for code in codes:
         ignores = get_config(member.scm, C_CONDUCT, code.name, C_IGNORE_GROUP)
+
+        found_ignore = False
         if ignores:
             for ignore in ignores:
                 if member.find_group(ignore):
-                    continue
+                    found_ignore = True
+        if found_ignore:
+            continue
 
         types = get_config(member.scm, C_CONDUCT, code.name, C_TYPES)
+        if types is None:
+            return
 
         for atype in types:
             found = False
@@ -142,11 +157,12 @@ def check_conduct(member, my_codes):
                 if found is False:
                     issue(member, E_NO_CONDUCT, f"{code.name}")
 
-                    if code.newdata and (A_MEMBERS in code.newdata):
-                        fix = code.newdata
-                    else:
-                        fix = {}
-                        fix[A_MEMBERS] = code.data[A_MEMBERS].copy()
-                    add = {A_GUID: member.guid}
-                    fix[A_MEMBERS].append(add)
-                    code.fixit(fix, f"Add {member.name}")
+                    # TODO - Need SCM bug fix first
+                    # if code.newdata and (A_MEMBERS in code.newdata):
+                    #    fix = code.newdata
+                    # else:
+                    #    fix = {}
+                    #    fix[A_MEMBERS] = code.data[A_MEMBERS].copy()
+                    # add = {A_GUID: member.guid}
+                    # fix[A_MEMBERS].append(add)
+                    # code.fixit(fix, f"Add {member.name}")

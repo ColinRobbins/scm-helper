@@ -280,6 +280,9 @@ lists:
     edit: False             # Allow script to modify generated lists
     confirmation: False     # Generate lists of non-confirmed and
                             # expired confirmation members
+#    conduct:               # Create a list of memebrs who have not signed the code of conduct
+#      - "Code of Conduct Name"
+
 #     list:
 #        "Swimmer: Development Only":
 #             group: "Development"
@@ -326,13 +329,13 @@ types:
 # Set ignore: true to ignore the message.
 #
 # For a list of issue codes see:
-# https://github.com/ColinRobbins/scm-helper/wiki/Configuration:-Issues
+# https://github.com/ColinRobbins/scm-helper/wiki/Configuration-Issues
 #
 ################################################################
 
 issues:
     E_CONFIRMATION_EXPIRED:
-        ignore_error: true
+        ignore_error: False
         message: "Confirmation expired"
 
 ##################################################
@@ -354,9 +357,9 @@ issues:
 #    age_eoy: true   # Calculate age at EOY, not age from SCM export file (where possible)
 #    verify: true  # Check a club member at time of swim (where possible)
 #    se_only: false
-    
-    
-    
+
+
+
 # Debug level, set to 0 for no debug info
 debug_level: 0
 

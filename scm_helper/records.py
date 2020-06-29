@@ -435,9 +435,10 @@ class SwimTimes:
         if swimage and swimage >= 25:
             age_eoy = True  # Masters are always EOY
 
+        swimdate = datetime.datetime.strptime(xdate, SCM_CSV_DATE_FORMAT)
+
         if member and age_eoy:
             yob = member.dob.year
-            swimdate = datetime.datetime.strptime(xdate, SCM_CSV_DATE_FORMAT)
             swimyear = swimdate.year
             swimage = swimyear - yob
 
@@ -452,13 +453,19 @@ class SwimTimes:
             start_age = int(swimage / 2) * 2
             end_age = start_age + 1
         elif swimage in (18, 19):
-            start_age = 18
+            if all_ages:
+                start_age = 19
+            else:
+                start_age = 18
             end_age = 24
         else:
             start_age = int(swimage / 5) * 5
             # round it
             if start_age == 20:
-                start_age = 18
+                if all_ages:
+                    start_age = 19
+                else:
+                    start_age = 18
                 end_age = 24
             else:
                 end_age = start_age + 4
@@ -466,7 +473,7 @@ class SwimTimes:
         agegroup = f"{start_age}-{end_age}"
 
         if all_ages:
-            if swimage < 18:
+            if swimage <= 18:
                 agegroup = str(swimage)
             ALL_AGES[agegroup] += 1
         else:
@@ -521,7 +528,9 @@ class Record:
         self.records[check_event] = swim
 
         sloc = swim[S_LOCATION]
-        newrec = f"New record: {check_event}, {swim[S_NAME]}, {swim[S_TIMESTR]}, {sloc}\n"
+        newrec = (
+            f"New record: {check_event}, {swim[S_NAME]}, {swim[S_TIMESTR]}, {sloc}\n"
+        )
         self.newrecords[check_event] = newrec
 
         if get_config(self.scm, C_RECORDS, C_OVERALL_FASTEST):

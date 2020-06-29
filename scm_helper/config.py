@@ -313,6 +313,7 @@ SCHEMA = Schema(
             Optional(C_GROUP): {
                 group: {
                     Optional(C_CHECK_DBS): bool,
+                    Optional(C_CONFIRMATION): str,
                     Optional(C_IGNORE_GROUP): bool,
                     Optional(C_IGNORE_SWIMMER): bool,
                     Optional(C_IGNORE_UNKNOWN): bool,
@@ -374,6 +375,7 @@ SCHEMA = Schema(
             C_SUFFIX: str,
             C_EDIT: bool,
             C_CONFIRMATION: bool,
+            Optional(C_CONDUCT): [conduct],
             Optional(C_LIST): {
                 str: {
                     Optional(C_GENDER): And(str, lambda s: s in ("male", "female")),
@@ -476,3 +478,25 @@ def verify_schema_data(scm):
     if error:
         return False
     return True
+
+
+def check_default(scm):
+    """Give warning if config not made."""
+
+    msg = ""
+    if get_config(scm, C_ROLES, C_ROLE) is None:
+        msg += " - No Roles configured\n"
+    if get_config(scm, C_GROUPS) is None:
+        msg += " - No Groups configured\n"
+    if get_config(scm, C_SESSIONS, C_SESSION) is None:
+        msg += " - No Sessions configured\n"
+    if get_config(scm, C_CONDUCT) is None:
+        msg += " - No Code of Conduct configured\n"
+    if get_config(scm, C_LISTS, C_LIST) is None:
+        msg += " - No Lists configured\n"
+
+    if msg:
+        msg = "\nIn your configuration file, you have:\n" + msg
+        msg += "By configuring these, SCM Helper can do a more for you!\n\n"
+
+    return msg

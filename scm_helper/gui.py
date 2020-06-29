@@ -37,6 +37,7 @@ from scm_helper.config import (
     FILE_READ,
     FILE_WRITE,
     HELPURL,
+    check_default,
 )
 from scm_helper.facebook import Facebook
 from scm_helper.file import Csv
@@ -83,13 +84,19 @@ class ScmGui:
         set_notify(self.notify_text)
         self.issues = IssueHandler()
         self.scm = API(self.issues)
+
         if self.scm.get_config_file() is False:
             msg = "Error in config file - see status window for details."
             messagebox.showerror("Error", msg, parent=self.master)
+            cfgmsg = ""
+        else:
+            cfgmsg = check_default(self.scm)
 
         self.api_init = False
 
-        msg = "Welcome to SCM Helper by Colin Robbins.\nPlease enter your password.\n"
+        msg = "Welcome to SCM Helper by Colin Robbins.\n"
+        msg += cfgmsg
+        msg += "Please enter your password.\n"
         self.notify_text.insert(END, msg)
         self.notify_text.config(state=DISABLED)
 
@@ -148,6 +155,10 @@ class ScmGui:
 
         cmd.add_command(label="Fix Errors", command=self.fixit, state=DISABLED)
         self.menu_fixit = [cmd, "Fix Errors"]
+
+        label = "Fix Search index"
+        cmd.add_command(label=label, command=self.fix_search, state=DISABLED)
+        self.menus.append([cmd, label])
 
         menubar.add_cascade(label="Edit", menu=cmd)
 
@@ -347,6 +358,17 @@ class ScmGui:
             return
 
         self.thread = AnalysisThread(self, False).start()
+
+    def fix_search(self):
+        """Window for reports."""
+        if self.thread:
+            return  # already running
+
+        if self.gotdata is False:
+            messagebox.showerror("Error", "Analyse data first, before fixing (2)")
+            return
+
+        self.thread = SearchThread(self).start()
 
     def fixit(self):
         """Window for reports."""
@@ -551,7 +573,7 @@ class AnalysisThread(threading.Thread):
         self.gui.notify_text.delete("1.0", END)
 
         if self.scm.get_config_file() is False:
-            messagebox.showerror("Error", f"Error in config file.")
+            messagebox.showerror("Error", "Error in config file.")
             self.gui.set_buttons(NORMAL)
             return
 
@@ -765,6 +787,28 @@ class UpdateThread(threading.Thread):
         self.gui.master.after(AFTER, self.gui.set_normal)
 
         self.gui.thread = None
+
+
+class SearchThread(threading.Thread):
+    """Thread to run Search fix."""
+
+    def __init__(self, gui):
+        """Initialise."""
+        threading.Thread.__init__(self)
+        self.gui = gui
+        self.scm = gui.scm
+
+    def run(self):
+        """Run analyser."""
+
+        self.gui.set_buttons(DISABLED)
+
+        if wrap(None, self.scm.fix_search) is False:
+            messagebox.showerror("Error", "fix search error")
+            self.gui.set_buttons(NORMAL)
+            return
+
+        self.gui.set_buttons(NORMAL)
 
 
 class Edit(Frame):  # pylint: disable=too-many-ancestors

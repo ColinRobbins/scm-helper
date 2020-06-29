@@ -1,6 +1,9 @@
 """SCM Group."""
+import datetime
+
 from scm_helper.config import (
     C_CHECK_DBS,
+    C_CONFIRMATION,
     C_GROUP,
     C_GROUPS,
     C_IGNORE_GROUP,
@@ -16,10 +19,12 @@ from scm_helper.config import (
     CTYPE_SWIMMER,
     EXCEPTION_GROUPNOSESSION,
     EXCEPTION_NONSWIMMINGMASTER,
+    SCM_CSV_DATE_FORMAT,
     get_config,
 )
 from scm_helper.entity import Entities, Entity, check_type
 from scm_helper.issue import (
+    E_CONFIRMATION_EXPIRED,
     E_NO_SWIMMERS,
     E_NOT_IN_SESSION,
     E_SESSIONS,
@@ -28,6 +33,7 @@ from scm_helper.issue import (
     debug_trace,
     issue,
 )
+from scm_helper.notify import notify
 
 A_GROUP_NAME = "GroupName"
 
@@ -65,12 +71,15 @@ class Group(Entity):
     def analyse(self):
         """Analise the group."""
         # pylint: disable=too-many-branches
+        # pylint: disable=too-many-statements
+        # pylint: disable=too-many-locals
         no_session = False
         check_dbs = False
         wanted_session = None
         allowed = None
         xtype = None
         ignore = None
+        confirm = None
 
         if self.config:
             ignore = self.config_item(C_IGNORE_GROUP)
@@ -79,6 +88,7 @@ class Group(Entity):
             wanted_sessions = self.config_item(C_SESSIONS)
             allowed = self.config_item(C_NO_SESSION_ALLOWED)
             xtype = self.config_item(C_TYPE)
+            confirm = self.config_item(C_CONFIRMATION)
 
         if ignore:
             debug(f"Ignoring group {self.name}", 7)
@@ -94,10 +104,34 @@ class Group(Entity):
                     name = member.sessions[0].name
                     issue(member, E_SESSIONS, f"Group: {self.name}, Session: {name}")
 
+        if confirm:
+            try:
+                date = datetime.datetime.strptime(confirm, SCM_CSV_DATE_FORMAT)
+                confirm = date
+            except ValueError:
+                notify(
+                    f"*** Error in date format in config file for groups config: {confirm} ***\n"
+                )
+                confirm = None
+
         for member in self.members:
             self.check_age(member)
             if check_dbs:
                 member.check_dbs(self.name)
+
+            if confirm:
+                err = False
+                if member.confirmed_date:
+                    gap = (confirm - member.confirmed_date).days
+                    if gap >= 0:
+                        err = True
+                else:
+                    err = True
+
+                if err:
+                    issue(member, E_CONFIRMATION_EXPIRED, f"Group: {self.name}")
+                    msg = f"Confirmation Expired for Group: {member.name}"
+                    member.scm.lists.add(msg, member)
 
             if member.newstarter:
                 continue
