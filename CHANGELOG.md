@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.3.1
+
+* Bug fix issue #14
+
 ## 1.3
 26/06/2020
 
