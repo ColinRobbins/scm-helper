@@ -32,8 +32,12 @@ MEMBERS_SUFFIX = "members/"
 SCROLL_PAUSE_TIME = 2
 
 FACEBOOK = "https://www.facebook.com"
-M_XPATH = '//*[@id="groupsMemberSection_all_members"]'
-M_ENTRY = "//ul//div/div[2]/div/div[2]/div[1]"
+
+ #M_XPATH = '//*[@id="groupsMemberSection_all_members"]'
+# M_ENTRY = "//ul//div/div[2]/div/div[2]/div[1]"
+# 05/07/2020 New Facebook GUI
+M_XPATH = '//*[@id="mount_0_0"]'
+M_ENTRY = '//div/div/div[2]/div[1]/div/div/div[1]/span/span/div/'
 M_ELEMENTS = M_XPATH + M_ENTRY + "/a"
 M_ELEMENTS2 = M_XPATH + M_ENTRY + "/span"
 
@@ -123,8 +127,9 @@ def fb_read_url(scm, url):
     for path in [M_ELEMENTS, M_ELEMENTS2]:
         elements = browser.find_elements_by_xpath(path)
         for element in elements:
-            count += 1
-            users.append(element.text)
+            if element.text not in users:
+                count += 1
+                users.append(element.text)
 
     notify(f"Read {count} names from {url}\n")
     browser.close()

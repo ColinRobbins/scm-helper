@@ -3,6 +3,7 @@
 ## 1.3.1
 
 * Bug fix issue #14
+* Fix for new Facebook interface
 
 ## 1.3
 26/06/2020
