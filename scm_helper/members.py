@@ -68,7 +68,7 @@ class Members(Entities):
             return
         if name in self.knownas:
             if member[A_ACTIVE] == "1" and self.knownas[name].is_active:
-                issue(self.knownas[name], E_DUPLICATE, name, "(Known as)")
+                issue(self.knownas[name], E_DUPLICATE, name, 0, "(Known as)")
             else:
                 issue(self.knownas[name], E_DUPLICATE, "One is inactive (Known as)", -1)
 

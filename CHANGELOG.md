@@ -1,8 +1,9 @@
 # Changelog
 
 ## 1.3.1
+07/07/2020
 
-* Bug fix issue #14
+* Bug fix issues #14, #15
 * Fix for new Facebook interface
 
 ## 1.3
