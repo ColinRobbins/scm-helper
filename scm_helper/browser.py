@@ -19,7 +19,6 @@ from scm_helper.config import (
     get_config,
 )
 from scm_helper.notify import interact_yesno, notify
-
 # pylint: disable=unused-import   #it is used!!!
 from selenium.webdriver.common.keys import Keys
 
@@ -33,11 +32,11 @@ SCROLL_PAUSE_TIME = 2
 
 FACEBOOK = "https://www.facebook.com"
 
- #M_XPATH = '//*[@id="groupsMemberSection_all_members"]'
+# M_XPATH = '//*[@id="groupsMemberSection_all_members"]'
 # M_ENTRY = "//ul//div/div[2]/div/div[2]/div[1]"
 # 05/07/2020 New Facebook GUI
 M_XPATH = '//*[@id="mount_0_0"]'
-M_ENTRY = '//div/div/div[2]/div[1]/div/div/div[1]/span/span/div/'
+M_ENTRY = "//div/div/div[2]/div[1]/div/div/div[1]/span/span/div/"
 M_ELEMENTS = M_XPATH + M_ENTRY + "/a"
 M_ELEMENTS2 = M_XPATH + M_ENTRY + "/span"
 

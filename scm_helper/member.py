@@ -463,7 +463,7 @@ class Member(Entity):
             self.check_type(CTYPE_POLO)
             found = True
 
-        if self.is_swimmer or self.is_polo or self.is_synchro:
+        if self.is_swimmer or self.is_polo or self.is_synchro or self.is_openwater:
             analyse_swimmer(self)
 
         if self.is_parent:
@@ -819,6 +819,30 @@ class Member(Entity):
     def is_synchro(self):
         """Is it a syncro swimmer."""
         isa = self.check_attribute("SynchronisedSwimming")
+        if isa == "1":
+            return True
+        return False
+
+    @property
+    def is_lts(self):
+        """Is it a LTS Teacher."""
+        isa = self.check_attribute("LTSTeacher")
+        if isa == "1":
+            return True
+        return False
+
+    @property
+    def is_openwater(self):
+        """Is it a Open Water swimmer."""
+        isa = self.check_attribute("OpenWater")
+        if isa == "1":
+            return True
+        return False
+
+    @property
+    def is_lifesaving(self):
+        """Is it a Life saver."""
+        isa = self.check_attribute("LifeSaving")
         if isa == "1":
             return True
         return False

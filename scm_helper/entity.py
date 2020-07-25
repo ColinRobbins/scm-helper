@@ -12,6 +12,8 @@ from scm_helper.config import (
     A_MEMBERS,
     CTYPE_COACH,
     CTYPE_COMMITTEE,
+    CTYPE_LIFESAVER,
+    CTYPE_LTS,
     CTYPE_OPENWATER,
     CTYPE_PARENT,
     CTYPE_POLO,
@@ -352,14 +354,20 @@ def check_type(member, xtype):
     if xtype == CTYPE_OPENWATER:
         return member.is_openwater
 
-    if xtype == CTYPE_PARENT:
-        return member.is_parent
-
     if xtype == CTYPE_POLO:
         return member.is_polo
 
+    if xtype == CTYPE_PARENT:
+        return member.is_parent
+
     if xtype == CTYPE_VOLUNTEER:
         return member.is_volunteer
+
+    if xtype == CTYPE_LTS:
+        return member.is_lts
+
+    if xtype == CTYPE_LIFESAVER:
+        return member.is_lifesaver
 
     return False
 

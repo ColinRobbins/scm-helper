@@ -195,9 +195,10 @@ C_VERIFY = "verify"
 C_VOLUNTEER = "volunteer"
 C_WEB_DRIVER = "web_driver"
 
-
 CTYPE_COACH = "coach"
 CTYPE_COMMITTEE = "committee"
+CTYPE_LIFESAVER = "lifesaver"
+CTYPE_LTS = "lts_teacher"
 CTYPE_OPENWATER = "openwater"
 CTYPE_PARENT = "parent"
 CTYPE_POLO = "waterpolo"
@@ -208,6 +209,8 @@ CTYPE_VOLUNTEER = "volunteer"
 CTYPES = [
     CTYPE_COACH,
     CTYPE_COMMITTEE,
+    CTYPE_LIFESAVER,
+    CTYPE_LTS,
     CTYPE_OPENWATER,
     CTYPE_PARENT,
     CTYPE_POLO,

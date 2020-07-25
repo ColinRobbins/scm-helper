@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.3.2
+25/07/2020
+
+* Fix for issue #16  - LTS support
+
 ## 1.3.1
 07/07/2020
 
