@@ -119,6 +119,9 @@ def fb_read_url(scm, url):
         interact_yesno("Please logon to Facebook and then press enter here.")
         write_cookies(browser, cookiefile, scm)
         browser.get(url)
+        
+        
+    interact_yesno("(Workaround) Press Allow/Disallow if there is a pop-up - then Click to Continue")
 
     scroll(browser)
 
