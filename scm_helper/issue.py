@@ -643,6 +643,7 @@ def print_dict(xdict, reports):
             res += to_print
             res += "\n"
 
-    if res:
-        return res
+    return res
+        
+
     
