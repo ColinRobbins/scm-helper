@@ -121,7 +121,7 @@ def fb_read_url(scm, url):
         browser.get(url)
         
         
-    interact_yesno("(Workaround) Press Allow/Disallow if there is a pop-up - then Click to Continue")
+    interact_yesno("Navigate to members page (if not there) - then Click to Continue")
 
     scroll(browser)
 
@@ -197,7 +197,7 @@ def check_member(browser, member):
         res += f"   Not current\n"
 
     if res:
-        res = f"{member.name} ({member.asa_number}) mismatch:\n" + res
+        res = f"\n{member.name} ({member.asa_number}) mismatch:\n" + res
 
     return res
 

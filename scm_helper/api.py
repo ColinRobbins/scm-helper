@@ -93,7 +93,7 @@ class API:
         """Read configuration file."""
         home = str(Path.home())
         cfg = os.path.join(home, CONFIG_DIR, CONFIG_FILE)
-
+        
         if os.path.isfile(cfg) is False:
             if create_default_config() is False:
                 return False
@@ -103,6 +103,7 @@ class API:
 
         try:
             with open(cfg) as file:
+                self._config = None
                 self._config = yaml.safe_load(file)
         except EnvironmentError:
             notify(f"Cannot open configuration file: {cfg}\n")

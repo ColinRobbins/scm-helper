@@ -9,7 +9,9 @@ from scm_helper.config import (
     CTYPE_COACH,
     CTYPE_COMMITTEE,
     CTYPE_PARENT,
+    CTYPE_POLO,
     CTYPE_SWIMMER,
+    CTYPE_SYNCHRO,
     CTYPE_VOLUNTEER,
     get_config,
 )
@@ -127,6 +129,8 @@ def check_conduct(member, my_codes):
         CTYPE_COACH: member.is_coach,
         CTYPE_COMMITTEE: member.is_committee_member,
         CTYPE_VOLUNTEER: member.is_volunteer,
+        CTYPE_POLO: member.is_polo,
+        CTYPE_SYNCHRO: member.is_synchro,
     }
 
     codes = member.scm.conduct.entities

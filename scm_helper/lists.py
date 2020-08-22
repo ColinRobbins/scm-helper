@@ -248,7 +248,8 @@ class NewList(Entity):
 
     def add_member(self, member):
         """Add a member to the list."""
-        self.members.append(member.guid)
+        if member.email:
+            self.members.append(member.guid)
 
     @property
     def name(self):
