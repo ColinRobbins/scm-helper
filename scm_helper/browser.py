@@ -16,8 +16,11 @@ from scm_helper.config import (
     C_TEST_ID,
     C_WEB_DRIVER,
     CONFIG_DIR,
+    EXCEPTION_SE_HIDDEN,
+    EXCEPTION_SE_NAME,
     get_config,
 )
+from scm_helper.issue import debug
 from scm_helper.notify import interact_yesno, notify
 # pylint: disable=unused-import   #it is used!!!
 from selenium.webdriver.common.keys import Keys
@@ -73,6 +76,7 @@ def se_check(scm, members):
 
     except selenium.common.exceptions.NoSuchElementException:
         msg = "Please solve the 'I am not a robot', and then press enter here."
+        msg += "\nIf you cnnot solve the capture try deleting the file 'se_cookies.json' in the config directory."
         interact_yesno(msg)
         write_cookies(browser, cookiefile, None)
 
@@ -176,22 +180,30 @@ def check_member(browser, member):
         category = browser.find_element_by_xpath("//table[2]/tbody/tr[3]/td[4]").text
 
     except selenium.common.exceptions.NoSuchElementException:
-        res = f"{member.name} ({member.asa_number}) does not exist in SE database.\n"
+        if member.print_exception(EXCEPTION_SE_HIDDEN) is False:
+            debug(f"SE Exception ignored: {member.name}", 7)
+            return ""
+            
+        res = f"\n{member.name} ({member.asa_number}) does not exist in SE database.\n"
         return res
 
     res = ""
-    if name != member.name:
-        res += f"   Name: {member.name} --> {name}\n"
 
-    if knownas and (member.knownas_only != knownas):
-        res += f"   Knownas: {member.knownas_only} --> {knownas}\n"
+    if member.print_exception(EXCEPTION_SE_NAME) is True:
+        if name.lower() != member.name.lower():
+            res += f"   Name: SCM-> {member.name}, SE-> {name}\n"
+    
+        if knownas and (member.knownas_only != knownas):
+            firstname = name.split(' ')
+            if knownas != firstname[0]:  # in SE they are the same if no knownas
+                res += f"   Knownas: SCM-> {member.knownas_only}, SE-> {knownas}\n"
 
     if member.gender and (gender != GENDER[member.gender]):
-        res += f"   Gender: {member.name} --> {gender}\n"
+        res += f"   Gender: SCM-> {member.name}, SE-> {gender}\n"
 
     mycat = f"SE Category {member.asa_category}"
     if category != mycat:
-        res += f"   Category: {mycat} --> {category}\n"
+        res += f"   Category: SCM-> {mycat}, SE-> {category}\n"
 
     if current != "Current":
         res += f"   Not current\n"

@@ -3,7 +3,12 @@
 ## 1.3.2
 25/07/2020
 
-* Fix for issue #16  - LTS support
+* Fix for issue #16 - LTS support
+* Fix for issue #17 - Abilty to assign polo to a code of conduct
+* Fix for bug #18 - not re-reading config after edit
+* Fix for bug #19 - "All Reports" not showing
+* Improved SE database checking
+
 
 ## 1.3.1
 07/07/2020

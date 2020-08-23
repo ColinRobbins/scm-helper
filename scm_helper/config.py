@@ -74,6 +74,8 @@ EXCEPTION_NOSAFEGUARD = "API: Coach no Safeguard OK"
 EXCEPTION_NOSESSIONS = "API: Coach no sessions"
 EXCEPTION_PERMISSIONS = "API: Coach permission OK"
 EXCEPTION_TWOGROUPS = "API: two groups OK"
+EXCEPTION_SE_HIDDEN = "API: Hidden in SE Database"
+EXCEPTION_SE_NAME = "API: Name in SE Database OK"
 
 SCM_DATE_FORMAT = "%Y-%m-%d"
 PRINT_DATE_FORMAT = "%d-%m-%Y"
