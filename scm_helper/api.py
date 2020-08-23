@@ -93,7 +93,7 @@ class API:
         """Read configuration file."""
         home = str(Path.home())
         cfg = os.path.join(home, CONFIG_DIR, CONFIG_FILE)
-        
+
         if os.path.isfile(cfg) is False:
             if create_default_config() is False:
                 return False

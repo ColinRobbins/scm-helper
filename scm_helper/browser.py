@@ -22,6 +22,7 @@ from scm_helper.config import (
 )
 from scm_helper.issue import debug
 from scm_helper.notify import interact_yesno, notify
+
 # pylint: disable=unused-import   #it is used!!!
 from selenium.webdriver.common.keys import Keys
 
@@ -75,8 +76,10 @@ def se_check(scm, members):
         browser.find_element_by_xpath("//table[1]/tbody/tr[2]/td[2]")
 
     except selenium.common.exceptions.NoSuchElementException:
-        msg = "Please solve the 'I am not a robot', and then press enter here."
-        msg += "\nIf you cnnot solve the capture try deleting the file 'se_cookies.json' in the config directory."
+        msg = """Please solve the 'I am not a robot', and then press enter here.
+If you cnnot solve the capture try deleting the file 'se_cookies.json' 
+in the config directory.
+"""
         interact_yesno(msg)
         write_cookies(browser, cookiefile, None)
 
@@ -123,8 +126,7 @@ def fb_read_url(scm, url):
         interact_yesno("Please logon to Facebook and then press enter here.")
         write_cookies(browser, cookiefile, scm)
         browser.get(url)
-        
-        
+
     interact_yesno("Navigate to members page (if not there) - then Click to Continue")
 
     scroll(browser)
@@ -183,7 +185,7 @@ def check_member(browser, member):
         if member.print_exception(EXCEPTION_SE_HIDDEN) is False:
             debug(f"SE Exception ignored: {member.name}", 7)
             return ""
-            
+
         res = f"\n{member.name} ({member.asa_number}) does not exist in SE database.\n"
         return res
 
@@ -192,9 +194,9 @@ def check_member(browser, member):
     if member.print_exception(EXCEPTION_SE_NAME) is True:
         if name.lower() != member.name.lower():
             res += f"   Name: SCM-> {member.name}, SE-> {name}\n"
-    
+
         if knownas and (member.knownas_only != knownas):
-            firstname = name.split(' ')
+            firstname = name.split(" ")
             if knownas != firstname[0]:  # in SE they are the same if no knownas
                 res += f"   Knownas: SCM-> {member.knownas_only}, SE-> {knownas}\n"
 
