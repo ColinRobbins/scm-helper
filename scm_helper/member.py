@@ -256,7 +256,7 @@ class Member(Entity):
             if find == code.name:
                 return code
         return None
-        
+
     def check_email(self):
         """Check email."""
         email = self.email

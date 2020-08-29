@@ -71,6 +71,7 @@ class Sessions(Entities):
 
         return res
 
+
 class Session(Entity):
     """A session."""
 
@@ -160,7 +161,7 @@ class Session(Entity):
                 res += f"   {swimmer.name}, {msg}\n"
 
         return res
-        
+
     @debug_trace(5)
     def analyse(self):
         """Analise the session."""
