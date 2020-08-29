@@ -116,6 +116,8 @@ class ScmGui:
         msg = "Analyse"
         self.button_analyse = Button(top_frame, text=msg, command=self.analyse_window)
         self.button_analyse.grid(row=0, column=2, pady=10, padx=10)
+        
+        self.master.bind('<Return>', self.analyse_enter)
 
         self.button_backup = Button(top_frame, text="Backup", command=self.backup)
         self.button_backup.grid(row=0, column=3, pady=10, padx=10)
@@ -177,6 +179,10 @@ class ScmGui:
 
         cmd.add_command(label="List Coaches", command=self.coaches, state=DISABLED)
         self.menus.append([cmd, "List Coaches"])
+        
+        label = "List Swimmers per Session - Covid"
+        cmd.add_command(label=label, command=self.sessions, state=DISABLED)
+        self.menus.append([cmd, label])
 
         label = "Show Not-confirmed Emails"
         cmd.add_command(label=label, command=self.confirm, state=DISABLED)
@@ -331,6 +337,17 @@ class ScmGui:
         self.notify_text.config(state=DISABLED)
         self.report_window.lift()
 
+    def sessions(self):
+        """Sessions Report."""
+        if self.prep_report() is False:
+            return
+
+        output = wrap(None, self.scm.sessions.print_swimmers_covid)
+        self.report_text.insert(END, output)
+        self.report_text.config(state=DISABLED)
+        self.notify_text.config(state=DISABLED)
+        self.report_window.lift()
+        
     def edit_config(self):
         """Edit Config."""
         home = str(Path.home())
@@ -359,6 +376,11 @@ class ScmGui:
 
         self.thread = AnalysisThread(self, False).start()
 
+    def analyse_enter(self, event):
+        """Window for analysis result."""
+        debug(f"Event: {event}", 7)
+        self.analyse_window()
+        
     def fix_search(self):
         """Window for reports."""
         if self.thread:

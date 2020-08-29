@@ -3,10 +3,12 @@ import datetime
 
 from scm_helper.config import (
     A_ARCHIVED,
+    A_DATEAGREED,
     A_GUID,
     A_LAST_ATTENDED,
     A_MEMBERS,
     C_ABSENCE,
+    C_COVID,
     C_GROUPS,
     C_IGNORE_ATTENDANCE,
     C_REGISTER,
@@ -58,6 +60,16 @@ class Sessions(Entities):
 
         return res
 
+    def print_swimmers_covid(self):
+        """Print coaches per session."""
+        res = ""
+        for session in sorted(self.entities, key=lambda x: x.full_name):
+            if session.is_active:
+                res += f"{session.full_name}\n"
+                res += session.print_swimmer_covid()
+                res += "\n"
+
+        return res
 
 class Session(Entity):
     """A session."""
@@ -129,6 +141,26 @@ class Session(Entity):
 
         return res
 
+    def print_swimmer_covid(self):
+        """Print swimmers."""
+        res = ""
+        covid = get_config(self.scm, C_SESSIONS, C_COVID)
+        for swimmer in self.members:
+            if swimmer.is_active:
+                msg = "No"
+                code = swimmer.get_conduct_name(covid)
+                if code:
+                    code_members = code.data[A_MEMBERS]
+                    for member in code_members:
+                        code_member = self.scm.members.by_guid[member[A_GUID]]
+                        if code_member == swimmer:
+                            if member[A_DATEAGREED]:
+                                msg = "Yes"
+
+                res += f"   {swimmer.name}, {msg}\n"
+
+        return res
+        
     @debug_trace(5)
     def analyse(self):
         """Analise the session."""

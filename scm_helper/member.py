@@ -250,6 +250,13 @@ class Member(Entity):
                 return True
         return False
 
+    def get_conduct_name(self, find):
+        """get a code of conduct."""
+        for code in self._conduct:
+            if find == code.name:
+                return code
+        return None
+        
     def check_email(self):
         """Check email."""
         email = self.email

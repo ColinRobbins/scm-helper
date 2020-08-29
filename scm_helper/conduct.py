@@ -1,5 +1,6 @@
 """SCM Conduct."""
 from scm_helper.config import (
+    A_DATEAGREED,
     A_GUID,
     A_MEMBERS,
     C_CONDUCT,
@@ -96,7 +97,7 @@ class Conduct(Entity):
         # This approach breaks the model. Oh well.
         for member in self.data[A_MEMBERS]:
 
-            if member["DateAgreed"]:
+            if member[A_DATEAGREED]:
                 continue
 
             person = self.scm.members.by_guid[member[A_GUID]]
