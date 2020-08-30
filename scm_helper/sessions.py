@@ -30,6 +30,7 @@ from scm_helper.issue import (
     debug_trace,
     issue,
 )
+from scm_helper.notify import notify
 
 A_SESSION_NAME = "SessionName"
 A_COACHES = "Coaches"
@@ -62,6 +63,11 @@ class Sessions(Entities):
 
     def print_swimmers_covid(self):
         """Print coaches per session."""
+        covid = get_config(self.scm, C_SESSIONS, C_COVID)
+        if covid is None:
+            notify("Missing config for COVID option")
+            return ""
+
         res = ""
         for session in sorted(self.entities, key=lambda x: x.full_name):
             if session.is_active:

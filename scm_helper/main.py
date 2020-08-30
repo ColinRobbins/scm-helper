@@ -208,14 +208,6 @@ def cmd(argv=None):
             print(output)
         sys.exit()
 
-    if scm.option("--covid"):
-        output = scm.sessions.print_swimmers_covid()
-        if scm.option("--email"):
-            send_email(scm, output, "SCM: Session / Covid Report")
-        else:
-            print(output)
-        sys.exit()
-
     if scm.option("--csv"):
         csv.analyse(scm)
         output = csv.print_errors()
@@ -253,6 +245,14 @@ def cmd(argv=None):
         sys.exit()
 
     scm.analyse()
+
+    if scm.option("--covid"):
+        output = scm.sessions.print_swimmers_covid()
+        if scm.option("--email"):
+            send_email(scm, output, "SCM: Session / Covid Report")
+        else:
+            print(output)
+        sys.exit()
 
     if scm.option("--lists"):
         if scm.option("--verify"):
