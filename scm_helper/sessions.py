@@ -146,6 +146,24 @@ class Session(Entity):
         """Print swimmers."""
         res = ""
         covid = get_config(self.scm, C_SESSIONS, C_COVID)
+
+        res += "  Coaches:\n"
+        for coach in self.data[A_COACHES]:
+            swimmer = self.scm.members.by_guid[coach[A_GUID]]
+            if swimmer.is_active:
+                msg = "No"
+                code = swimmer.get_conduct_name(covid)
+                if code:
+                    code_members = code.data[A_MEMBERS]
+                    for member in code_members:
+                        code_member = self.scm.members.by_guid[member[A_GUID]]
+                        if code_member == swimmer:
+                            if member[A_DATEAGREED]:
+                                msg = "Yes"
+
+                res += f"   {swimmer.name}, {msg}\n"
+
+        res += "  Swimmers:\n"
         for swimmer in self.members:
             if swimmer.is_active:
                 msg = "No"
@@ -159,6 +177,8 @@ class Session(Entity):
                                 msg = "Yes"
 
                 res += f"   {swimmer.name}, {msg}\n"
+
+
 
         return res
 

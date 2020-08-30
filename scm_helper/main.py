@@ -22,6 +22,7 @@ Where <options> are:
    --backup = backup
    --coaches = report of coaches per session
    --confirm_email = print email addresses for confirm errors
+   --covid = print a list of sessions with who has replied to the Covid declaration
    --csv <csvfile> = read and validate file
    --dump <type> = dump entities of <type>
    --error = print sorted by error
@@ -55,6 +56,7 @@ LONG_OPTS = [
     "backup",
     "coaches",
     "confirm_email",
+    "covid",
     "csv=",
     "dump=",
     "email",
@@ -202,6 +204,14 @@ def cmd(argv=None):
         output = scm.sessions.print_coaches()
         if scm.option("--email"):
             send_email(scm, output, "SCM: Coaches Report")
+        else:
+            print(output)
+        sys.exit()
+        
+    if scm.option("--covid"):
+        output = scm.sessions.print_swimmers_covid()
+        if scm.option("--email"):
+            send_email(scm, output, "SCM: Session / Covid Report")
         else:
             print(output)
         sys.exit()

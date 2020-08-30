@@ -10,6 +10,7 @@ import selenium
 from scm_helper.config import (
     C_BASE_URL,
     C_BROWSER,
+    C_DEBUG_LEVEL,
     C_CHECK_URL,
     C_SELENIUM,
     C_SWIM_ENGLAND,
@@ -127,7 +128,9 @@ def fb_read_url(scm, url):
         write_cookies(browser, cookiefile, scm)
         browser.get(url)
 
-    interact_yesno("Navigate to members page (if not there) - then Click to Continue")
+    debug_config = scm.config(C_DEBUG_LEVEL)
+    if debug_config > 1:
+        interact_yesno("Navigate to members page (if not there) - then Click to Continue")
 
     scroll(browser)
 

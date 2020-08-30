@@ -102,7 +102,7 @@ class Conduct(Entity):
 
             person = self.scm.members.by_guid[member[A_GUID]]
             if person.confirmed_date:  # Will get a not confirmed error later in not set
-                issue(person, E_NO_CONDUCT_DATE, self.name)
+                issue(person, E_NO_CONDUCT_DATE, self.name, 0, person.first_group)
                 codes = get_config(self.scm, C_LISTS, C_CONDUCT)
                 if codes:
                     for code in codes:

@@ -698,7 +698,7 @@ class FacebookThread(threading.Thread):
         """Process a Facebook report."""
 
         fbook = Facebook()
-        if fbook.read_data(self.scm) is False:
+        if wrap(None, fbook.read_data, self.scm) is False:
             messagebox.showerror("Error", "Could not read facebook files")
             self.gui.report_text.config(state=DISABLED)
             self.gui.notify_text.config(state=DISABLED)
@@ -983,8 +983,9 @@ def wrap(xtime, func, arg=None):
         TypeError,
         ValueError,
     ) as err:
-        errmsg = traceback.format_exc(10)
-        debug(errmsg, 1)
+        errmsg = f"\nSCM Helper Version: {VERSION}.\n"
+        errmsg += traceback.format_exc(10)
+        debug(errmsg, 0)
         msg = f"Internal SCM Helper Error:\n{err}\nPlease log an issue on github.\n"
         wrap_trace()
         messagebox.showerror("Error", msg)
