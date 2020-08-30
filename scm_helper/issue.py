@@ -614,6 +614,8 @@ def print_dict(xdict, reports):
             inner_match = False
             first = True
             length = len(xdict[key1][key2])
+            # pylint: disable=bad-continuation
+            # black insists
             for xissue in sorted(
                 xdict[key1][key2], key=lambda x: "None" if x[0] is None else x[0]
             ):

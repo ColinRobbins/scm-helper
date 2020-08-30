@@ -144,6 +144,7 @@ class Session(Entity):
 
     def print_swimmer_covid(self):
         """Print swimmers."""
+        # pylint: disable=too-many-nested-blocks
         res = ""
         covid = get_config(self.scm, C_SESSIONS, C_COVID)
 
@@ -177,8 +178,6 @@ class Session(Entity):
                                 msg = "Yes"
 
                 res += f"   {swimmer.name}, {msg}\n"
-
-
 
         return res
 

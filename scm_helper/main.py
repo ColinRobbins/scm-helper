@@ -207,7 +207,7 @@ def cmd(argv=None):
         else:
             print(output)
         sys.exit()
-        
+
     if scm.option("--covid"):
         output = scm.sessions.print_swimmers_covid()
         if scm.option("--email"):
