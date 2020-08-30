@@ -86,6 +86,7 @@ A_ACTIVE = "Active"
 A_ARCHIVED = "Archived"
 A_ASA_CATEGORY = "ASACategory"
 A_ASA_NUMBER = "ASANumber"
+A_DATEAGREED = "DateAgreed"
 A_DOB = "DOB"
 A_FIRSTNAME = "Firstname"
 A_GUID = "Guid"
@@ -122,6 +123,7 @@ C_COACHES = "coaches"
 C_CONDUCT = "conduct"
 C_CONF_DIFF = "confirmation_difference"
 C_CONFIRMATION = "confirmation"
+C_COVID = "covid"
 C_DBS = "dbs"
 C_DEBUG_LEVEL = "debug_level"
 C_DOB_FORMAT = "dob_format"
@@ -336,6 +338,7 @@ SCHEMA = Schema(
         Optional(C_SESSIONS): {
             Optional(C_ABSENCE): int,
             Optional(C_REGISTER): int,
+            Optional(C_COVID): conduct,
             Optional(C_SESSION): {
                 session: {
                     Optional(C_GROUPS): [group],

@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.5
+30/08/2020
+* GUI bug fix
+* Added COVID-19 Session / Return to Swim Declaration Report.
+
 ## 1.4
 20/08/2020
 

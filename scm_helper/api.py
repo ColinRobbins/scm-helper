@@ -206,8 +206,8 @@ class API:
 
     def get_data(self, backup):
         """Get data."""
-        notify(f"Reading Data...\n")
         debug(f"(version: {VERSION})", 1)
+        notify(f"Reading Data...\n")
 
         loop = self.classes
         if backup:

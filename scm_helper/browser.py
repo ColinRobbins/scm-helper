@@ -11,6 +11,7 @@ from scm_helper.config import (
     C_BASE_URL,
     C_BROWSER,
     C_CHECK_URL,
+    C_DEBUG_LEVEL,
     C_SELENIUM,
     C_SWIM_ENGLAND,
     C_TEST_ID,
@@ -77,7 +78,7 @@ def se_check(scm, members):
 
     except selenium.common.exceptions.NoSuchElementException:
         msg = """Please solve the 'I am not a robot', and then press enter here.
-If you cnnot solve the capture try deleting the file 'se_cookies.json' 
+If you cnnot solve the capture try deleting the file 'se_cookies.json'
 in the config directory.
 """
         interact_yesno(msg)
@@ -127,7 +128,11 @@ def fb_read_url(scm, url):
         write_cookies(browser, cookiefile, scm)
         browser.get(url)
 
-    interact_yesno("Navigate to members page (if not there) - then Click to Continue")
+    debug_config = scm.config(C_DEBUG_LEVEL)
+    if debug_config > 1:
+        interact_yesno(
+            "Navigate to members page (if not there) - then Click to Continue"
+        )
 
     scroll(browser)
 

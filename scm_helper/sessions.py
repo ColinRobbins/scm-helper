@@ -3,10 +3,12 @@ import datetime
 
 from scm_helper.config import (
     A_ARCHIVED,
+    A_DATEAGREED,
     A_GUID,
     A_LAST_ATTENDED,
     A_MEMBERS,
     C_ABSENCE,
+    C_COVID,
     C_GROUPS,
     C_IGNORE_ATTENDANCE,
     C_REGISTER,
@@ -28,6 +30,7 @@ from scm_helper.issue import (
     debug_trace,
     issue,
 )
+from scm_helper.notify import notify
 
 A_SESSION_NAME = "SessionName"
 A_COACHES = "Coaches"
@@ -54,6 +57,22 @@ class Sessions(Entities):
             if session.is_active:
                 res += f"{session.full_name}:\n"
                 res += session.print_coaches()
+                res += "\n"
+
+        return res
+
+    def print_swimmers_covid(self):
+        """Print coaches per session."""
+        covid = get_config(self.scm, C_SESSIONS, C_COVID)
+        if covid is None:
+            notify("Missing config for COVID option")
+            return ""
+
+        res = ""
+        for session in sorted(self.entities, key=lambda x: x.full_name):
+            if session.is_active:
+                res += f"{session.full_name}\n"
+                res += session.print_swimmer_covid()
                 res += "\n"
 
         return res
@@ -126,6 +145,45 @@ class Session(Entity):
                 else:
                     msg = "(Never seen)"
                 res += f"   {guid.name} {msg}\n"
+
+        return res
+
+    def print_swimmer_covid(self):
+        """Print swimmers."""
+        # pylint: disable=too-many-nested-blocks
+        res = ""
+        covid = get_config(self.scm, C_SESSIONS, C_COVID)
+
+        res += "  Coaches:\n"
+        for coach in self.data[A_COACHES]:
+            swimmer = self.scm.members.by_guid[coach[A_GUID]]
+            if swimmer.is_active:
+                msg = "No"
+                code = swimmer.get_conduct_name(covid)
+                if code:
+                    code_members = code.data[A_MEMBERS]
+                    for member in code_members:
+                        code_member = self.scm.members.by_guid[member[A_GUID]]
+                        if code_member == swimmer:
+                            if member[A_DATEAGREED]:
+                                msg = "Yes"
+
+                res += f"   {swimmer.name}, {msg}\n"
+
+        res += "  Swimmers:\n"
+        for swimmer in self.members:
+            if swimmer.is_active:
+                msg = "No"
+                code = swimmer.get_conduct_name(covid)
+                if code:
+                    code_members = code.data[A_MEMBERS]
+                    for member in code_members:
+                        code_member = self.scm.members.by_guid[member[A_GUID]]
+                        if code_member == swimmer:
+                            if member[A_DATEAGREED]:
+                                msg = "Yes"
+
+                res += f"   {swimmer.name}, {msg}\n"
 
         return res
 

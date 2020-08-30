@@ -117,6 +117,8 @@ class ScmGui:
         self.button_analyse = Button(top_frame, text=msg, command=self.analyse_window)
         self.button_analyse.grid(row=0, column=2, pady=10, padx=10)
 
+        self.master.bind("<Return>", self.analyse_enter)
+
         self.button_backup = Button(top_frame, text="Backup", command=self.backup)
         self.button_backup.grid(row=0, column=3, pady=10, padx=10)
 
@@ -177,6 +179,10 @@ class ScmGui:
 
         cmd.add_command(label="List Coaches", command=self.coaches, state=DISABLED)
         self.menus.append([cmd, "List Coaches"])
+
+        label = "List Swimmers per Session - Covid"
+        cmd.add_command(label=label, command=self.sessions, state=DISABLED)
+        self.menus.append([cmd, label])
 
         label = "Show Not-confirmed Emails"
         cmd.add_command(label=label, command=self.confirm, state=DISABLED)
@@ -331,6 +337,17 @@ class ScmGui:
         self.notify_text.config(state=DISABLED)
         self.report_window.lift()
 
+    def sessions(self):
+        """Sessions Report."""
+        if self.prep_report() is False:
+            return
+
+        output = wrap(None, self.scm.sessions.print_swimmers_covid)
+        self.report_text.insert(END, output)
+        self.report_text.config(state=DISABLED)
+        self.notify_text.config(state=DISABLED)
+        self.report_window.lift()
+
     def edit_config(self):
         """Edit Config."""
         home = str(Path.home())
@@ -358,6 +375,11 @@ class ScmGui:
             return
 
         self.thread = AnalysisThread(self, False).start()
+
+    def analyse_enter(self, event):
+        """Window for analysis result."""
+        debug(f"Event: {event}", 7)
+        self.analyse_window()
 
     def fix_search(self):
         """Window for reports."""
@@ -676,7 +698,7 @@ class FacebookThread(threading.Thread):
         """Process a Facebook report."""
 
         fbook = Facebook()
-        if fbook.read_data(self.scm) is False:
+        if wrap(None, fbook.read_data, self.scm) is False:
             messagebox.showerror("Error", "Could not read facebook files")
             self.gui.report_text.config(state=DISABLED)
             self.gui.notify_text.config(state=DISABLED)
@@ -961,8 +983,9 @@ def wrap(xtime, func, arg=None):
         TypeError,
         ValueError,
     ) as err:
-        errmsg = traceback.format_exc(10)
-        debug(errmsg, 1)
+        errmsg = f"\nSCM Helper Version: {VERSION}.\n"
+        errmsg += traceback.format_exc(10)
+        debug(errmsg, 0)
         msg = f"Internal SCM Helper Error:\n{err}\nPlease log an issue on github.\n"
         wrap_trace()
         messagebox.showerror("Error", msg)
