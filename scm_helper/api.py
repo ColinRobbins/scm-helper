@@ -240,7 +240,7 @@ class API:
         return True
 
     def analyse(self):
-        """Analise the data."""
+        """Analyse the data."""
         notify("Analysing...\n")
 
         for aclass in self.classes:

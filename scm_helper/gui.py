@@ -621,7 +621,7 @@ class AnalysisThread(threading.Thread):
                 return
         else:
             if wrap(None, self.scm.get_data, False) is False:
-                messagebox.showerror("Analsyis", "Failed to read data")
+                messagebox.showerror("Analysis", "Failed to read data")
                 self.gui.master.after(AFTER, self.gui.set_normal)
                 self.gui.thread = None
                 return

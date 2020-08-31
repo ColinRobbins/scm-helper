@@ -438,7 +438,7 @@ class Member(Entity):
 
     @debug_trace(5)
     def analyse(self):
-        """Analise the member."""
+        """Analyse the member."""
         # pylint: disable=too-many-branches
         # pylint: disable=too-many-statements
 
