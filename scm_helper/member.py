@@ -493,8 +493,6 @@ class Member(Entity):
             self.check_type(CTYPE_COMMITTEE)
 
         if self.jobtitle:
-            # pylint: disable=bad-continuation
-            # black insists
             if (
                 (self.is_volunteer is not True)
                 and (self.is_committee_member is not True)
@@ -533,7 +531,7 @@ class Member(Entity):
                     notify("Hit a snag!\n")
                     return False
 
-                notify(f"Recreating...")
+                notify("Recreating...")
 
                 self.newdata[A_FIRSTNAME] = self.data[A_FIRSTNAME]
 
@@ -544,7 +542,7 @@ class Member(Entity):
                     notify(f"{msg} '{self.data[A_FIRSTNAME]}' {msg2}")
                     return False
 
-                notify(f"Success.\n")
+                notify("Success.\n")
 
         return True
 

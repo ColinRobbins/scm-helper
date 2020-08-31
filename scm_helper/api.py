@@ -7,6 +7,7 @@ from shutil import copyfile
 
 import requests
 import yaml
+
 from scm_helper.conduct import CodesOfConduct
 from scm_helper.config import (
     BACKUP_DIR,
@@ -207,7 +208,7 @@ class API:
     def get_data(self, backup):
         """Get data."""
         debug(f"(version: {VERSION})", 1)
-        notify(f"Reading Data...\n")
+        notify("Reading Data...\n")
 
         loop = self.classes
         if backup:

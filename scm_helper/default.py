@@ -41,7 +41,7 @@ def create_default_config():
         return False
 
 
-DEFAULT_CONFIG = f"""
+DEFAULT_CONFIG = """
 ################################################################
 # Configuration of SCM-Helper
 #

@@ -116,8 +116,6 @@ def check_lastseen(swimmer):
             # if no session, don't have data about when they have been seen
             check = True
             for session in swimmer.sessions:
-                # pylint: disable=bad-continuation
-                # black insists
                 if get_config(
                     swimmer.scm,
                     C_SESSIONS,
@@ -203,8 +201,6 @@ def check_parents(swimmer):
             confirm_error = check_confirmed_diff(swimmer, parent)
             if confirm_error:
                 issue(swimmer, E_CONFIRM_DIFF, f"Parent {parent.name}")
-    # pylint: disable=bad-continuation
-    # black insists
     if (
         swimmer.parents
         and swimmer.age

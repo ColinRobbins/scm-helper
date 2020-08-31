@@ -34,6 +34,7 @@ class Crypto:
     def decrypt_backup(self, name, xdate):
         """Decrypt file."""
         notify("Not implemented on iPad\n")
+        return False
 
     def read_key(self, filename):
         """Read API key."""

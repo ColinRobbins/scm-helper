@@ -29,6 +29,7 @@ from tkinter import (
 )
 
 from func_timeout import FunctionTimedOut, func_timeout
+
 from scm_helper.api import API
 from scm_helper.config import (
     BACKUP_DIR,
@@ -467,7 +468,10 @@ class ScmGui:
         all_reports = ["All Reports"] + rpts
 
         menu = OptionMenu(
-            top_frame, self.reports, *all_reports, command=self.process_issue_option,
+            top_frame,
+            self.reports,
+            *all_reports,
+            command=self.process_issue_option,
         )
         menu.grid(row=0, column=1, pady=10, padx=10)
 
@@ -974,7 +978,6 @@ def wrap(xtime, func, arg=None):
         messagebox.showerror("Error", msg)
         return False
 
-    # pylint: disable=bad-continuation
     except (
         AssertionError,
         AttributeError,

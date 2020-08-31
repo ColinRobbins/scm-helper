@@ -7,6 +7,10 @@ import time
 from pathlib import Path
 
 import selenium
+
+# pylint: disable=unused-import   #it is used!!!
+from selenium.webdriver.common.keys import Keys
+
 from scm_helper.config import (
     C_BASE_URL,
     C_BROWSER,
@@ -23,9 +27,6 @@ from scm_helper.config import (
 )
 from scm_helper.issue import debug
 from scm_helper.notify import interact_yesno, notify
-
-# pylint: disable=unused-import   #it is used!!!
-from selenium.webdriver.common.keys import Keys
 
 SE_COOKIES = "se_cookies.json"
 FB_COOKIES = "fb_cookies.json.enc"
@@ -213,7 +214,7 @@ def check_member(browser, member):
         res += f"   Category: SCM-> {mycat}, SE-> {category}\n"
 
     if current != "Current":
-        res += f"   Not current\n"
+        res += "   Not current\n"
 
     if res:
         res = f"\n{member.name} ({member.asa_number}) mismatch:\n" + res
