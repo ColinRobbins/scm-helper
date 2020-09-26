@@ -60,7 +60,7 @@ def analyse_parent(parent):
             issue(swimmer, E_PARENT_AGE_TOO_OLD, f"{swimmer.age}, {parent.name}")
 
     login = get_config(parent.scm, C_PARENTS, C_LOGIN, C_MANDATORY)
-    if login and (parent.username is None):
+    if login and (parent.username is None) and parent.email:
         issue(parent, E_NO_LOGIN, "Parent (fixable)")
         fix = {}
         fix[A_USERNAME] = parent.email

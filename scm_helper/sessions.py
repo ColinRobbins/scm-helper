@@ -6,6 +6,7 @@ from scm_helper.config import (
     A_DATEAGREED,
     A_GUID,
     A_LAST_ATTENDED,
+    A_MAX_MEMBERS,
     A_MEMBERS,
     C_ABSENCE,
     C_COVID,
@@ -22,6 +23,7 @@ from scm_helper.entity import Entities, Entity
 from scm_helper.issue import (
     E_INACTIVE,
     E_NEVER_ATTENDED,
+    E_TOO_MANY_SWIMMERS,
     E_NO_COACH,
     E_NO_REGISTER,
     E_NO_SWIMMERS,
@@ -205,11 +207,14 @@ class Session(Entity):
         groups = get_config(self.scm, C_SESSIONS, C_SESSION, self.name, C_GROUPS)
 
         seen = None
+        n_swimmers = 0
 
         for swimmer in self.data[A_MEMBERS]:
             found = False
             lastseen = None
             person = self.scm.members.by_guid[swimmer[A_GUID]]
+            
+            n_swimmers += 1
 
             if person.newstarter:
                 continue
@@ -247,6 +252,9 @@ class Session(Entity):
                 else:
                     if absence != 9999:
                         issue(person, E_NEVER_ATTENDED, f"{self.full_name}")
+         
+        if n_swimmers > self.max_members:
+            issue(self, E_TOO_MANY_SWIMMERS, f"{n_swimmers} > {self.max_members}")
 
         if (self.ignore_attendance is False) and (register != 9999):
             msg = "Never"
@@ -256,6 +264,8 @@ class Session(Entity):
                 else:
                     return
             issue(self, E_NO_REGISTER, f"last taken: {msg} ({self.full_name})")
+            
+            
 
     @property
     def name(self):
@@ -278,3 +288,11 @@ class Session(Entity):
             if self.data[A_ARCHIVED] == 0:
                 return True
         return False
+        
+    @property
+    def max_members(self):
+        """Is the entry active..."""
+        if A_MAX_MEMBERS in self.data:
+            return self.data[A_MAX_MEMBERS]
+            
+        return 9999
