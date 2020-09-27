@@ -95,6 +95,9 @@ class Conduct(Entity):
         # A better way of doing this would be to add
         # the attribute to the swimmer in linkage.
         # This approach breaks the model. Oh well.
+        
+        ignores = get_config(self.scm, C_CONDUCT, self.name, C_IGNORE_GROUP)
+        
         for member in self.data[A_MEMBERS]:
 
             if member[A_DATEAGREED]:
@@ -102,6 +105,15 @@ class Conduct(Entity):
 
             person = self.scm.members.by_guid[member[A_GUID]]
             if person.confirmed_date:  # Will get a not confirmed error later in not set
+            
+                found_ignore = False
+                if ignores:
+                    for ignore in ignores:
+                        if person.find_group(ignore):
+                            found_ignore = True
+                if found_ignore:
+                    continue
+
                 issue(person, E_NO_CONDUCT_DATE, self.name, 0, person.first_group)
                 codes = get_config(self.scm, C_LISTS, C_CONDUCT)
                 if codes:
