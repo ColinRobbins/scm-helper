@@ -20,7 +20,5 @@ Download latest [Windows Version](https://github.com/ColinRobbins/scm-helper/raw
 See [documentation](https://github.com/ColinRobbins/scm-helper/wiki) on GitHub for installation and usage instructions.
 # Change Log
 See [changelog](CHANGELOG.md)
-# Donations.
-The software was developed for free during 2020 lockdown, taking about 100 hours work.  If you find the software useful, please consider making a [donation](https://uk.virginmoneygiving.com/ColinRobbins) to support the NHS Covid 19 appeal.
 ## Author
 * [Colin Robbins](https://github.com/ColinRobbins)
