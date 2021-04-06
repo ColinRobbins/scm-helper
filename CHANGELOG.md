@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.5.2
+* Fix EOY date issue
+* Add Date to Code of Codduct check
+
 ## 1.5.1
 28/09/2020
 * Create issue if max swimmers per session exceeded
