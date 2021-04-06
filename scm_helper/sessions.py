@@ -158,6 +158,8 @@ class Session(Entity):
         res = ""
         covid = get_config(self.scm, C_SESSIONS, C_COVID)
         c_date_str = get_config(self.scm, C_CONDUCT, covid, C_DATE)
+        if c_date_str is None:
+            c_date_str = "1900-01-01"
         c_date = datetime.datetime.strptime(c_date_str, SCM_DATE_FORMAT)
 
         res += "  Coaches:\n"
