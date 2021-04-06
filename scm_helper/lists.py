@@ -156,11 +156,11 @@ class NewList(Entity):
 
         min_age_eoy = 0
         if C_MIN_AGE_EOY in cfg:
-            min_age = cfg[C_MIN_AGE_EOY]
+            min_age_eoy = cfg[C_MIN_AGE_EOY]
 
         max_age_eoy = 999
         if C_MAX_AGE_EOY in cfg:
-            max_age = cfg[C_MAX_AGE_EOY]
+            max_age_eoy = cfg[C_MAX_AGE_EOY]
 
         min_year = 1900
         if C_MIN_YEAR in cfg:
