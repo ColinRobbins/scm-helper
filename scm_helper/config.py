@@ -1,5 +1,5 @@
 """Configuration stuff."""
-from schema import And, Optional, Schema, SchemaError
+from schema import And, Optional, Regex, Schema, SchemaError
 
 from scm_helper.notify import notify
 from scm_helper.version import VERSION
@@ -125,6 +125,7 @@ C_CONDUCT = "conduct"
 C_CONF_DIFF = "confirmation_difference"
 C_CONFIRMATION = "confirmation"
 C_COVID = "covid"
+C_DATE = "date"
 C_DBS = "dbs"
 C_DEBUG_LEVEL = "debug_level"
 C_DOB_FORMAT = "dob_format"
@@ -348,7 +349,11 @@ SCHEMA = Schema(
             },
         },
         Optional(C_CONDUCT): {
-            conduct: {C_TYPES: [member_type], Optional(C_IGNORE_GROUP): [group]}
+            conduct: {
+                C_TYPES: [member_type],
+                Optional(C_IGNORE_GROUP): [group],
+                Optional(C_DATE): Regex(r"\d\d\d\d-\d\d-\d\d"),
+            }
         },
         Optional(C_ISSUES): {
             issue: {Optional(C_MESSAGE): str, Optional(C_IGNORE_ERROR): bool}

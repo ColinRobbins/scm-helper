@@ -8,7 +8,9 @@ from scm_helper.config import (
     A_LAST_ATTENDED,
     A_MEMBERS,
     C_ABSENCE,
+    C_CONDUCT,
     C_COVID,
+    C_DATE,
     C_GROUPS,
     C_IGNORE_ATTENDANCE,
     C_REGISTER,
@@ -153,6 +155,8 @@ class Session(Entity):
         # pylint: disable=too-many-nested-blocks
         res = ""
         covid = get_config(self.scm, C_SESSIONS, C_COVID)
+        c_date_str = get_config(self.scm, C_CONDUCT, covid, C_DATE)
+        c_date = datetime.datetime.strptime(c_date_str, SCM_DATE_FORMAT)
 
         res += "  Coaches:\n"
         for coach in self.data[A_COACHES]:
@@ -166,7 +170,11 @@ class Session(Entity):
                         code_member = self.scm.members.by_guid[member[A_GUID]]
                         if code_member == swimmer:
                             if member[A_DATEAGREED]:
-                                msg = "Yes"
+                                m_date = datetime.datetime.strptime(
+                                    member[A_DATEAGREED], SCM_DATE_FORMAT
+                                )
+                                if m_date > c_date:
+                                    msg = "Yes"
 
                 res += f"   {swimmer.name}, {msg}\n"
 
@@ -181,7 +189,11 @@ class Session(Entity):
                         code_member = self.scm.members.by_guid[member[A_GUID]]
                         if code_member == swimmer:
                             if member[A_DATEAGREED]:
-                                msg = "Yes"
+                                m_date = datetime.datetime.strptime(
+                                    member[A_DATEAGREED], SCM_DATE_FORMAT
+                                )
+                                if m_date > c_date:
+                                    msg = "Yes"
 
                 res += f"   {swimmer.name}, {msg}\n"
 
