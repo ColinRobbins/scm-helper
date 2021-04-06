@@ -437,10 +437,16 @@ class ScmGui:
         top_frame = Frame(self.report_window)
         top_frame.grid(row=0, column=0, sticky=W + E)
 
+        txt = "Report..."
+        top_group = LabelFrame(self.report_window, text=txt, pady=5, padx=5)
+        top_group.grid(row=0, column=0, pady=10, padx=10, sticky=NSEW)
+
         self.report_window.columnconfigure(0, weight=1)
         self.report_window.rowconfigure(0, weight=1)
+        top_group.columnconfigure(0, weight=1)
+        top_group.rowconfigure(0, weight=1)
 
-        self.report_text = scrolledtext.ScrolledText(top_frame, width=80, height=40)
+        self.report_text = scrolledtext.ScrolledText(top_group, width=80, height=40)
         self.report_text.grid(row=0, column=0, sticky=NSEW)
 
         self.report_window.protocol("WM_DELETE_WINDOW", self.close_report_window)
@@ -496,7 +502,6 @@ class ScmGui:
 
         self.issue_window.columnconfigure(0, weight=1)
         self.issue_window.rowconfigure(1, weight=1)
-
         top_group.columnconfigure(0, weight=1)
         top_group.rowconfigure(0, weight=1)
 

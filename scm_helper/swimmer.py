@@ -259,15 +259,19 @@ def check_confirmed_diff(swimmer, parent):
     debug(f"{prefix} {swimmer.name}, {parent.name} {postfix}", 8)
 
     if swimmer.email != parent.email:
+        debug(f"email: {swimmer.email}: {parent.email}", 8)
         return True
 
     if swimmer.homephone != parent.homephone:
+        debug(f"phone: {swimmer.homephone}: {parent.homephone}", 8)
         return True
 
     if swimmer.mobilephone != parent.mobilephone:
+        debug(f"mobile: {swimmer.mobilephone}: {parent.mobilephone}", 8)
         return True
 
     if swimmer.address != parent.address:
+        debug(f"address: {swimmer.address}: {parent.address}", 8)
         return True
 
     # Dates are different, but core attributes same
