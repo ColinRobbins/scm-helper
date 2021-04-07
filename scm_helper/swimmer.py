@@ -104,8 +104,8 @@ def check_max_sessions(swimmer):
         if len(swimmer.sessions) > max_session:
             sessions = swimmer.print_swimmer_sessions(False)
             issue(swimmer, E_MAX_SESSIONS, f"{len(swimmer.sessions)}: \n{sessions}")
-    
-    
+
+
 def check_asa(swimmer):
     """Check ASA (Swim England) number is OK."""
     if swimmer.asa_number is None:

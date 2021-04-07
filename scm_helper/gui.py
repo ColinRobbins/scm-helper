@@ -1,4 +1,5 @@
 """Windows GUI."""
+# pylint: disable=too-many-lines
 import os.path
 import sys
 import threading
@@ -141,6 +142,7 @@ class ScmGui:
 
     def create_menu(self):
         """Create Menus."""
+        # pylint: disable=too-many-statements
         menubar = Menu(self.master)
         file = Menu(menubar, tearoff=0)
         file.add_command(label="Open Archive", command=self.open_archive)
@@ -352,7 +354,7 @@ class ScmGui:
         self.report_text.config(state=DISABLED)
         self.notify_text.config(state=DISABLED)
         self.report_window.lift()
-        
+
     def sessions(self):
         """Swimmers per Sessions Report."""
         if self.prep_report() is False:

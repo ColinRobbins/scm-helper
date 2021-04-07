@@ -175,9 +175,9 @@ class Members(Entities):
         res = "Name,Group,"
         for session in self.scm.sessions.entities:
             if session.is_active:
-                res += f"\"{session.full_name}\","
+                res += f'"{session.full_name}",'
         res += "\n"
-                        
+
         for swimmer in self.entities:
             if swimmer.is_active:
                 sessions = swimmer.print_swimmer_sessions(True)
@@ -187,7 +187,7 @@ class Members(Entities):
                     res += "\n"
 
         return res
-        
+
     @property
     def url(self):
         """Return URL."""

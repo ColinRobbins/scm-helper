@@ -25,12 +25,12 @@ from scm_helper.entity import Entities, Entity
 from scm_helper.issue import (
     E_INACTIVE,
     E_NEVER_ATTENDED,
-    E_TOO_MANY_SWIMMERS,
     E_NO_COACH,
     E_NO_REGISTER,
     E_NO_SWIMMERS,
     E_NOT_ATTENDED,
     E_NOT_IN_GROUP,
+    E_TOO_MANY_SWIMMERS,
     debug_trace,
     issue,
 )
@@ -155,6 +155,7 @@ class Session(Entity):
     def print_swimmer_covid(self):
         """Print swimmers."""
         # pylint: disable=too-many-nested-blocks
+        # pylint: disable=too-many-branches
         res = ""
         covid = get_config(self.scm, C_SESSIONS, C_COVID)
         c_date_str = get_config(self.scm, C_CONDUCT, covid, C_DATE)
@@ -227,7 +228,7 @@ class Session(Entity):
             found = False
             lastseen = None
             person = self.scm.members.by_guid[swimmer[A_GUID]]
-            
+
             n_swimmers += 1
 
             if person.newstarter:
@@ -266,7 +267,7 @@ class Session(Entity):
                 else:
                     if absence != 9999:
                         issue(person, E_NEVER_ATTENDED, f"{self.full_name}")
-         
+
         if n_swimmers > self.max_members:
             issue(self, E_TOO_MANY_SWIMMERS, f"{n_swimmers} > {self.max_members}")
 
@@ -278,8 +279,6 @@ class Session(Entity):
                 else:
                     return
             issue(self, E_NO_REGISTER, f"last taken: {msg} ({self.full_name})")
-            
-            
 
     @property
     def name(self):
@@ -302,11 +301,11 @@ class Session(Entity):
             if self.data[A_ARCHIVED] == 0:
                 return True
         return False
-        
+
     @property
     def max_members(self):
         """Is the entry active..."""
         if A_MAX_MEMBERS in self.data:
             return self.data[A_MAX_MEMBERS]
-            
+
         return 9999

@@ -627,16 +627,16 @@ class Member(Entity):
         """Print sessions per swimmers."""
         if len(self.sessions) == 0:
             return None
-            
+
         res = ""
         cnt = 0
-        
+
         if grid:
             for session in self.scm.sessions.entities:
                 if session.is_active:
                     if session in self.sessions:
                         res += "X"
-                    res +=","
+                    res += ","
         else:
             for session in self.sessions:
                 if cnt > 0:
