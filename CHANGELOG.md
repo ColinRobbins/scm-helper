@@ -3,7 +3,7 @@
 ## 1.6
 07/04/2021
 * Fix EOY date issue
-* Add Date to Code of Codduct check
+* Add Date to Code of Conduct check
 * Add report: grid of swimmers per session
 
 ## 1.5.1
