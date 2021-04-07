@@ -90,7 +90,7 @@ class Entities:
         return Entity(entity, self.scm, self._url)
 
     def analyse(self):
-        """Analise the members."""
+        """Analyse the members."""
         for entity in self.entities:
             entity.analyse()
 

@@ -6,9 +6,12 @@ from scm_helper.config import (
     A_DATEAGREED,
     A_GUID,
     A_LAST_ATTENDED,
+    A_MAX_MEMBERS,
     A_MEMBERS,
     C_ABSENCE,
+    C_CONDUCT,
     C_COVID,
+    C_DATE,
     C_GROUPS,
     C_IGNORE_ATTENDANCE,
     C_REGISTER,
@@ -27,6 +30,7 @@ from scm_helper.issue import (
     E_NO_SWIMMERS,
     E_NOT_ATTENDED,
     E_NOT_IN_GROUP,
+    E_TOO_MANY_SWIMMERS,
     debug_trace,
     issue,
 )
@@ -151,8 +155,13 @@ class Session(Entity):
     def print_swimmer_covid(self):
         """Print swimmers."""
         # pylint: disable=too-many-nested-blocks
+        # pylint: disable=too-many-branches
         res = ""
         covid = get_config(self.scm, C_SESSIONS, C_COVID)
+        c_date_str = get_config(self.scm, C_CONDUCT, covid, C_DATE)
+        if c_date_str is None:
+            c_date_str = "1900-01-01"
+        c_date = datetime.datetime.strptime(c_date_str, SCM_DATE_FORMAT)
 
         res += "  Coaches:\n"
         for coach in self.data[A_COACHES]:
@@ -166,7 +175,11 @@ class Session(Entity):
                         code_member = self.scm.members.by_guid[member[A_GUID]]
                         if code_member == swimmer:
                             if member[A_DATEAGREED]:
-                                msg = "Yes"
+                                m_date = datetime.datetime.strptime(
+                                    member[A_DATEAGREED], SCM_DATE_FORMAT
+                                )
+                                if m_date > c_date:
+                                    msg = "Yes"
 
                 res += f"   {swimmer.name}, {msg}\n"
 
@@ -181,7 +194,11 @@ class Session(Entity):
                         code_member = self.scm.members.by_guid[member[A_GUID]]
                         if code_member == swimmer:
                             if member[A_DATEAGREED]:
-                                msg = "Yes"
+                                m_date = datetime.datetime.strptime(
+                                    member[A_DATEAGREED], SCM_DATE_FORMAT
+                                )
+                                if m_date > c_date:
+                                    msg = "Yes"
 
                 res += f"   {swimmer.name}, {msg}\n"
 
@@ -189,7 +206,7 @@ class Session(Entity):
 
     @debug_trace(5)
     def analyse(self):
-        """Analise the session."""
+        """Analyse the session."""
         # pylint: disable=too-many-branches
         if self.is_active is False:
             return
@@ -205,11 +222,14 @@ class Session(Entity):
         groups = get_config(self.scm, C_SESSIONS, C_SESSION, self.name, C_GROUPS)
 
         seen = None
+        n_swimmers = 0
 
         for swimmer in self.data[A_MEMBERS]:
             found = False
             lastseen = None
             person = self.scm.members.by_guid[swimmer[A_GUID]]
+
+            n_swimmers += 1
 
             if person.newstarter:
                 continue
@@ -248,6 +268,9 @@ class Session(Entity):
                     if absence != 9999:
                         issue(person, E_NEVER_ATTENDED, f"{self.full_name}")
 
+        if n_swimmers > self.max_members:
+            issue(self, E_TOO_MANY_SWIMMERS, f"{n_swimmers} > {self.max_members}")
+
         if (self.ignore_attendance is False) and (register != 9999):
             msg = "Never"
             if seen:
@@ -278,3 +301,11 @@ class Session(Entity):
             if self.data[A_ARCHIVED] == 0:
                 return True
         return False
+
+    @property
+    def max_members(self):
+        """Is the entry active..."""
+        if A_MAX_MEMBERS in self.data:
+            return self.data[A_MAX_MEMBERS]
+
+        return 9999

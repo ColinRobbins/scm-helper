@@ -135,6 +135,11 @@ E_NAME_CAPITAL = {
     MESSAGE: "Check name capitilisation",
     REVERSE: False,
     REPORT: R_MEMBER}
+E_MAX_SESSIONS = {
+    NAME: "E_MAX_SESSIONS",
+    MESSAGE: "Maximum nuber of sessions permitted exceeded",
+    REVERSE: False,
+    REPORT: R_SESSION}
 E_NEVERSEEN = {
     NAME: "E_NEVERSEEN",
     MESSAGE: "Never seen",
@@ -228,6 +233,11 @@ E_NO_SESSIONS = {
 E_NO_SWIMMERS = {
     NAME: "E_NO_SWIMMERS",
     MESSAGE: "No swimmers",
+    REVERSE: False,
+    REPORT: R_SESSION}
+E_TOO_MANY_SWIMMERS = {
+    NAME: "E_TOO_MANY_SWIMMERS",
+    MESSAGE: "Max swimmers exceeded",
     REVERSE: False,
     REPORT: R_SESSION}
 E_NOT_A_COACH = {
@@ -614,8 +624,7 @@ def print_dict(xdict, reports):
             inner_match = False
             first = True
             length = len(xdict[key1][key2])
-            # pylint: disable=bad-continuation
-            # black insists
+
             for xissue in sorted(
                 xdict[key1][key2], key=lambda x: "None" if x[0] is None else x[0]
             ):

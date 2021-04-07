@@ -1,5 +1,6 @@
 """Configuration stuff."""
-from schema import And, Optional, Schema, SchemaError
+from schema import And, Optional, Regex, Schema, SchemaError
+
 from scm_helper.notify import notify
 from scm_helper.version import VERSION
 
@@ -96,6 +97,7 @@ A_ISVOLUNTEER = "IsAVolunteer"
 A_KNOWNAS = "KnownAs"
 A_LAST_ATTENDED = "LastAttended"
 A_LASTNAME = "Lastname"
+A_MAX_MEMBERS = "MaxMembers"
 A_MEMBERS = "Members"
 A_PARENTS = "Parents"
 A_USERNAME = "Username"
@@ -124,6 +126,7 @@ C_CONDUCT = "conduct"
 C_CONF_DIFF = "confirmation_difference"
 C_CONFIRMATION = "confirmation"
 C_COVID = "covid"
+C_DATE = "date"
 C_DBS = "dbs"
 C_DEBUG_LEVEL = "debug_level"
 C_DOB_FORMAT = "dob_format"
@@ -155,6 +158,7 @@ C_MANDATORY = "mandatory"
 C_MAPPING = "mapping"
 C_MAX_AGE = "max_age"
 C_MAX_AGE_EOY = "max_age_eoy"
+C_MAX_SESSIONS = "max_sessions"
 C_MAX_YEAR = "max_year"
 C_MEMBERS = "members"
 C_MESSAGE = "message"
@@ -292,6 +296,7 @@ SCHEMA = Schema(
             C_PARENT: {C_MANDATORY: bool, C_MAX_AGE: int},
             Optional(C_CONF_DIFF): {C_VERIFY: bool},
             Optional(C_ABSENCE): {C_TIME: int},
+            Optional(C_MAX_SESSIONS): int,
         },
         C_PARENTS: {
             Optional(C_AGE): {C_MIN_AGE: int, C_CHILD: int},
@@ -347,7 +352,11 @@ SCHEMA = Schema(
             },
         },
         Optional(C_CONDUCT): {
-            conduct: {C_TYPES: [member_type], Optional(C_IGNORE_GROUP): [group]}
+            conduct: {
+                C_TYPES: [member_type],
+                Optional(C_IGNORE_GROUP): [group],
+                Optional(C_DATE): Regex(r"\d\d\d\d-\d\d-\d\d"),
+            }
         },
         Optional(C_ISSUES): {
             issue: {Optional(C_MESSAGE): str, Optional(C_IGNORE_ERROR): bool}

@@ -42,6 +42,7 @@ Where <options> are:
    --report <report> = which reports to run
    --restore <type> = restore an entity of <type> (need -archive as well)
    --se = Check against SE database
+   --sessions = print a list of swimmers and their sessions in CSV format
    --to <email> = Who to send the emial to (used with --email)
    --verify <date> = use archive backup
 
@@ -76,6 +77,7 @@ LONG_OPTS = [
     "report=",
     "restore=",
     "se",
+    "sessions",
     "to=",
     "verify=",
 ]
@@ -250,6 +252,14 @@ def cmd(argv=None):
         output = scm.sessions.print_swimmers_covid()
         if scm.option("--email"):
             send_email(scm, output, "SCM: Session / Covid Report")
+        else:
+            print(output)
+        sys.exit()
+
+    if scm.option("--sessions"):
+        output = scm.members.print_swimmers_sessions()
+        if scm.option("--email"):
+            send_email(scm, output, "SCM: Swimmers Per Session Report")
         else:
             print(output)
         sys.exit()

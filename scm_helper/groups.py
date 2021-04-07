@@ -69,7 +69,7 @@ class Group(Entity):
 
     @debug_trace(5)
     def analyse(self):
-        """Analise the group."""
+        """Analyse the group."""
         # pylint: disable=too-many-branches
         # pylint: disable=too-many-statements
         # pylint: disable=too-many-locals

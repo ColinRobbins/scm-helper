@@ -68,7 +68,7 @@ class CodesOfConduct(Entities):
 
     @debug_trace(5)
     def analyse(self):
-        """Analise the conduct class."""
+        """Analyse the conduct class."""
         if get_config(self.scm, C_CONDUCT) is None:
             return
 
@@ -91,10 +91,13 @@ class Conduct(Entity):
             member.add_conduct(self)
 
     def analyse(self):
-        """Analise the conduct entry."""
+        """Analyse the conduct entry."""
         # A better way of doing this would be to add
         # the attribute to the swimmer in linkage.
         # This approach breaks the model. Oh well.
+
+        ignores = get_config(self.scm, C_CONDUCT, self.name, C_IGNORE_GROUP)
+
         for member in self.data[A_MEMBERS]:
 
             if member[A_DATEAGREED]:
@@ -102,6 +105,15 @@ class Conduct(Entity):
 
             person = self.scm.members.by_guid[member[A_GUID]]
             if person.confirmed_date:  # Will get a not confirmed error later in not set
+
+                found_ignore = False
+                if ignores:
+                    for ignore in ignores:
+                        if person.find_group(ignore):
+                            found_ignore = True
+                if found_ignore:
+                    continue
+
                 issue(person, E_NO_CONDUCT_DATE, self.name, 0, person.first_group)
                 codes = get_config(self.scm, C_LISTS, C_CONDUCT)
                 if codes:
@@ -118,7 +130,7 @@ class Conduct(Entity):
 
 # Outside of class
 def check_conduct(member, my_codes):
-    """Analise a code of conduct."""
+    """Analyse a code of conduct."""
     # pylint: disable=too-many-branches
 
     if get_config(member.scm, C_CONDUCT) is None:

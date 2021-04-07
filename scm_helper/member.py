@@ -438,7 +438,7 @@ class Member(Entity):
 
     @debug_trace(5)
     def analyse(self):
-        """Analise the member."""
+        """Analyse the member."""
         # pylint: disable=too-many-branches
         # pylint: disable=too-many-statements
 
@@ -493,8 +493,6 @@ class Member(Entity):
             self.check_type(CTYPE_COMMITTEE)
 
         if self.jobtitle:
-            # pylint: disable=bad-continuation
-            # black insists
             if (
                 (self.is_volunteer is not True)
                 and (self.is_committee_member is not True)
@@ -533,7 +531,7 @@ class Member(Entity):
                     notify("Hit a snag!\n")
                     return False
 
-                notify(f"Recreating...")
+                notify("Recreating...")
 
                 self.newdata[A_FIRSTNAME] = self.data[A_FIRSTNAME]
 
@@ -544,7 +542,7 @@ class Member(Entity):
                     notify(f"{msg} '{self.data[A_FIRSTNAME]}' {msg2}")
                     return False
 
-                notify(f"Success.\n")
+                notify("Success.\n")
 
         return True
 
@@ -624,6 +622,30 @@ class Member(Entity):
             if exception == item:
                 return False
         return True
+
+    def print_swimmer_sessions(self, grid):
+        """Print sessions per swimmers."""
+        if len(self.sessions) == 0:
+            return None
+
+        res = ""
+        cnt = 0
+
+        if grid:
+            for session in self.scm.sessions.entities:
+                if session.is_active:
+                    if session in self.sessions:
+                        res += "X"
+                    res += ","
+        else:
+            for session in self.sessions:
+                if cnt > 0:
+                    res += "\n"
+                else:
+                    cnt = 1
+                res += f"        {session.full_name}"
+
+        return res
 
     def print_links(self):
         """Print links."""

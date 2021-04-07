@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.6
+07/04/2021
+* Fix EOY date issue
+* Add Date to Code of Codduct check
+* Add report: grid of swimmers per session
+
+## 1.5.1
+28/09/2020
+* Create issue if max swimmers per session exceeded
+
 ## 1.5
 30/08/2020
 * GUI bug fix

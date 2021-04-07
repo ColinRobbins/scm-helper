@@ -9,6 +9,7 @@ from scm_helper.config import (
     C_IGNORE_ATTENDANCE,
     C_MANDATORY,
     C_MAX_AGE,
+    C_MAX_SESSIONS,
     C_MIN_AGE,
     C_NO_CLUB_SESSIONS,
     C_PARENT,
@@ -39,6 +40,7 @@ from scm_helper.issue import (
     E_GENDER,
     E_INACTIVE,
     E_LOGIN_TOO_YOUNG,
+    E_MAX_SESSIONS,
     E_NEVERSEEN,
     E_NO_GROUP,
     E_NO_PARENT,
@@ -78,6 +80,7 @@ def analyse_swimmer(swimmer):
 
     if swimmer.is_swimmer:
         check_parents(swimmer)
+        check_max_sessions(swimmer)
         return
 
     if swimmer.is_synchro:
@@ -92,6 +95,15 @@ def analyse_swimmer(swimmer):
             pass
         else:
             check_parents(swimmer)
+
+
+def check_max_sessions(swimmer):
+    """Check not exceeding max numbr of sessions allowed"""
+    max_session = get_config(swimmer.scm, C_SWIMMERS, C_MAX_SESSIONS)
+    if max_session:
+        if len(swimmer.sessions) > max_session:
+            sessions = swimmer.print_swimmer_sessions(False)
+            issue(swimmer, E_MAX_SESSIONS, f"{len(swimmer.sessions)}: \n{sessions}")
 
 
 def check_asa(swimmer):
@@ -116,8 +128,6 @@ def check_lastseen(swimmer):
             # if no session, don't have data about when they have been seen
             check = True
             for session in swimmer.sessions:
-                # pylint: disable=bad-continuation
-                # black insists
                 if get_config(
                     swimmer.scm,
                     C_SESSIONS,
@@ -203,8 +213,6 @@ def check_parents(swimmer):
             confirm_error = check_confirmed_diff(swimmer, parent)
             if confirm_error:
                 issue(swimmer, E_CONFIRM_DIFF, f"Parent {parent.name}")
-    # pylint: disable=bad-continuation
-    # black insists
     if (
         swimmer.parents
         and swimmer.age
@@ -263,15 +271,19 @@ def check_confirmed_diff(swimmer, parent):
     debug(f"{prefix} {swimmer.name}, {parent.name} {postfix}", 8)
 
     if swimmer.email != parent.email:
+        debug(f"email: {swimmer.email}: {parent.email}", 8)
         return True
 
     if swimmer.homephone != parent.homephone:
+        debug(f"phone: {swimmer.homephone}: {parent.homephone}", 8)
         return True
 
     if swimmer.mobilephone != parent.mobilephone:
+        debug(f"mobile: {swimmer.mobilephone}: {parent.mobilephone}", 8)
         return True
 
     if swimmer.address != parent.address:
+        debug(f"address: {swimmer.address}: {parent.address}", 8)
         return True
 
     # Dates are different, but core attributes same

@@ -1,4 +1,5 @@
 """Windows GUI."""
+# pylint: disable=too-many-lines
 import os.path
 import sys
 import threading
@@ -29,6 +30,7 @@ from tkinter import (
 )
 
 from func_timeout import FunctionTimedOut, func_timeout
+
 from scm_helper.api import API
 from scm_helper.config import (
     BACKUP_DIR,
@@ -140,6 +142,7 @@ class ScmGui:
 
     def create_menu(self):
         """Create Menus."""
+        # pylint: disable=too-many-statements
         menubar = Menu(self.master)
         file = Menu(menubar, tearoff=0)
         file.add_command(label="Open Archive", command=self.open_archive)
@@ -180,7 +183,11 @@ class ScmGui:
         cmd.add_command(label="List Coaches", command=self.coaches, state=DISABLED)
         self.menus.append([cmd, "List Coaches"])
 
-        label = "List Swimmers per Session - Covid"
+        label = "Show Swimmers Covid Declaration per session"
+        cmd.add_command(label=label, command=self.covid, state=DISABLED)
+        self.menus.append([cmd, label])
+
+        label = "List Swimmers sessions"
         cmd.add_command(label=label, command=self.sessions, state=DISABLED)
         self.menus.append([cmd, label])
 
@@ -337,12 +344,23 @@ class ScmGui:
         self.notify_text.config(state=DISABLED)
         self.report_window.lift()
 
-    def sessions(self):
-        """Sessions Report."""
+    def covid(self):
+        """Covid Report."""
         if self.prep_report() is False:
             return
 
         output = wrap(None, self.scm.sessions.print_swimmers_covid)
+        self.report_text.insert(END, output)
+        self.report_text.config(state=DISABLED)
+        self.notify_text.config(state=DISABLED)
+        self.report_window.lift()
+
+    def sessions(self):
+        """Swimmers per Sessions Report."""
+        if self.prep_report() is False:
+            return
+
+        output = wrap(None, self.scm.members.print_swimmers_sessions)
         self.report_text.insert(END, output)
         self.report_text.config(state=DISABLED)
         self.notify_text.config(state=DISABLED)
@@ -436,10 +454,16 @@ class ScmGui:
         top_frame = Frame(self.report_window)
         top_frame.grid(row=0, column=0, sticky=W + E)
 
+        txt = "Report..."
+        top_group = LabelFrame(self.report_window, text=txt, pady=5, padx=5)
+        top_group.grid(row=0, column=0, pady=10, padx=10, sticky=NSEW)
+
         self.report_window.columnconfigure(0, weight=1)
         self.report_window.rowconfigure(0, weight=1)
+        top_group.columnconfigure(0, weight=1)
+        top_group.rowconfigure(0, weight=1)
 
-        self.report_text = scrolledtext.ScrolledText(top_frame, width=80, height=40)
+        self.report_text = scrolledtext.ScrolledText(top_group, width=80, height=40)
         self.report_text.grid(row=0, column=0, sticky=NSEW)
 
         self.report_window.protocol("WM_DELETE_WINDOW", self.close_report_window)
@@ -467,7 +491,10 @@ class ScmGui:
         all_reports = ["All Reports"] + rpts
 
         menu = OptionMenu(
-            top_frame, self.reports, *all_reports, command=self.process_issue_option,
+            top_frame,
+            self.reports,
+            *all_reports,
+            command=self.process_issue_option,
         )
         menu.grid(row=0, column=1, pady=10, padx=10)
 
@@ -492,7 +519,6 @@ class ScmGui:
 
         self.issue_window.columnconfigure(0, weight=1)
         self.issue_window.rowconfigure(1, weight=1)
-
         top_group.columnconfigure(0, weight=1)
         top_group.rowconfigure(0, weight=1)
 
@@ -617,7 +643,7 @@ class AnalysisThread(threading.Thread):
                 return
         else:
             if wrap(None, self.scm.get_data, False) is False:
-                messagebox.showerror("Analsyis", "Failed to read data")
+                messagebox.showerror("Analysis", "Failed to read data")
                 self.gui.master.after(AFTER, self.gui.set_normal)
                 self.gui.thread = None
                 return
@@ -974,7 +1000,6 @@ def wrap(xtime, func, arg=None):
         messagebox.showerror("Error", msg)
         return False
 
-    # pylint: disable=bad-continuation
     except (
         AssertionError,
         AttributeError,
