@@ -135,6 +135,11 @@ E_NAME_CAPITAL = {
     MESSAGE: "Check name capitilisation",
     REVERSE: False,
     REPORT: R_MEMBER}
+E_MAX_SESSIONS = {
+    NAME: "E_MAX_SESSIONS",
+    MESSAGE: "Maximum nuber of sessions permitted exceeded",
+    REVERSE: False,
+    REPORT: R_SESSION}
 E_NEVERSEEN = {
     NAME: "E_NEVERSEEN",
     MESSAGE: "Never seen",

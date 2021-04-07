@@ -158,6 +158,7 @@ C_MANDATORY = "mandatory"
 C_MAPPING = "mapping"
 C_MAX_AGE = "max_age"
 C_MAX_AGE_EOY = "max_age_eoy"
+C_MAX_SESSIONS = "max_sessions"
 C_MAX_YEAR = "max_year"
 C_MEMBERS = "members"
 C_MESSAGE = "message"
@@ -295,6 +296,7 @@ SCHEMA = Schema(
             C_PARENT: {C_MANDATORY: bool, C_MAX_AGE: int},
             Optional(C_CONF_DIFF): {C_VERIFY: bool},
             Optional(C_ABSENCE): {C_TIME: int},
+            Optional(C_MAX_SESSIONS): int,
         },
         C_PARENTS: {
             Optional(C_AGE): {C_MIN_AGE: int, C_CHILD: int},

@@ -623,6 +623,30 @@ class Member(Entity):
                 return False
         return True
 
+    def print_swimmer_sessions(self, grid):
+        """Print sessions per swimmers."""
+        if len(self.sessions) == 0:
+            return None
+            
+        res = ""
+        cnt = 0
+        
+        if grid:
+            for session in self.scm.sessions.entities:
+                if session.is_active:
+                    if session in self.sessions:
+                        res += "X"
+                    res +=","
+        else:
+            for session in self.sessions:
+                if cnt > 0:
+                    res += "\n"
+                else:
+                    cnt = 1
+                res += f"        {session.full_name}"
+
+        return res
+
     def print_links(self):
         """Print links."""
         # pylint: disable=no-self-use

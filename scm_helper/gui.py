@@ -181,7 +181,11 @@ class ScmGui:
         cmd.add_command(label="List Coaches", command=self.coaches, state=DISABLED)
         self.menus.append([cmd, "List Coaches"])
 
-        label = "List Swimmers per Session - Covid"
+        label = "Show Swimmers Covid Declaration per session"
+        cmd.add_command(label=label, command=self.covid, state=DISABLED)
+        self.menus.append([cmd, label])
+
+        label = "List Swimmers sessions"
         cmd.add_command(label=label, command=self.sessions, state=DISABLED)
         self.menus.append([cmd, label])
 
@@ -338,12 +342,23 @@ class ScmGui:
         self.notify_text.config(state=DISABLED)
         self.report_window.lift()
 
-    def sessions(self):
-        """Sessions Report."""
+    def covid(self):
+        """Covid Report."""
         if self.prep_report() is False:
             return
 
         output = wrap(None, self.scm.sessions.print_swimmers_covid)
+        self.report_text.insert(END, output)
+        self.report_text.config(state=DISABLED)
+        self.notify_text.config(state=DISABLED)
+        self.report_window.lift()
+        
+    def sessions(self):
+        """Swimmers per Sessions Report."""
+        if self.prep_report() is False:
+            return
+
+        output = wrap(None, self.scm.members.print_swimmers_sessions)
         self.report_text.insert(END, output)
         self.report_text.config(state=DISABLED)
         self.notify_text.config(state=DISABLED)

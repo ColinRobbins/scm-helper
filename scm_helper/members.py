@@ -170,6 +170,24 @@ class Members(Entities):
 
         return opt
 
+    def print_swimmers_sessions(self):
+        """Print sessions each swimmer is in."""
+        res = "Name,Group,"
+        for session in self.scm.sessions.entities:
+            if session.is_active:
+                res += f"\"{session.full_name}\","
+        res += "\n"
+                        
+        for swimmer in self.entities:
+            if swimmer.is_active:
+                sessions = swimmer.print_swimmer_sessions(True)
+                if sessions:
+                    res += f"{swimmer.name},{swimmer.first_group},"
+                    res += sessions
+                    res += "\n"
+
+        return res
+        
     @property
     def url(self):
         """Return URL."""
