@@ -137,7 +137,7 @@ E_NAME_CAPITAL = {
     REPORT: R_MEMBER}
 E_MAX_SESSIONS = {
     NAME: "E_MAX_SESSIONS",
-    MESSAGE: "Maximum nuber of sessions permitted exceeded",
+    MESSAGE: "Maximum number of sessions permitted exceeded",
     REVERSE: False,
     REPORT: R_SESSION}
 E_NEVERSEEN = {

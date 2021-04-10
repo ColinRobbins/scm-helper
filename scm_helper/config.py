@@ -296,7 +296,6 @@ SCHEMA = Schema(
             C_PARENT: {C_MANDATORY: bool, C_MAX_AGE: int},
             Optional(C_CONF_DIFF): {C_VERIFY: bool},
             Optional(C_ABSENCE): {C_TIME: int},
-            Optional(C_MAX_SESSIONS): int,
         },
         C_PARENTS: {
             Optional(C_AGE): {C_MIN_AGE: int, C_CHILD: int},
@@ -330,6 +329,7 @@ SCHEMA = Schema(
                     Optional(C_IGNORE_SWIMMER): bool,
                     Optional(C_IGNORE_UNKNOWN): bool,
                     Optional(C_MAX_AGE): int,
+                    Optional(C_MAX_SESSIONS): int,
                     Optional(C_MIN_AGE): int,
                     Optional(C_NO_CLUB_SESSIONS): bool,
                     Optional(C_NO_SESSION_ALLOWED): [group],

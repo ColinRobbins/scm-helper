@@ -1,9 +1,12 @@
 """SCM Conduct."""
+import datetime
+
 from scm_helper.config import (
     A_DATEAGREED,
     A_GUID,
     A_MEMBERS,
     C_CONDUCT,
+    C_DATE,
     C_IGNORE_GROUP,
     C_LISTS,
     C_TYPES,
@@ -14,6 +17,7 @@ from scm_helper.config import (
     CTYPE_SWIMMER,
     CTYPE_SYNCHRO,
     CTYPE_VOLUNTEER,
+    SCM_DATE_FORMAT,
     get_config,
 )
 from scm_helper.entity import Entities, Entity
@@ -97,11 +101,20 @@ class Conduct(Entity):
         # This approach breaks the model. Oh well.
 
         ignores = get_config(self.scm, C_CONDUCT, self.name, C_IGNORE_GROUP)
+        c_date_str = get_config(self.scm, C_CONDUCT, self.name, C_DATE)
+
+        if c_date_str is None:
+            c_date_str = "1900-01-01"
+        c_date = datetime.datetime.strptime(c_date_str, SCM_DATE_FORMAT)
 
         for member in self.data[A_MEMBERS]:
 
             if member[A_DATEAGREED]:
-                continue
+                m_date = datetime.datetime.strptime(
+                    member[A_DATEAGREED], SCM_DATE_FORMAT
+                )
+                if m_date > c_date:
+                    continue
 
             person = self.scm.members.by_guid[member[A_GUID]]
             if person.confirmed_date:  # Will get a not confirmed error later in not set

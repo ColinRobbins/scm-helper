@@ -166,7 +166,7 @@ class Session(Entity):
         res += "  Coaches:\n"
         for coach in self.data[A_COACHES]:
             swimmer = self.scm.members.by_guid[coach[A_GUID]]
-            
+
             if swimmer.is_active:
                 declaration = False
                 code = swimmer.get_conduct_name(covid)
@@ -183,8 +183,6 @@ class Session(Entity):
                                     declaration = True
 
                 if declaration == False:
-                    msg = "COVID declation out of date"
-                    self.scm.lists.add(msg, swimmer)
                     res += f"   {swimmer.name}\n"
 
         res += "  Swimmers:\n"
@@ -205,8 +203,6 @@ class Session(Entity):
                                     declaration = True
 
                 if declaration == False:
-                    msg = "COVID declation out of date"
-                    self.scm.lists.add(msg, swimmer)
                     res += f"   {swimmer.name}\n"
 
         return res

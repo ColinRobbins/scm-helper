@@ -99,7 +99,9 @@ def analyse_swimmer(swimmer):
 
 def check_max_sessions(swimmer):
     """Check not exceeding max numbr of sessions allowed"""
-    max_session = get_config(swimmer.scm, C_SWIMMERS, C_MAX_SESSIONS)
+    max_session = get_config(
+        swimmer.scm, C_GROUPS, C_GROUP, swimmer.first_group, C_MAX_SESSIONS
+    )
     if max_session:
         if len(swimmer.sessions) > max_session:
             sessions = swimmer.print_swimmer_sessions(False)
