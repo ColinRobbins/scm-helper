@@ -155,7 +155,7 @@ class ScmGui:
         cmd.add_command(label="Edit Config", command=self.edit_config)
         self.menus.append([cmd, "Edit Config"])
         cmd.add_separator()
-        cmd.add_command(label="Create Lists", command=self.create_lists, state=DISABLED)
+        cmd.add_command(label="Create / Update Lists", command=self.create_lists, state=DISABLED)
         self.menus.append([cmd, "Create Lists"])
 
         cmd.add_command(label="Fix Errors", command=self.fixit, state=DISABLED)

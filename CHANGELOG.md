@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.6.1
+10/4/21
+* COVID list generation bug fix
+
 ## 1.6
 07/04/2021
 * Fix EOY date issue

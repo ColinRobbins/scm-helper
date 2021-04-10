@@ -66,7 +66,7 @@ class Sessions(Entities):
         return res
 
     def print_swimmers_covid(self):
-        """Print coaches per session."""
+        """Print swimmers and coaches with no COVID dec."""
         covid = get_config(self.scm, C_SESSIONS, C_COVID)
         if covid is None:
             notify("Missing config for COVID option")
@@ -166,8 +166,9 @@ class Session(Entity):
         res += "  Coaches:\n"
         for coach in self.data[A_COACHES]:
             swimmer = self.scm.members.by_guid[coach[A_GUID]]
+            
             if swimmer.is_active:
-                msg = "No"
+                declaration = False
                 code = swimmer.get_conduct_name(covid)
                 if code:
                     code_members = code.data[A_MEMBERS]
@@ -179,14 +180,17 @@ class Session(Entity):
                                     member[A_DATEAGREED], SCM_DATE_FORMAT
                                 )
                                 if m_date > c_date:
-                                    msg = "Yes"
+                                    declaration = True
 
-                res += f"   {swimmer.name}, {msg}\n"
+                if declaration == False:
+                    msg = "COVID declation out of date"
+                    self.scm.lists.add(msg, swimmer)
+                    res += f"   {swimmer.name}\n"
 
         res += "  Swimmers:\n"
         for swimmer in self.members:
             if swimmer.is_active:
-                msg = "No"
+                declaration = False
                 code = swimmer.get_conduct_name(covid)
                 if code:
                     code_members = code.data[A_MEMBERS]
@@ -198,9 +202,12 @@ class Session(Entity):
                                     member[A_DATEAGREED], SCM_DATE_FORMAT
                                 )
                                 if m_date > c_date:
-                                    msg = "Yes"
+                                    declaration = True
 
-                res += f"   {swimmer.name}, {msg}\n"
+                if declaration == False:
+                    msg = "COVID declation out of date"
+                    self.scm.lists.add(msg, swimmer)
+                    res += f"   {swimmer.name}\n"
 
         return res
 
