@@ -1,8 +1,9 @@
 # Changelog
 
-## 1.6.1
-10/4/21
+## 1.7
+10/04/2021
 * COVID list generation bug fix
+* Create issue if max swimmers per session exceeded - configurable per-group
 
 ## 1.6
 07/04/2021

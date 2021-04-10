@@ -158,7 +158,7 @@ class ScmGui:
         cmd.add_command(
             label="Create / Update Lists", command=self.create_lists, state=DISABLED
         )
-        self.menus.append([cmd, "Create Lists"])
+        self.menus.append([cmd, "Create / Update Lists"])
 
         cmd.add_command(label="Fix Errors", command=self.fixit, state=DISABLED)
         self.menu_fixit = [cmd, "Fix Errors"]
