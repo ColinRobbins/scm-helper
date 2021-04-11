@@ -41,11 +41,11 @@ FACEBOOK = "https://www.facebook.com"
 # M_XPATH = '//*[@id="groupsMemberSection_all_members"]'
 # M_ENTRY = "//ul//div/div[2]/div/div[2]/div[1]"
 # 05/07/2020 New Facebook GUI
-M_XPATH = '//*[@id="mount_0_0"]'
-M_ENTRY = "//div/div/div[2]/div[1]/div/div/div[1]/span/span/div/"
+# M_XPATH = '//*[@id="mount_0_0"]'
+M_XPATH = '//*[contains(@id,"mount_0_0")]'
+M_ENTRY = "//div/div/div[2]/div[1]/div/div/div[1]/span/span/div"
 M_ELEMENTS = M_XPATH + M_ENTRY + "/a"
 M_ELEMENTS2 = M_XPATH + M_ENTRY + "/span"
-
 
 GENDER = {"M": "Male", "F": "Female"}
 
@@ -79,7 +79,7 @@ def se_check(scm, members):
 
     except selenium.common.exceptions.NoSuchElementException:
         msg = """Please solve the 'I am not a robot', and then press enter here.
-If you cnnot solve the capture try deleting the file 'se_cookies.json'
+If you cannot solve the capture try deleting the file 'se_cookies.json'
 in the config directory.
 """
         interact_yesno(msg)

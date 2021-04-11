@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.7.1
+* Updated example config
+* Updated Facebook page analysis
+
 ## 1.7
 10/04/2021
 * COVID list generation bug fix
