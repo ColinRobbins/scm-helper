@@ -182,7 +182,7 @@ class Session(Entity):
                                 if m_date > c_date:
                                     declaration = True
 
-                if declaration == False:
+                if not declaration:
                     res += f"   {swimmer.name}\n"
 
         res += "  Swimmers:\n"
@@ -202,7 +202,7 @@ class Session(Entity):
                                 if m_date > c_date:
                                     declaration = True
 
-                if declaration == False:
+                if not declaration:
                     res += f"   {swimmer.name}\n"
 
         return res
