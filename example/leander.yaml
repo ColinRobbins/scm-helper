@@ -1,7 +1,7 @@
 #############################################
 # Configuration of SCM-Validator
 # Colin Robbins
-# March 2020
+# April 2021
 #
 # You will need to change these parameters
 # to reflect the situation at your cluv
@@ -147,18 +147,21 @@ groups:
   group:
     'Membership Only':
         no_sessions: true
-    'Senior Development':
+    'Senior Squad':
         sessions:
-          - 'Senior Development'
+          - 'Senior Squad'
         type: swimmer
+        max_sessions: 3
     'Development':
         sessions:
           - 'Club Session'
         type: swimmer
+        max_sessions: 3
     'Junior Squad':
         sessions:
           - 'Junior'
         type: swimmer
+        max_sessions: 3
     'Masters':
         sessions:
           - 'Masters'
@@ -170,12 +173,14 @@ groups:
         unique: false
         min_age: 17
         type: swimmer
-    'SNR Youth':
+        max_sessions: 3
+    'Senior Performance Squad':
         sessions:
-          - 'Senior'
+          - 'Senior Performance'
         type: swimmer
         no_session_allowed:
           - 'Nova'
+        max_sessions: 4
     'Water Polo':
         sessions:
           - 'Water Polo'
@@ -185,14 +190,20 @@ groups:
           - 'Membership Only'
           - 'Student'
         type: "waterpolo"
+        max_sessions: 6    # 3 swim, 3 polo
     'Tadpoles':
-        max_age: 10
+        max_age: 11
         min_age: 3
         type: "synchro"
+        sessions:
+          - 'Tadpoles'
     'Transition':
         max_age: 12
         min_age: 6
         type: "synchro"
+        sessions:
+          - 'Tadpoles'
+          - 'Transition'
     'Life Members and Past Presidents':
         ignore_unknown: true    # Don't raise error if not a swimmer, parent or coach.
         unique: false
@@ -254,29 +265,33 @@ sessions:
   absence:  120  # Number of days allowed to miss a sesssion
   register: 60   # Alert if register not taken for this many days
   session:
+  session:
     'Club Session':
         groups:
           - 'Development'
     'Junior Squad':
         groups:
           - 'Junior Squad'
+    'Senior Performance Squad':
+        groups:
+          - 'Senior Performance Squad'
+    'Senior Squad':
+        groups:
+          - 'Senior Squad'
+    'Water Polo':
+        groups:
+          - 'Water Polo'
     'Masters':
         groups:
           - 'Masters'
     'Masters #MNRN':
         groups:
           - 'Masters'
-    'Senior Squad':
-        groups:
-          - 'SNR Youth'
-    'Water Polo':
-        groups:
-          - 'Water Polo'
-    'Masters and Seniors':
-        groups:
-          - 'Masters'
-          - 'SNR Youth'
     'Tadpoles':
+        groups:
+          - 'Tadpoles'
+        ignore_attendance: True
+    'Tadpoles Main Pool':
         groups:
           - 'Tadpoles'
         ignore_attendance: True
@@ -286,34 +301,21 @@ sessions:
           - 'Development'
           - 'Transition'
         ignore_attendance: True
-    'Senior Development/Club Session':
+    'Senior Squad/Junior Squad/Club Session':
         groups:
-          - 'SNR Youth'
           - 'Junior Squad'
-          - 'Senior Development'
+          - 'Senior Squad'
           - 'Development'
-    'Tadpole Main Pool':
+    'Senior Squad/Club Session':
         groups:
-          - 'Tadpoles'
-        ignore_attendance: True
-    'Senior Development and Masters':
+          - 'Senior Squad'
+          - 'Development'
+    'Senior Performance/Senior Squad':
         groups:
-          - 'SNR Youth'
-          - 'Senior Development'
-          - 'Masters'
-    'Senior Squad, Age Group and Masters':
-        groups:
-          - 'SNR Youth'
-          - 'Junior Squad'
-          - 'Masters'
-          - 'Senior Development'
-    'Senior Squad and Age Group':
-        groups:
-          - 'SNR Youth'
-          - 'Junior Squad'
+          - 'Senior Squad'
+          - 'Senior Performance Squad'
     'Starts and Turns':
         ignore_attendance: True
-
 
 #############################################
 # Codes of Conduct
@@ -337,7 +339,15 @@ conduct:
    "Data Protection":
       types:
         - "coach"
-
+   "Return to Training Declaration":
+      types:
+        - "swimmer"
+        - "coach"
+        - "synchro"
+        - "waterpolo"
+      ignore_group:
+        - "Membership Only"
+      date: "2021-04-01"
 #############################################
 # Facebook Correlations
 #############################################
@@ -361,6 +371,8 @@ lists:
     suffix: " (Generated)"  # Use to identity generated lists
     edit: True              # Allow script to modify generated lists
     confirmation: True      # Generate lists of non-confirmed and expired confirmation members
+    conduct:
+       - "Return to Training Declaration"
     list:
          "Swimmer: Development Only":
             group: "Development"
@@ -457,7 +469,6 @@ issues:
     E_NOT_CONFIRMED:
         ignore_error: true
 
-
 #############################################
 # Swim England Correlations
 #############################################
@@ -474,7 +485,19 @@ swim_england:
 selenium:
     browser: "Chrome"
     web_driver: "C:\\Program Files (x86)\\Python37-32\\Scripts\\chromedriver.exe"
-  
+
+##################################################
+# Records
+# Used to configure swimming records
+##################################################
+records:
+    relay: false
+    age_eoy: true   # Calculate age at EOY, not age from SCM export file (where possible)
+    verify: true  # Check a club member at time of swim (where possible)
+    se_only: true
+    all_ages_u18: false
+    overall_fastest: false
+    
 # Debug level
 # Set to 0 for no debug info
 # A setting of 1 is recommended while getting it working!
