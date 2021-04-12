@@ -36,6 +36,7 @@ from scm_helper.config import (
     URL_WHO,
     USER_AGENT,
     WHO,
+    delete_schema,
     get_config,
     verify_schema,
     verify_schema_data,
@@ -105,6 +106,7 @@ class API:
         try:
             with open(cfg) as file:
                 self._config = None
+                delete_schema()
                 self._config = yaml.safe_load(file)
         except EnvironmentError:
             notify(f"Cannot open configuration file: {cfg}\n")
