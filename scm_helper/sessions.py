@@ -156,6 +156,7 @@ class Session(Entity):
         """Print swimmers."""
         # pylint: disable=too-many-nested-blocks
         # pylint: disable=too-many-branches
+        # pylint: disable=too-many-locals
         res = None
         covid = get_config(self.scm, C_SESSIONS, C_COVID)
         c_date_str = get_config(self.scm, C_CONDUCT, covid, C_DATE)
@@ -186,7 +187,7 @@ class Session(Entity):
                 if not declaration:
                     c_res += f"   {swimmer.name}\n"
                     found = True
-                    
+
         if found:
             res = c_res
 
