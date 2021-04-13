@@ -471,26 +471,31 @@ def verify_schema_data(scm):
         if xgroup not in scm.groups.by_name:
             notify(f"Error in config file: Group '{xgroup}' not found\n")
             error = True
+            break
 
     for code in VAR_CONDUCT:
         if code not in scm.conduct.by_name:
             notify(f"Error in config file: Code of Conduct '{code}' not found\n")
             error = True
+            break
 
     for xrole in VAR_ROLE:
         if xrole not in scm.roles.by_name:
             notify(f"Error in config file: Role '{xrole}' not found\n")
             error = True
+            break
 
     for xsession in VAR_SESSION:
         if scm.sessions.find_session_substr(xsession) is None:
             notify(f"Error in config file: Session '{xsession}' not found\n")
             error = True
+            break
 
     for xissue in VAR_ISSUE:
         if scm.issue_handler.check_issue(xissue) is False:
             notify(f"Error in config file: Issue '{xissue}' not found\n")
             error = True
+            break
 
     if error:
         return False
@@ -522,8 +527,8 @@ def check_default(scm):
 def delete_schema():
     """Delete configured parameters, so file can be re-read"""
 
-    VAR_CONDUCT = []
-    VAR_GROUP = []
-    VAR_ISSUE = []
-    VAR_ROLE = []
-    VAR_SESSION = []
+    VAR_CONDUCT.clear()
+    VAR_GROUP.clear()
+    VAR_ISSUE.clear()
+    VAR_ROLE.clear()
+    VAR_SESSION.clear()
