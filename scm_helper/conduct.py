@@ -113,7 +113,7 @@ class Conduct(Entity):
                 m_date = datetime.datetime.strptime(
                     member[A_DATEAGREED], SCM_DATE_FORMAT
                 )
-                if m_date > c_date:
+                if m_date >= c_date:
                     continue
 
             person = self.scm.members.by_guid[member[A_GUID]]
