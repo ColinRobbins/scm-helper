@@ -75,9 +75,9 @@ class Sessions(Entities):
         res = ""
         for session in sorted(self.entities, key=lambda x: x.full_name):
             if session.is_active:
-                res += f"{session.full_name}\n"
-                res += session.print_swimmer_covid()
-                res += "\n"
+                c_res = session.print_swimmer_covid()
+                if c_res:
+                    res += f"{session.full_name}\n{c_res}\n"
 
         return res
 
@@ -156,14 +156,15 @@ class Session(Entity):
         """Print swimmers."""
         # pylint: disable=too-many-nested-blocks
         # pylint: disable=too-many-branches
-        res = ""
+        res = None
         covid = get_config(self.scm, C_SESSIONS, C_COVID)
         c_date_str = get_config(self.scm, C_CONDUCT, covid, C_DATE)
         if c_date_str is None:
             c_date_str = "1900-01-01"
         c_date = datetime.datetime.strptime(c_date_str, SCM_DATE_FORMAT)
 
-        res += "  Coaches:\n"
+        c_res = "  Coaches:\n"
+        found = False
         for coach in self.data[A_COACHES]:
             swimmer = self.scm.members.by_guid[coach[A_GUID]]
 
@@ -183,9 +184,14 @@ class Session(Entity):
                                     declaration = True
 
                 if not declaration:
-                    res += f"   {swimmer.name}\n"
+                    c_res += f"   {swimmer.name}\n"
+                    found = True
+                    
+        if found:
+            res = c_res
 
-        res += "  Swimmers:\n"
+        s_res = "  Swimmers:\n"
+        found = False
         for swimmer in self.members:
             if swimmer.is_active:
                 declaration = False
@@ -203,7 +209,13 @@ class Session(Entity):
                                     declaration = True
 
                 if not declaration:
-                    res += f"   {swimmer.name}\n"
+                    s_res += f"   {swimmer.name}\n"
+                    found = True
+        if found:
+            if res:
+                res += s_res
+            else:
+                res = s_res
 
         return res
 
