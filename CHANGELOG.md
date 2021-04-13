@@ -3,6 +3,7 @@
 ## 1.7.1
 * Updated example config
 * Updated Facebook page analysis
+* Fix bug preventing config reloading correctly after an edit
 
 ## 1.7
 10/04/2021

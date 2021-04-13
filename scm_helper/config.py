@@ -517,3 +517,13 @@ def check_default(scm):
         msg += "By configuring these, SCM Helper can do a more for you!\n\n"
 
     return msg
+
+
+def delete_schema():
+    """Delete configured parameters, so file can be re-read"""
+
+    VAR_CONDUCT = []
+    VAR_GROUP = []
+    VAR_ISSUE = []
+    VAR_ROLE = []
+    VAR_SESSION = []
