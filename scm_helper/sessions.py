@@ -12,6 +12,7 @@ from scm_helper.config import (
     C_CONDUCT,
     C_COVID,
     C_DATE,
+    C_EXCLUDE_MAX,
     C_GROUPS,
     C_IGNORE_ATTENDANCE,
     C_REGISTER,
@@ -90,14 +91,20 @@ class Session(Entity):
         super().__init__(entity, scm, url)
         self.coaches = []
         self.swimmers = []
-
+        
         self.ignore_attendance = False
+        self.exclude_max = False
 
         cfg = get_config(
             self.scm, C_SESSIONS, C_SESSION, self.name, C_IGNORE_ATTENDANCE
         )
         if cfg:
             self.ignore_attendance = cfg
+
+        cfg = get_config(
+            self.scm, C_SESSIONS, C_SESSION, self.name, C_EXCLUDE_MAX)
+        if cfg:
+            self.exclude_max = cfg
 
     def linkage(self, members):
         """Link coaches and swimmers."""

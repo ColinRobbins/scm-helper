@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.7.2
+* Added option to exclude session from count of sessions per swimmer
+
 ## 1.7.1
 * Updated example config
 * Updated Facebook page analysis

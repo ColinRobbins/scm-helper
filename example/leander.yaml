@@ -316,6 +316,7 @@ sessions:
           - 'Senior Performance Squad'
     'Starts and Turns':
         ignore_attendance: True
+        exclude_from_max_sessions: True
 
 #############################################
 # Codes of Conduct

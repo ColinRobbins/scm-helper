@@ -103,9 +103,14 @@ def check_max_sessions(swimmer):
         swimmer.scm, C_GROUPS, C_GROUP, swimmer.first_group, C_MAX_SESSIONS
     )
     if max_session:
-        if len(swimmer.sessions) > max_session:
-            sessions = swimmer.print_swimmer_sessions(False)
-            issue(swimmer, E_MAX_SESSIONS, f"{len(swimmer.sessions)}: \n{sessions}")
+        num_sessions = len(swimmer.sessions)
+        if num_sessions > max_session:
+            for session in swimmer.sessions:
+                if session.exclude_max:
+                    num_sessions = num_sessions - 1
+            if num_sessions > max_session:
+                sessions = swimmer.print_swimmer_sessions(False)
+                issue(swimmer, E_MAX_SESSIONS, f"{len(swimmer.sessions)}: \n{sessions}")
 
 
 def check_asa(swimmer):
@@ -165,6 +170,7 @@ def check_two_groups(swimmer):
 
     g_count = 0
     errmsg = ""
+    
     for group in swimmer.groups:
 
         nosession = get_config(

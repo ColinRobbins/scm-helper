@@ -132,6 +132,7 @@ C_DEBUG_LEVEL = "debug_level"
 C_DOB_FORMAT = "dob_format"
 C_EDIT = "edit"
 C_EMAIL = "email"
+C_EXCLUDE_MAX = "exclude_from_max_sessions"
 C_EXPIRY = "expiry"
 C_FACEBOOK = "facebook"
 C_FILES = "files"
@@ -348,6 +349,7 @@ SCHEMA = Schema(
                 session: {
                     Optional(C_GROUPS): [group],
                     Optional(C_IGNORE_ATTENDANCE): bool,
+                    Optional(C_EXCLUDE_MAX): bool,
                 }
             },
         },
