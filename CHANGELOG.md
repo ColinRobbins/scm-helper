@@ -2,6 +2,7 @@
 
 ## 1.7.2
 * Added option to exclude session from count of sessions per swimmer
+* Print last seen date on Covid Report
 
 ## 1.7.1
 * Updated example config

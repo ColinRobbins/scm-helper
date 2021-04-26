@@ -192,7 +192,7 @@ class Session(Entity):
                                     declaration = True
 
                 if not declaration:
-                    c_res += f"   {swimmer.name}\n"
+                    c_res += f"   {swimmer.name} (last seen: {swimmer.lastseen_str})\n"
                     found = True
 
         if found:
@@ -217,7 +217,7 @@ class Session(Entity):
                                     declaration = True
 
                 if not declaration:
-                    s_res += f"   {swimmer.name}\n"
+                    s_res += f"   {swimmer.name} (last seen: {swimmer.lastseen_str})\n"
                     found = True
         if found:
             if res:
