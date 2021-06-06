@@ -91,7 +91,7 @@ class Session(Entity):
         super().__init__(entity, scm, url)
         self.coaches = []
         self.swimmers = []
-        
+
         self.ignore_attendance = False
         self.exclude_max = False
 
@@ -101,8 +101,7 @@ class Session(Entity):
         if cfg:
             self.ignore_attendance = cfg
 
-        cfg = get_config(
-            self.scm, C_SESSIONS, C_SESSION, self.name, C_EXCLUDE_MAX)
+        cfg = get_config(self.scm, C_SESSIONS, C_SESSION, self.name, C_EXCLUDE_MAX)
         if cfg:
             self.exclude_max = cfg
 

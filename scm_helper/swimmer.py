@@ -170,7 +170,7 @@ def check_two_groups(swimmer):
 
     g_count = 0
     errmsg = ""
-    
+
     for group in swimmer.groups:
 
         nosession = get_config(
