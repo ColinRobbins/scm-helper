@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.7.3
+06/60/2021
+* Fix issue [4](https://github.com/ColinRobbins/scm-helper/issues/4)
+
 ## 1.7.2
 * Added option to exclude session from count of sessions per swimmer
 * Print last seen date on Covid Report

@@ -187,12 +187,12 @@ def check_conduct(member, my_codes):
                 if found is False:
                     issue(member, E_NO_CONDUCT, f"{code.name}")
 
-                    # TODO - Need SCM bug fix first
-                    # if code.newdata and (A_MEMBERS in code.newdata):
-                    #    fix = code.newdata
-                    # else:
-                    #    fix = {}
-                    #    fix[A_MEMBERS] = code.data[A_MEMBERS].copy()
-                    # add = {A_GUID: member.guid}
-                    # fix[A_MEMBERS].append(add)
-                    # code.fixit(fix, f"Add {member.name}")
+                    if code.newdata and (A_MEMBERS in code.newdata):
+                        fix = code.newdata
+                    else:
+                        fix = {}
+                    
+                    fix[A_MEMBERS] = code.data[A_MEMBERS].copy()
+                    add = {A_GUID: member.guid}
+                    fix[A_MEMBERS].append(add)
+                    code.fixit(fix, f"Add {member.name}")

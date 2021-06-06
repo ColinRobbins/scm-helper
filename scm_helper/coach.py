@@ -1,6 +1,7 @@
 """Coach routines."""
 from scm_helper.config import (
     A_ISCOACH,
+    A_GUID,
     C_COACHES,
     C_MANDATORY,
     C_ROLE,
@@ -58,14 +59,12 @@ def check_coach_permissions(coach, role):
                 match = True
                 break
         if match is False:
-            # SCM bug 6588
             issue(coach, E_PERMISSION_MISSING, session.full_name)
-            # TODO
-            # fix = {}
-            # data = coach.data["SessionRestrictions"]
-            # fix["SessionRestrictions"] = data.copy()
-            # fix["SessionRestrictions"].append({A_GUID: session.guid})
-            # coach.fixit(fix, f"Add permission for {session.name}")
+            fix = {}
+            data = coach.data["SessionRestrictions"]
+            fix["SessionRestrictions"] = data.copy()
+            fix["SessionRestrictions"].append({A_GUID: session.guid})
+            coach.fixit(fix, f"Add permission for {session.name}")
 
     for permission in coach.restricted:
         match = False
@@ -74,12 +73,10 @@ def check_coach_permissions(coach, role):
                 match = True
                 break
         if match is False:
-            # SCM bug 6588
             issue(coach, E_PERMISSION_EXTRA, permission.full_name)
-            # TODO
-            # fix = {}
-            # data = coach.data["SessionRestrictions"]
-            # debug(f"Session restriction deletion - before:\n{data}\n", 9)
-            # fix["SessionRestrictions"] = data.copy()
-            # fix["SessionRestrictions"].remove({A_GUID: permission.guid})
-            # coach.fixit(fix, f"Remove permission for {permission.name}")
+            fix = {}
+            data = coach.data["SessionRestrictions"]
+            debug(f"Session restriction deletion - before:\n{data}\n", 9)
+            fix["SessionRestrictions"] = data.copy()
+            fix["SessionRestrictions"].remove({A_GUID: permission.guid})
+            coach.fixit(fix, f"Remove permission for {permission.name}")
