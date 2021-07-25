@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.7.4
+25/07/2021
+* Bug fix - deal with null session data in fixit.
+* Bug Fix - Facebook changed XPath
+
 ## 1.7.3
 06/60/2021
 * Fix issue [4](https://github.com/ColinRobbins/scm-helper/issues/4)

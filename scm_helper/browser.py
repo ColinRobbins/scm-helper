@@ -43,7 +43,7 @@ FACEBOOK = "https://www.facebook.com"
 # 05/07/2020 New Facebook GUI
 # M_XPATH = '//*[@id="mount_0_0"]'
 M_XPATH = '//*[contains(@id,"mount_0_0")]'
-M_ENTRY = "//div/div/div[2]/div[1]/div/div/div[1]/span/span/div"
+M_ENTRY = "//div/div/div[2]/div[1]/div/div/div[1]/span/span/span"
 M_ELEMENTS = M_XPATH + M_ENTRY + "/a"
 M_ELEMENTS2 = M_XPATH + M_ENTRY + "/span"
 

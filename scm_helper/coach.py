@@ -62,7 +62,10 @@ def check_coach_permissions(coach, role):
             issue(coach, E_PERMISSION_MISSING, session.full_name)
             fix = {}
             data = coach.data["SessionRestrictions"]
-            fix["SessionRestrictions"] = data.copy()
+            if data:
+                fix["SessionRestrictions"] = data.copy()
+            else:
+                fix["SessionRestrictions"] = []
             fix["SessionRestrictions"].append({A_GUID: session.guid})
             coach.fixit(fix, f"Add permission for {session.name}")
 
