@@ -36,6 +36,8 @@ def analyse_coach(coach):
 
 def check_coach_permissions(coach, role):
     """Check a coaches permissions."""
+    # pylint: disable=too-many-branches
+
     debug(f"Permission check: {coach.name}, {role.name}", 7)
     if coach.is_coach is False:
         issue(coach, E_NOT_A_COACH, f"Role: {role.name} (fixable)")
