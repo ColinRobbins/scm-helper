@@ -423,8 +423,7 @@ SCHEMA = Schema(
                 C_SUFFIX: str,
                 C_ELEMENTS: str,
                 C_ELEMENTS2: str,
-            }
-            
+            },
         },
         Optional(C_SELENIUM): {C_BROWSER: str, C_WEB_DRIVER: str},
         Optional(C_SWIM_ENGLAND): {C_BASE_URL: str, C_CHECK_URL: str, C_TEST_ID: int},

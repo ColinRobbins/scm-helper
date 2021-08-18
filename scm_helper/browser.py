@@ -106,6 +106,7 @@ in the config directory.
 
 def fb_read_url(scm, url):
     """Read Facebook Group members."""
+    # pylint: disable=too-many-locals
 
     users = []
 
@@ -122,9 +123,9 @@ def fb_read_url(scm, url):
         return None
 
     read_cookies(browser, cookiefile, FACEBOOK, scm)
-    
+
     m_xpath = get_config(scm, C_FACEBOOK, C_XPATH, C_PREFIX)
-    
+
     if m_xpath is None:
         m_xpath = M_XPATH
         m_entry = M_ENTRY
