@@ -16,10 +16,16 @@ from scm_helper.config import (
     C_BROWSER,
     C_CHECK_URL,
     C_DEBUG_LEVEL,
+    C_ELEMENTS,
+    C_ELEMENTS2,
+    C_FACEBOOK,
+    C_PREFIX,
     C_SELENIUM,
+    C_SUFFIX,
     C_SWIM_ENGLAND,
     C_TEST_ID,
     C_WEB_DRIVER,
+    C_XPATH,
     CONFIG_DIR,
     EXCEPTION_SE_HIDDEN,
     EXCEPTION_SE_NAME,
@@ -38,10 +44,6 @@ SCROLL_PAUSE_TIME = 2
 
 FACEBOOK = "https://www.facebook.com"
 
-# M_XPATH = '//*[@id="groupsMemberSection_all_members"]'
-# M_ENTRY = "//ul//div/div[2]/div/div[2]/div[1]"
-# 05/07/2020 New Facebook GUI
-# M_XPATH = '//*[@id="mount_0_0"]'
 M_XPATH = '//*[contains(@id,"mount_0_0")]'
 M_ENTRY = "//div/div/div[2]/div[1]/div/div/div[1]/span/span/span"
 M_ELEMENTS = M_XPATH + M_ENTRY + "/a"
@@ -120,10 +122,24 @@ def fb_read_url(scm, url):
         return None
 
     read_cookies(browser, cookiefile, FACEBOOK, scm)
+    
+    m_xpath = get_config(scm, C_FACEBOOK, C_XPATH, C_PREFIX)
+    
+    if m_xpath is None:
+        m_xpath = M_XPATH
+        m_entry = M_ENTRY
+        m_elements = M_ELEMENTS
+        m_elements2 = M_ELEMENTS2
+    else:
+        m_entry = get_config(scm, C_FACEBOOK, C_XPATH, C_SUFFIX)
+        elements = get_config(scm, C_FACEBOOK, C_XPATH, C_ELEMENTS)
+        elements2 = get_config(scm, C_FACEBOOK, C_XPATH, C_ELEMENTS2)
+        m_elements = m_xpath + m_entry + elements
+        m_elements2 = m_xpath + m_entry + elements2
 
     browser.get(url)
     try:
-        browser.find_element_by_xpath(M_XPATH)
+        browser.find_element_by_xpath(m_xpath)
     except selenium.common.exceptions.NoSuchElementException:
         interact_yesno("Please logon to Facebook and then press enter here.")
         write_cookies(browser, cookiefile, scm)
@@ -138,7 +154,7 @@ def fb_read_url(scm, url):
     scroll(browser)
 
     count = 0
-    for path in [M_ELEMENTS, M_ELEMENTS2]:
+    for path in [m_elements, m_elements2]:
         elements = browser.find_elements_by_xpath(path)
         for element in elements:
             if element.text not in users:

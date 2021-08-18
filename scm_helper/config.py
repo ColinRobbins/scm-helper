@@ -107,9 +107,9 @@ C_ABSENCE = "absence"
 C_AGE = "age"
 C_AGE_EOY = "age_eoy"
 C_ALIGN_QUARTER = "align_quarter"
+C_ALL_AGES = "all_ages_u18"
 C_ALLOW_GROUP = "allow_group"
 C_ALLOW_UPDATE = "allow_update"
-C_ALL_AGES = "all_ages_u18"
 C_BASE_URL = "base_url"
 C_BROWSER = "browser"
 C_CHECK_DBS = "check_dbs"
@@ -131,6 +131,8 @@ C_DBS = "dbs"
 C_DEBUG_LEVEL = "debug_level"
 C_DOB_FORMAT = "dob_format"
 C_EDIT = "edit"
+C_ELEMENTS = "elements"
+C_ELEMENTS2 = "elements2"
 C_EMAIL = "email"
 C_EXCLUDE_MAX = "exclude_from_max_sessions"
 C_EXPIRY = "expiry"
@@ -175,15 +177,16 @@ C_OVERALL_FASTEST = "overall_fastest"
 C_PARENT = "parent"
 C_PARENTS = "parents"
 C_PASSWORD = "password"
+C_PREFIX = "prefix"
 C_PRIORITY = "priority"
 C_RECORDS = "records"
 C_REGISTER = "register"
 C_RELAY = "relay"
 C_ROLE = "role"
 C_ROLES = "roles"
+C_SE_ONLY = "se_only"
 C_SELENIUM = "selenium"
 C_SEND_TO = "send_to"
-C_SE_ONLY = "se_only"
 C_SESSION = "session"
 C_SESSIONS = "sessions"
 C_SMTP_PORT = "smtp_port"
@@ -203,6 +206,7 @@ C_USERNAME = "username"
 C_VERIFY = "verify"
 C_VOLUNTEER = "volunteer"
 C_WEB_DRIVER = "web_driver"
+C_XPATH = "xpath"
 
 CTYPE_COACH = "coach"
 CTYPE_COMMITTEE = "committee"
@@ -411,7 +415,17 @@ SCHEMA = Schema(
                 }
             },
         },
-        Optional(C_FACEBOOK): {Optional(C_FILES): [str], Optional(C_GROUPS): [str]},
+        Optional(C_FACEBOOK): {
+            Optional(C_FILES): [str],
+            Optional(C_GROUPS): [str],
+            Optional(C_XPATH): {
+                C_PREFIX: str,
+                C_SUFFIX: str,
+                C_ELEMENTS: str,
+                C_ELEMENTS2: str,
+            }
+            
+        },
         Optional(C_SELENIUM): {C_BROWSER: str, C_WEB_DRIVER: str},
         Optional(C_SWIM_ENGLAND): {C_BASE_URL: str, C_CHECK_URL: str, C_TEST_ID: int},
         Optional(C_RECORDS): {

@@ -3,6 +3,7 @@
 ## 1.7.5
 18/08/2021
 * bug fix - records handling failing after update 1.5
+* Added Facebook XPATH as a config option
 
 ## 1.7.4
 25/07/2021
