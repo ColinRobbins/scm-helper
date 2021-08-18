@@ -548,6 +548,7 @@ class Record:
 
     def check_row(self, row, count):
         """Check a row from the records file."""
+        
         event = row[S_EVENT]
         test = event.split()
 
@@ -597,6 +598,18 @@ class Record:
             with open(filename, newline="") as csvfile:
                 csv_reader = csv.DictReader(csvfile, skipinitialspace=True)
                 self.fieldnames = csv_reader.fieldnames
+                
+                if not self.fieldnames:
+                    notify(f"Records file is empty: {filename}\n")
+                    return False
+                
+                if S_EVENT not in self.fieldnames:
+                    for row in csv_reader:
+                        count += 1
+                    notify(f"Cannot find header in {filename}\n")
+                    notify(f"{count} lines in file\n")
+                    notify(f"Firstline is\n{self.fieldnames}\n")
+                    return False
 
                 for row in csv_reader:
                     count += 1

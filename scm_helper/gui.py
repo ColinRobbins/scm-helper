@@ -596,9 +596,6 @@ class ScmGui:
         if self.thread:
             return  # already running
 
-        if self.scm_init() is False:
-            return
-
         self.thread = RecordThread(self, newtimes).start()
 
 

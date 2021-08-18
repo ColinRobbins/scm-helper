@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.7.5
+18/08/2021
+* bug fix - records handling failing after update 1.5
+
 ## 1.7.4
 25/07/2021
 * Bug fix - deal with null session data in fixit.

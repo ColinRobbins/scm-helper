@@ -85,6 +85,7 @@ class Members(Entities):
             self.knownas[data.knownas] = data
             if data.asa_number:
                 self.by_asa[data.asa_number] = data
+
             if data.facebook:
                 for face in data.facebook:
                     self.facebook[face] = data
