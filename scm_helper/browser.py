@@ -161,8 +161,11 @@ def fb_read_url(scm, url):
             if element.text not in users:
                 count += 1
                 users.append(element.text)
-
-    notify(f"Read {count} names from {url}\n")
+                
+    if count == 0:
+        interact_yesno(f"No members found in {url}\nCheck configuration (XPATH)")
+    else:
+        notify(f"Read {count} names from {url}\n")
     browser.close()
 
     return users
