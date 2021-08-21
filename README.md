@@ -19,6 +19,6 @@ Download latest [Windows Version](https://github.com/ColinRobbins/scm-helper/raw
 # Documentation
 See [documentation](https://github.com/ColinRobbins/scm-helper/wiki) on GitHub for installation and usage instructions.
 # Change Log
-See [changelog](CHANGELOG.md)
+See [changelog](https://github.com/ColinRobbins/scm-helper/blob/master/CHANGELOG.md)
 ## Author
 * [Colin Robbins](https://github.com/ColinRobbins)
