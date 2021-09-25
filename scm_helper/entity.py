@@ -14,6 +14,7 @@ from scm_helper.config import (
     CTYPE_COMMITTEE,
     CTYPE_LIFESAVER,
     CTYPE_LTS,
+    CTYPE_MASTER,
     CTYPE_OPENWATER,
     CTYPE_PARENT,
     CTYPE_POLO,
@@ -339,6 +340,9 @@ def check_type(member, xtype):
     """Check each type for a match."""
     # pylint: disable=too-many-return-statements
     # Need them all!
+    if xtype == CTYPE_MASTER:
+        return member.is_master
+
     if xtype == CTYPE_SWIMMER:
         return member.is_swimmer
 

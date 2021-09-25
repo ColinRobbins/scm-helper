@@ -92,6 +92,7 @@ A_DOB = "DOB"
 A_FIRSTNAME = "Firstname"
 A_GUID = "Guid"
 A_ISCOACH = "IsACoach"
+A_ISMASTER = "Masters"
 A_ISPARENT = "IsAParent"
 A_ISVOLUNTEER = "IsAVolunteer"
 A_KNOWNAS = "KnownAs"
@@ -212,6 +213,7 @@ CTYPE_COACH = "coach"
 CTYPE_COMMITTEE = "committee"
 CTYPE_LIFESAVER = "lifesaver"
 CTYPE_LTS = "lts_teacher"
+CTYPE_MASTER = "master"
 CTYPE_OPENWATER = "openwater"
 CTYPE_PARENT = "parent"
 CTYPE_POLO = "waterpolo"
@@ -224,6 +226,7 @@ CTYPES = [
     CTYPE_COMMITTEE,
     CTYPE_LIFESAVER,
     CTYPE_LTS,
+    CTYPE_MASTER,
     CTYPE_OPENWATER,
     CTYPE_PARENT,
     CTYPE_POLO,
