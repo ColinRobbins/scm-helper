@@ -857,7 +857,7 @@ class RelayRecord(Record):
             else:
                 event[2] = str(mdist)
 
-        if RELAY_STROKES.get(event[3], None) is None:
+        if RELAY_STROKES.get(event[3]) is None:
             notify(f"Line {count}: unknown event '{event[3]}'\n")
         if COURSE.get(event[4], None) is None:
             notify(f"Line {count}: unknown course '{event[4]}'\n")
