@@ -23,13 +23,17 @@ from scm_helper.issue import (
 
 def analyse_coach(coach):
     """Analyse a coach..."""
-    if coach.coach_role is False:
-        if get_config(coach.scm, C_COACHES, C_ROLE, C_MANDATORY):
-            issue(coach, E_NO_ROLE_COACH)
+    if (
+        coach.coach_role is False
+        and get_config(coach.scm, C_COACHES, C_ROLE, C_MANDATORY)
+    ):
+        issue(coach, E_NO_ROLE_COACH)
 
-    if len(coach.coach_sessions) == 0:
-        if coach.print_exception(EXCEPTION_NOSESSIONS):
-            issue(coach, E_NO_SESSIONS)
+    if (
+        len(coach.coach_sessions) == 0
+        and coach.print_exception(EXCEPTION_NOSESSIONS)
+    ):
+        issue(coach, E_NO_SESSIONS)
 
     coach.check_dbs("Coach")
 
@@ -47,9 +51,8 @@ def check_coach_permissions(coach, role):
 
     coach.set_in_coach_role()
 
-    if coach.is_swimmer is False:
-        if len(coach.sessions) > 0:
-            issue(coach, E_COACH_WITH_SESSIONS, f"Role: {role.name}")
+    if coach.is_swimmer is False and len(coach.sessions) > 0:
+        issue(coach, E_COACH_WITH_SESSIONS, f"Role: {role.name}")
 
     if coach.print_exception(EXCEPTION_PERMISSIONS) is False:
         return

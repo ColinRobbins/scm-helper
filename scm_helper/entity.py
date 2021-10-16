@@ -201,9 +201,8 @@ class Entity:
 
     def check_attribute(self, attribute):
         """Return the value, if there is one."""
-        if attribute in self.data:
-            if self.data[attribute]:
-                return self.data[attribute]
+        if attribute in self.data and self.data[attribute]:
+            return self.data[attribute]
         return None
 
     def set_date(self, field):

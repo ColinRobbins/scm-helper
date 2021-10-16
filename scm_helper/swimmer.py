@@ -60,9 +60,11 @@ def analyse_swimmer(swimmer):
     if swimmer.in_ignore_swimmer:
         return
 
-    if len(swimmer.groups) == 0:
-        if swimmer.print_exception(EXCEPTION_NOGROUPS):
-            issue(swimmer, E_NO_GROUP)
+    if (
+        len(swimmer.groups) == 0
+        and swimmer.print_exception(EXCEPTION_NOGROUPS)
+    ):
+        issue(swimmer, E_NO_GROUP)
 
     if swimmer.dob is None:
         issue(swimmer, E_DOB)
@@ -158,9 +160,8 @@ def check_login(swimmer):
     """Check if the login is OK."""
     if swimmer.username:
         min_age = get_config(swimmer.scm, C_SWIMMERS, C_USERNAME, C_MIN_AGE)
-        if min_age:
-            if swimmer.age and (swimmer.age < min_age):
-                issue(swimmer, E_LOGIN_TOO_YOUNG, f"Age: {swimmer.age}")
+        if min_age and swimmer.age and (swimmer.age < min_age):
+            issue(swimmer, E_LOGIN_TOO_YOUNG, f"Age: {swimmer.age}")
 
 
 def check_two_groups(swimmer):
@@ -190,9 +191,11 @@ def check_two_groups(swimmer):
             else:
                 errmsg += group.name
 
-    if g_count > 1:
-        if swimmer.print_exception(EXCEPTION_TWOGROUPS):
-            issue(swimmer, E_TWO_GROUPS, errmsg)
+    if (
+        g_count > 1
+        and swimmer.print_exception(EXCEPTION_TWOGROUPS)
+    ):
+        issue(swimmer, E_TWO_GROUPS, errmsg)
 
 
 def check_parents(swimmer):
@@ -222,21 +225,27 @@ def check_parents(swimmer):
             if confirm_error:
                 issue(swimmer, E_CONFIRM_DIFF, f"Parent {parent.name}")
     if (
+        (
         swimmer.parents
         and swimmer.age
         and (match is False)
         and (swimmer.age <= max_age)
+    )
+        and swimmer.print_exception(EXCEPTION_EMAILDIFF)
     ):
-        if swimmer.print_exception(EXCEPTION_EMAILDIFF):
-            err = f"{swimmer.email} - {swimmer.parents[0].email}"
-            issue(swimmer, E_EMAIL_MATCH, err)
+        err = f"{swimmer.email} - {swimmer.parents[0].email}"
+        issue(swimmer, E_EMAIL_MATCH, err)
 
     if count == 0:
         mandatory = get_config(swimmer.scm, C_SWIMMERS, C_PARENT, C_MANDATORY)
-        if mandatory and max_age:
-            if swimmer.age and (swimmer.age <= max_age):
-                msg = f"{swimmer.first_group}, Age: {swimmer.age}"
-                issue(swimmer, E_NO_PARENT, msg)
+        if (
+            mandatory
+            and max_age
+            and swimmer.age
+            and (swimmer.age <= max_age)
+        ):
+            msg = f"{swimmer.first_group}, Age: {swimmer.age}"
+            issue(swimmer, E_NO_PARENT, msg)
 
     if count > 2:
         issue(swimmer, E_NUM_PARENTS)
@@ -301,8 +310,10 @@ def check_confirmed_diff(swimmer, parent):
         parent.set_confirmed(swimmer.confirmed_date)
         return False
 
-    if swimmer.confirmed_date:
-        if swimmer.confirmed_date > parent.confirmed_date:
-            parent.set_confirmed(swimmer.confirmed_date)
+    if (
+        swimmer.confirmed_date
+        and swimmer.confirmed_date > parent.confirmed_date
+    ):
+        parent.set_confirmed(swimmer.confirmed_date)
 
     return False

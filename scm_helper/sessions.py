@@ -182,13 +182,12 @@ class Session(Entity):
                     code_members = code.data[A_MEMBERS]
                     for member in code_members:
                         code_member = self.scm.members.by_guid[member[A_GUID]]
-                        if code_member == swimmer:
-                            if member[A_DATEAGREED]:
-                                m_date = datetime.datetime.strptime(
-                                    member[A_DATEAGREED], SCM_DATE_FORMAT
-                                )
-                                if m_date > c_date:
-                                    declaration = True
+                        if code_member == swimmer and member[A_DATEAGREED]:
+                            m_date = datetime.datetime.strptime(
+                                member[A_DATEAGREED], SCM_DATE_FORMAT
+                            )
+                            if m_date > c_date:
+                                declaration = True
 
                 if not declaration:
                     c_res += f"   {swimmer.name} (last seen: {swimmer.lastseen_str})\n"
@@ -207,13 +206,12 @@ class Session(Entity):
                     code_members = code.data[A_MEMBERS]
                     for member in code_members:
                         code_member = self.scm.members.by_guid[member[A_GUID]]
-                        if code_member == swimmer:
-                            if member[A_DATEAGREED]:
-                                m_date = datetime.datetime.strptime(
-                                    member[A_DATEAGREED], SCM_DATE_FORMAT
-                                )
-                                if m_date > c_date:
-                                    declaration = True
+                        if code_member == swimmer and member[A_DATEAGREED]:
+                            m_date = datetime.datetime.strptime(
+                                member[A_DATEAGREED], SCM_DATE_FORMAT
+                            )
+                            if m_date > c_date:
+                                declaration = True
 
                 if not declaration:
                     s_res += f"   {swimmer.name} (last seen: {swimmer.lastseen_str})\n"
@@ -319,9 +317,8 @@ class Session(Entity):
     @property
     def is_active(self):
         """Is the entry active..."""
-        if A_ARCHIVED in self.data:
-            if self.data[A_ARCHIVED] == 0:
-                return True
+        if A_ARCHIVED in self.data and self.data[A_ARCHIVED] == 0:
+            return True
         return False
 
     @property

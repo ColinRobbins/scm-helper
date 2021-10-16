@@ -199,12 +199,11 @@ class NewList(Entity):
             if C_GROUP in cfg:
                 if member.find_group(cfg[C_GROUP]) is False:
                     continue
-                if C_UNIQUE in cfg:
-                    if len(member.groups) > 1:
-                        if C_ALLOW_GROUP not in cfg:
-                            continue
-                        if member.find_group(cfg[C_ALLOW_GROUP]) is False:
-                            continue
+                if C_UNIQUE in cfg and len(member.groups) > 1:
+                    if C_ALLOW_GROUP not in cfg:
+                        continue
+                    if member.find_group(cfg[C_ALLOW_GROUP]) is False:
+                        continue
 
             if C_GENDER in cfg:
                 gender = cfg[C_GENDER]

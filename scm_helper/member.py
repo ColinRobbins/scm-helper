@@ -423,10 +423,12 @@ class Member(Entity):
                 if self.find_group(group):
                     found = True
                     break
-            if found is False:
-                if self.in_ignore_group is False:
-                    if self.in_ignore_swimmer is False:
-                        issue(self, E_TYPE_GROUP, name)
+            if (
+                found is False
+                and self.in_ignore_group is False
+                and self.in_ignore_swimmer is False
+            ):
+                issue(self, E_TYPE_GROUP, name)
 
         if jobtitle:
             if self.jobtitle:
@@ -492,15 +494,17 @@ class Member(Entity):
             found = True
             self.check_type(CTYPE_COMMITTEE)
 
-        if self.jobtitle:
-            if (
-                (self.is_volunteer is not True)
-                and (self.is_committee_member is not True)
-                and (self.is_coach is not True)
-            ):
-                cfg = get_config(self.scm, C_JOBTITLE, C_IGNORE)
-                if self.jobtitle not in cfg:
-                    issue(self, E_JOB, self.jobtitle)
+        if (
+            self.jobtitle
+            and (
+            (self.is_volunteer is not True)
+            and (self.is_committee_member is not True)
+            and (self.is_coach is not True)
+        )
+        ):
+            cfg = get_config(self.scm, C_JOBTITLE, C_IGNORE)
+            if self.jobtitle not in cfg:
+                issue(self, E_JOB, self.jobtitle)
 
         if found:
             if self.in_ignore_swimmer:
@@ -517,32 +521,31 @@ class Member(Entity):
 
     def fix_search(self):
         """fix_search_index."""
-        if A_KNOWNAS in self.data:
-            if self.data[A_KNOWNAS]:
+        if A_KNOWNAS in self.data and self.data[A_KNOWNAS]:
 
-                self.newdata = {}
-                self.newdata[A_GUID] = self.guid
-                notify(f"Deleting index for {self.name}...")
+            self.newdata = {}
+            self.newdata[A_GUID] = self.guid
+            notify(f"Deleting index for {self.name}...")
 
-                self.newdata[A_FIRSTNAME] = "XXX"
+            self.newdata[A_FIRSTNAME] = "XXX"
 
-                res = self.scm.api_write(self, False)
-                if res is False:
-                    notify("Hit a snag!\n")
-                    return False
+            res = self.scm.api_write(self, False)
+            if res is False:
+                notify("Hit a snag!\n")
+                return False
 
-                notify("Recreating...")
+            notify("Recreating...")
 
-                self.newdata[A_FIRSTNAME] = self.data[A_FIRSTNAME]
+            self.newdata[A_FIRSTNAME] = self.data[A_FIRSTNAME]
 
-                res = self.scm.api_write(self, False)
-                if res is False:
-                    msg = "Hit a snag - Firstname"
-                    msg2 = "deleted - oops sorry - restore manually!\n"
-                    notify(f"{msg} '{self.data[A_FIRSTNAME]}' {msg2}")
-                    return False
+            res = self.scm.api_write(self, False)
+            if res is False:
+                msg = "Hit a snag - Firstname"
+                msg2 = "deleted - oops sorry - restore manually!\n"
+                notify(f"{msg} '{self.data[A_FIRSTNAME]}' {msg2}")
+                return False
 
-                notify("Success.\n")
+            notify("Success.\n")
 
         return True
 
@@ -681,9 +684,8 @@ class Member(Entity):
         """Full name - use Knownas."""
         firstname = self.data[A_FIRSTNAME]
         lastname = self.data[A_LASTNAME]
-        if A_KNOWNAS in self.data:
-            if self.data[A_KNOWNAS]:
-                return f"{self.data[A_KNOWNAS]} ({firstname}) {lastname}"
+        if A_KNOWNAS in self.data and self.data[A_KNOWNAS]:
+            return f"{self.data[A_KNOWNAS]} ({firstname}) {lastname}"
         return self.name
 
     @property
@@ -691,9 +693,8 @@ class Member(Entity):
         """Known as."""
         firstname = self.data[A_FIRSTNAME]
 
-        if A_KNOWNAS in self.data:
-            if self.data[A_KNOWNAS]:
-                firstname = self.data[A_KNOWNAS]
+        if A_KNOWNAS in self.data and self.data[A_KNOWNAS]:
+            firstname = self.data[A_KNOWNAS]
 
         lastname = self.data[A_LASTNAME]
         return f"{firstname} {lastname}"
@@ -702,18 +703,20 @@ class Member(Entity):
     def knownas_only(self):
         """Known as."""
         firstname = self.data[A_FIRSTNAME]
-        if A_KNOWNAS in self.data:
-            if self.data[A_KNOWNAS]:
-                firstname = self.data[A_KNOWNAS]
+        if A_KNOWNAS in self.data and self.data[A_KNOWNAS]:
+            firstname = self.data[A_KNOWNAS]
         return firstname
 
     @property
     def newstarter(self):
         """Is the member a new stater."""
         grace = get_config(self.scm, C_MEMBERS, C_NEWSTARTER, C_GRACE)
-        if grace and self._date_joined:
-            if (self.scm.today - self._date_joined).days < grace:
-                return True
+        if (
+            grace
+            and self._date_joined
+            and (self.scm.today - self._date_joined).days < grace
+        ):
+            return True
         return False
 
     @property
@@ -736,9 +739,8 @@ class Member(Entity):
         """Check swimmer within age group."""
         if self.age and (self.age < xmin):
             issue(self, E_TOO_YOUNG, f"{group}: {self.age}")
-        if self.age and (self.age > xmax):
-            if not self.is_coach:
-                issue(self, E_TOO_OLD, f"{group}: {self.age}")
+        if self.age and (self.age > xmax) and not self.is_coach:
+            issue(self, E_TOO_OLD, f"{group}: {self.age}")
 
     def set_dates(self):
         """Calculate dates."""

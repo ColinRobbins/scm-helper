@@ -71,16 +71,20 @@ class Role(Entity):
         if member.username is None:
             issue(member, E_NO_LOGIN, f"Member of role {self.name}, so cannot login")
 
-        if get_config(self.scm, C_ROLES, C_ROLE, self.name, C_IS_COACH):
-            if member.is_coach is False:
-                issue(member, E_COACH_ROLE, f"Role: {self.name}")
+        if (
+            get_config(self.scm, C_ROLES, C_ROLE, self.name, C_IS_COACH)
+            and member.is_coach is False
+        ):
+            issue(member, E_COACH_ROLE, f"Role: {self.name}")
 
-        if get_config(self.scm, C_ROLES, C_VOLUNTEER, C_MANDATORY):
-            if member.is_volunteer is False:
-                issue(member, E_VOLUNTEER, f"Role: {self.name} (fixable)")
-                fix = {}
-                fix[A_ISVOLUNTEER] = "1"
-                member.fixit(fix, "Mark as volunteer")
+        if (
+            get_config(self.scm, C_ROLES, C_VOLUNTEER, C_MANDATORY)
+            and member.is_volunteer is False
+        ):
+            issue(member, E_VOLUNTEER, f"Role: {self.name} (fixable)")
+            fix = {}
+            fix[A_ISVOLUNTEER] = "1"
+            member.fixit(fix, "Mark as volunteer")
 
         if member.last_login:
             if (self.scm.today - member.last_login).days > unused:
@@ -101,9 +105,12 @@ class Role(Entity):
         if (C_CHECK_PERMISSIONS in lookup) and lookup[C_CHECK_PERMISSIONS]:
             check_coach_permissions(member, self)
 
-        if (C_CHECK_RESTRICTIONS in lookup) and lookup[C_CHECK_RESTRICTIONS]:
-            if len(member.restricted) == 0:
-                issue(member, E_NO_RESTRICTIONS, f"Role: {self.name}")
+        if (
+            (C_CHECK_RESTRICTIONS in lookup)
+            and lookup[C_CHECK_RESTRICTIONS]
+            and len(member.restricted) == 0
+        ):
+            issue(member, E_NO_RESTRICTIONS, f"Role: {self.name}")
 
     @property
     def name(self):

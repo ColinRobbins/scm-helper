@@ -240,9 +240,11 @@ def cmd(argv=None):
         record = Records(scm)
         if record.read_baseline() is False:
             sys.exit(2)
-        if scm.option("--newtimes"):
-            if record.read_newtimes(scm.option("--newtimes")) is False:
-                sys.exit(2)
+        if (
+            scm.option("--newtimes")
+            and record.read_newtimes(scm.option("--newtimes")) is False
+        ):
+            sys.exit(2)
         record.create_html()
         sys.exit()
 

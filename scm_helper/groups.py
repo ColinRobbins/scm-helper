@@ -148,10 +148,12 @@ class Group(Entity):
             if xtype:
                 if check_type(member, xtype):
                     continue
-                if xtype == CTYPE_SWIMMER:  # if swimmers wanted, allow it to be a coach
-                    if check_type(member, CTYPE_COACH) is False:
-                        msg = f"Group: {self.name}, Type required: {xtype}"
-                        issue(member, E_TYPE, msg)
+                if (
+                    xtype == CTYPE_SWIMMER
+                    and check_type(member, CTYPE_COACH) is False
+                ):
+                    msg = f"Group: {self.name}, Type required: {xtype}"
+                    issue(member, E_TYPE, msg)
 
     def check_age(self, swimmer):
         """Check in right age group."""
