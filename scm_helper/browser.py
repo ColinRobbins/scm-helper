@@ -54,7 +54,6 @@ GENDER = {"M": "Male", "F": "Female"}
 
 def se_check(scm, members):
     """Check members against the SE database."""
-
     home = str(Path.home())
     cookiefile = os.path.join(home, CONFIG_DIR, SE_COOKIES)
 
@@ -173,7 +172,6 @@ def fb_read_url(scm, url):
 
 def scroll(browser):
     """Scroll to end of page."""
-
     # Get scroll height
     last_height = browser.execute_script("return document.body.scrollHeight")
 
@@ -197,7 +195,6 @@ def scroll(browser):
 
 def check_member(browser, member):
     """Check a member."""
-
     notify(f"Checking {member.name}...\n")
 
     try:
@@ -244,7 +241,6 @@ def check_member(browser, member):
 
 def start_browser(scm):
     """Start Browser."""
-
     web_driver = get_config(scm, C_SELENIUM, C_WEB_DRIVER)
     client = get_config(scm, C_SELENIUM, C_BROWSER)
 
@@ -264,7 +260,6 @@ def start_browser(scm):
 
 def read_cookies(browser, cookiefile, url, scm):
     """Read cookies."""
-
     if os.path.isfile(cookiefile):
         browser.get(url)
 
@@ -289,7 +284,6 @@ def read_cookies(browser, cookiefile, url, scm):
 
 def write_cookies(browser, cookiefile, scm):
     """Write cookies."""
-
     cookies = browser.get_cookies()
 
     if cookies:

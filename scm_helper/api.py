@@ -152,7 +152,6 @@ class API:
 
     def initialise(self, password):
         """Initialise."""
-
         if self.ipad:
             password = "dummy"  # Can't to crypto on iPad
 
@@ -458,7 +457,6 @@ class API:
 
     def fix_search(self):
         """fix_search_index."""
-
         home = str(Path.home())
         cfg = os.path.join(home, CONFIG_DIR, "fixed_search.txt")
         if os.path.isfile(cfg) is True:

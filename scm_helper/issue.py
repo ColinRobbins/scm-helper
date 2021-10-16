@@ -424,7 +424,6 @@ HANDLER = None
 
 def issue(xobject, error, msg=None, level=0, msg2=""):
     """Record an issue."""
-
     debug(f"ISSUE: {xobject.name}, {error[MESSAGE]} / {msg}", 5)
 
     if level != -1:
