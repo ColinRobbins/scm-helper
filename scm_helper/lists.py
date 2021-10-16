@@ -67,9 +67,6 @@ class Lists(Entities):
         for xlist in self.newlists:
             xlist.generate_data(self._suffix)
 
-            if xlist.upload() is None:
-                pass  # not sure what to do, just carry on!
-
     def delete(self):
         """Delete all members."""
         super().delete()
