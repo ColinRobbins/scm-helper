@@ -721,7 +721,6 @@ class FacebookThread(threading.Thread):
 
     def run(self):
         """Process a Facebook report."""
-
         fbook = Facebook()
         if wrap(None, fbook.read_data, self.scm) is False:
             messagebox.showerror("Error", "Could not read facebook files")
@@ -847,7 +846,6 @@ class SearchThread(threading.Thread):
 
     def run(self):
         """Run analyser."""
-
         self.gui.set_buttons(DISABLED)
 
         if wrap(None, self.scm.fix_search) is False:

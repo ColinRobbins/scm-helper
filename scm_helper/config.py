@@ -519,7 +519,6 @@ def verify_schema_data(scm):
 
 def check_default(scm):
     """Give warning if config not made."""
-
     msg = ""
     if get_config(scm, C_ROLES, C_ROLE) is None:
         msg += " - No Roles configured\n"
@@ -541,7 +540,6 @@ def check_default(scm):
 
 def delete_schema():
     """Delete configured parameters, so file can be re-read"""
-
     VAR_CONDUCT.clear()
     VAR_GROUP.clear()
     VAR_ISSUE.clear()
