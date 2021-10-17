@@ -569,8 +569,8 @@ class IssueHandler:
     def confirm_email(self):
         """Print email addresses for confirmation errors."""
         matrix = {}
-        for (anissue, anerror) in self.by_error.items():
-            pkg = self.by_error[anissue][anerror]
+        # If errors, check history - big pylint change
+        for pkg in self.by_error.values():
             for line in pkg:
                 _, _, report, _, entity = line
                 if report == R_CONFIRMATION:

@@ -545,7 +545,7 @@ class Record:
         event = row[S_EVENT]
         test = event.split()
 
-        if GENDER.get(test[0], None) is None:
+        if GENDER.get(test[0]) is None:
             notify(f"Line {count}: unknown gender '{test[0]}'\n")
             return
 
@@ -554,7 +554,7 @@ class Record:
         else:
             ages = AGES
 
-        if ages.get(test[1], None) is None:
+        if ages.get(test[1]) is None:
             notify(f"Line {count}: unknown age '{test[1]}'\n")
             return
 
@@ -562,11 +562,11 @@ class Record:
             notify(f"Line {count}: unknown distance '{test[2]}'\n")
             return
 
-        if STROKES.get(test[3], None) is None:
+        if STROKES.get(test[3]) is None:
             notify(f"Line {count}: unknown event '{test[3]}'\n")
             return
 
-        if COURSE.get(test[4], None) is None:
+        if COURSE.get(test[4]) is None:
             notify(f"Line {count}: unknown course '{test[4]}'\n")
             return
 
@@ -844,14 +844,14 @@ class RelayRecord(Record):
     def check_row(self, row, count):
         """Check a row from the records file."""
         event = row[S_EVENT].split()
-        if RELAY_GENDER.get(event[0], None) is None:
+        if RELAY_GENDER.get(event[0]) is None:
             notify(f"Line {count}: unknown gender '{event[0]}'\n")
-        if RELAY_AGES.get(event[1], None) is None:
+        if RELAY_AGES.get(event[1]) is None:
             notify(f"Line {count}: unknown age '{event[1]}'\n")
 
-        dist = RELAY_DISTANCE.get(event[2], None)
+        dist = RELAY_DISTANCE.get(event[2])
         if dist is None:
-            mdist = RELAY_DISTANCE.get(event[2].rstrip("m"), None)
+            mdist = RELAY_DISTANCE.get(event[2].rstrip("m"))
             if mdist is None:
                 notify(f"Line {count}: unknown distance '{event[2]}'\n")
             else:
@@ -859,7 +859,7 @@ class RelayRecord(Record):
 
         if RELAY_STROKES.get(event[3]) is None:
             notify(f"Line {count}: unknown event '{event[3]}'\n")
-        if COURSE.get(event[4], None) is None:
+        if COURSE.get(event[4]) is None:
             notify(f"Line {count}: unknown course '{event[4]}'\n")
 
         jevent = " ".join(event)

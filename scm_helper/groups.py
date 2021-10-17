@@ -178,7 +178,6 @@ class Group(Entity):
                     fix[attr] = "1"
                     member.fixit(fix, f"Add type: {attr}")
 
-
     def check_age(self, swimmer):
         """Check in right age group."""
         mymin = 3
