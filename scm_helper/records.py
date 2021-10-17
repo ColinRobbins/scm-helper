@@ -219,14 +219,14 @@ class Records:
 
             filename = os.path.join(mydir, F_BASELINE)
             if os.path.isfile(filename) is False:
-                with open(filename, FILE_WRITE) as file:
+                with open(filename, FILE_WRITE, encoding="utf8") as file:
                     file.write(DEFAULT_RECORDS)
 
             filename = os.path.splitext(filename)[0]
             filename += HEADER
 
             if os.path.isfile(filename) is False:
-                with open(filename, FILE_WRITE) as file:
+                with open(filename, FILE_WRITE, encoding="utf8") as file:
                     file.write(DEFAULT_HEADER)
 
         except EnvironmentError as error:
@@ -275,7 +275,7 @@ class Records:
         filename = os.path.join(mydir, F_RECORDS)
 
         try:
-            with open(filename, FILE_WRITE) as htmlfile:
+            with open(filename, FILE_WRITE, encoding="utf8") as htmlfile:
                 htmlfile.write(res)
 
         except EnvironmentError as error:
@@ -289,7 +289,7 @@ class Records:
             filename = os.path.join(mydir, F_RELAY_RECORDS)
 
             try:
-                with open(filename, FILE_WRITE) as htmlfile:
+                with open(filename, FILE_WRITE, encoding="utf8") as htmlfile:
                     htmlfile.write(res)
 
             except EnvironmentError as error:
@@ -588,7 +588,7 @@ class Record:
             fdate = os.path.getmtime(filename)
             self.date = time.strftime(PRINT_DATE_FORMAT, time.localtime(fdate))
 
-            with open(filename, newline="") as csvfile:
+            with open(filename, newline="", encoding="utf8") as csvfile:
                 csv_reader = csv.DictReader(csvfile, skipinitialspace=True)
                 self.fieldnames = csv_reader.fieldnames
 
@@ -645,7 +645,7 @@ class Record:
             return
 
         try:
-            with open(self._filename, "w", newline="") as file:
+            with open(self._filename, "w", newline="", encoding="utf8") as file:
                 writer = csv.DictWriter(file, self.fieldnames, extrasaction="ignore")
                 writer.writeheader()
                 for record in sorted(self.records):
@@ -674,7 +674,7 @@ class Record:
         header += HEADER
 
         try:
-            with open(header, FILE_READ) as file:
+            with open(header, FILE_READ, encoding="utf8") as file:
                 prefix = file.read()
 
         except EnvironmentError as error:
