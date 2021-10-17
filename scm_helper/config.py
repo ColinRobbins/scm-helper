@@ -92,6 +92,7 @@ A_DOB = "DOB"
 A_FIRSTNAME = "Firstname"
 A_GUID = "Guid"
 A_ISCOACH = "IsACoach"
+A_ISMASTER = "Masters"
 A_ISPARENT = "IsAParent"
 A_ISVOLUNTEER = "IsAVolunteer"
 A_KNOWNAS = "KnownAs"
@@ -212,6 +213,7 @@ CTYPE_COACH = "coach"
 CTYPE_COMMITTEE = "committee"
 CTYPE_LIFESAVER = "lifesaver"
 CTYPE_LTS = "lts_teacher"
+CTYPE_MASTER = "master"
 CTYPE_OPENWATER = "openwater"
 CTYPE_PARENT = "parent"
 CTYPE_POLO = "waterpolo"
@@ -224,6 +226,7 @@ CTYPES = [
     CTYPE_COMMITTEE,
     CTYPE_LIFESAVER,
     CTYPE_LTS,
+    CTYPE_MASTER,
     CTYPE_OPENWATER,
     CTYPE_PARENT,
     CTYPE_POLO,
@@ -519,7 +522,6 @@ def verify_schema_data(scm):
 
 def check_default(scm):
     """Give warning if config not made."""
-
     msg = ""
     if get_config(scm, C_ROLES, C_ROLE) is None:
         msg += " - No Roles configured\n"
@@ -541,7 +543,6 @@ def check_default(scm):
 
 def delete_schema():
     """Delete configured parameters, so file can be re-read"""
-
     VAR_CONDUCT.clear()
     VAR_GROUP.clear()
     VAR_ISSUE.clear()

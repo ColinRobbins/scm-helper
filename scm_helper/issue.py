@@ -424,7 +424,6 @@ HANDLER = None
 
 def issue(xobject, error, msg=None, level=0, msg2=""):
     """Record an issue."""
-
     debug(f"ISSUE: {xobject.name}, {error[MESSAGE]} / {msg}", 5)
 
     if level != -1:
@@ -468,7 +467,9 @@ def debug_trace(level):
     """Decorator to provide a trace capability."""
 
     def wrap(func):
+        """The wrapper..."""
         def wrapped_f(self, *args):
+            """The wrapped..."""
             name = func.__name__
             xclass = self.__class__.__name__
             xtime = datetime.now().time()

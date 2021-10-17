@@ -219,14 +219,14 @@ class Records:
 
             filename = os.path.join(mydir, F_BASELINE)
             if os.path.isfile(filename) is False:
-                with open(filename, FILE_WRITE) as file:
+                with open(filename, FILE_WRITE, encoding="utf8") as file:
                     file.write(DEFAULT_RECORDS)
 
             filename = os.path.splitext(filename)[0]
             filename += HEADER
 
             if os.path.isfile(filename) is False:
-                with open(filename, FILE_WRITE) as file:
+                with open(filename, FILE_WRITE, encoding="utf8") as file:
                     file.write(DEFAULT_HEADER)
 
         except EnvironmentError as error:
@@ -234,7 +234,6 @@ class Records:
 
     def read_baseline(self):
         """Read baseline."""
-
         home = str(Path.home())
         mydir = os.path.join(home, CONFIG_DIR, RECORDS_DIR)
 
@@ -251,7 +250,6 @@ class Records:
 
     def read_newtimes(self, filename):
         """Read swimtimes."""
-
         times = SwimTimes(self.records)
         res = times.merge_times(filename, self.scm)
         if self.records.newrecords:
@@ -265,7 +263,6 @@ class Records:
 
     def create_html(self):
         """Create HTML files for records."""
-
         home = str(Path.home())
         mydir = os.path.join(home, CONFIG_DIR, RECORDS_DIR)
 
@@ -278,7 +275,7 @@ class Records:
         filename = os.path.join(mydir, F_RECORDS)
 
         try:
-            with open(filename, FILE_WRITE) as htmlfile:
+            with open(filename, FILE_WRITE, encoding="utf8") as htmlfile:
                 htmlfile.write(res)
 
         except EnvironmentError as error:
@@ -292,7 +289,7 @@ class Records:
             filename = os.path.join(mydir, F_RELAY_RECORDS)
 
             try:
-                with open(filename, FILE_WRITE) as htmlfile:
+                with open(filename, FILE_WRITE, encoding="utf8") as htmlfile:
                     htmlfile.write(res)
 
             except EnvironmentError as error:
@@ -358,12 +355,10 @@ class SwimTimes:
 
     def process_row(self, row, count):
         """Process and merge a row into records."""
-
         # pylint: disable=too-many-locals
         # pylint: disable=too-many-return-statements
         # pylint: disable=too-many-branches
         # pylint: disable=too-many-statements
-
         if "Swimmer" not in row:
             if count == 1:
                 notify("Is the header line missing in the CSV?\n")
@@ -503,7 +498,6 @@ class Record:
 
     def __init__(self):
         """Initilaise Records handling."""
-
         self._filename = None
         self.scm = None
         self.records = {}
@@ -548,7 +542,6 @@ class Record:
 
     def check_row(self, row, count):
         """Check a row from the records file."""
-
         event = row[S_EVENT]
         test = event.split()
 
@@ -595,7 +588,7 @@ class Record:
             fdate = os.path.getmtime(filename)
             self.date = time.strftime(PRINT_DATE_FORMAT, time.localtime(fdate))
 
-            with open(filename, newline="") as csvfile:
+            with open(filename, newline="", encoding="utf8") as csvfile:
                 csv_reader = csv.DictReader(csvfile, skipinitialspace=True)
                 self.fieldnames = csv_reader.fieldnames
 
@@ -631,7 +624,6 @@ class Record:
 
     def write_records(self):
         """Write the new reords, and backup old."""
-
         try:
             home = str(Path.home())
             today = datetime.datetime.now()
@@ -653,7 +645,7 @@ class Record:
             return
 
         try:
-            with open(self._filename, "w", newline="") as file:
+            with open(self._filename, "w", newline="", encoding="utf8") as file:
                 writer = csv.DictWriter(file, self.fieldnames, extrasaction="ignore")
                 writer.writeheader()
                 for record in sorted(self.records):
@@ -670,7 +662,7 @@ class Record:
         notify(f"Updated records file: {self._filename}\n")
 
     def create_html(self, arg_gender, arg_strokes, arg_ages, arg_relay):
-        """create a records file."""
+        """Create a records file."""
         # Get prefix
 
         # pylint: disable=too-many-locals
@@ -682,7 +674,7 @@ class Record:
         header += HEADER
 
         try:
-            with open(header, FILE_READ) as file:
+            with open(header, FILE_READ, encoding="utf8") as file:
                 prefix = file.read()
 
         except EnvironmentError as error:
@@ -801,9 +793,7 @@ class Record:
 
     def print_record(self, stroke, dist, age, course, gender):
         """Print a record."""
-
         # pylint: disable=too-many-arguments
-
         lookup = f"{gender} {age} {dist} {stroke} {course}"
 
         if lookup in self.records:
@@ -853,7 +843,6 @@ class RelayRecord(Record):
 
     def check_row(self, row, count):
         """Check a row from the records file."""
-
         event = row[S_EVENT].split()
         if RELAY_GENDER.get(event[0], None) is None:
             notify(f"Line {count}: unknown gender '{event[0]}'\n")
@@ -868,7 +857,7 @@ class RelayRecord(Record):
             else:
                 event[2] = str(mdist)
 
-        if RELAY_STROKES.get(event[3], None) is None:
+        if RELAY_STROKES.get(event[3]) is None:
             notify(f"Line {count}: unknown event '{event[3]}'\n")
         if COURSE.get(event[4], None) is None:
             notify(f"Line {count}: unknown course '{event[4]}'\n")
@@ -889,10 +878,8 @@ class RelayRecord(Record):
 
     def print_record(self, stroke, dist, age, course, gender):
         """Print a record."""
-
         # pylint: disable=too-many-arguments
         # pylint: disable=too-many-locals
-
         lookup = f"{gender} {age} {dist} {stroke} {course}"
         if lookup in self.records:
             record = self.records[lookup]
@@ -920,7 +907,6 @@ class RelayRecord(Record):
 
 def convert_time(xtime):
     """Convert a time to a number of seconds."""
-
     try:
         hms = xtime.split(":")
         if len(hms) == 2:

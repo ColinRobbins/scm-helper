@@ -12,6 +12,7 @@ from scm_helper.config import (
     A_FIRSTNAME,
     A_GUID,
     A_ISCOACH,
+    A_ISMASTER,
     A_ISPARENT,
     A_ISVOLUNTEER,
     A_KNOWNAS,
@@ -40,6 +41,7 @@ from scm_helper.config import (
     C_TYPES,
     CTYPE_COACH,
     CTYPE_COMMITTEE,
+    CTYPE_MASTER,
     CTYPE_PARENT,
     CTYPE_POLO,
     CTYPE_SWIMMER,
@@ -251,7 +253,7 @@ class Member(Entity):
         return False
 
     def get_conduct_name(self, find):
-        """get a code of conduct."""
+        """Get a code of conduct."""
         for code in self._conduct:
             if find == code.name:
                 return code
@@ -460,6 +462,10 @@ class Member(Entity):
 
         if self.is_swimmer:
             self.check_type(CTYPE_SWIMMER)
+            found = True
+
+        if self.is_master:
+            self.check_type(CTYPE_MASTER)
             found = True
 
         if self.is_synchro:
@@ -832,6 +838,14 @@ class Member(Entity):
     def is_coach(self):
         """Is it a Coach."""
         isa = self.check_attribute(A_ISCOACH)
+        if isa == "1":
+            return True
+        return False
+
+    @property
+    def is_master(self):
+        """Is it a Master."""
+        isa = self.check_attribute(A_ISMASTER)
         if isa == "1":
             return True
         return False

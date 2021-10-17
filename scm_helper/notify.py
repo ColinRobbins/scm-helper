@@ -15,8 +15,6 @@ WHERE = None
 
 def notify(msg):
     """Notify on STDERR."""
-    # pylint: disable=global-statement
-    global WHERE
     if WHERE:
         WHERE.insert(END, msg)
         WHERE.see(END)
@@ -36,8 +34,6 @@ def set_notify(where):
 
 def interact(msg):
     """Get user input."""
-    # pylint: disable=global-statement
-    global WHERE
     if WHERE:
         prefix = "SCM-Helper: input needed"
         return simpledialog.askstring(prefix, msg, parent=WHERE.master)
@@ -47,8 +43,6 @@ def interact(msg):
 
 def interact_yesno(msg):
     """Get user input."""
-    # pylint: disable=global-statement
-    global WHERE
     if WHERE:
         msg += "?"
         return messagebox.askyesno("SCM-Helper: Yes / No?", msg, parent=WHERE.master)

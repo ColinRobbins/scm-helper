@@ -29,7 +29,7 @@ def create_default_config():
         if os.path.exists(cfg) is False:
             os.mkdir(cfg)
 
-        with open(cfg_file, FILE_WRITE) as file:
+        with open(cfg_file, FILE_WRITE, encoding="utf8") as file:
             file.write(content)
 
         notify("Done.\n")

@@ -265,7 +265,6 @@ sessions:
   absence:  120  # Number of days allowed to miss a sesssion
   register: 60   # Alert if register not taken for this many days
   session:
-  session:
     'Club Session':
         groups:
           - 'Development'

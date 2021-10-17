@@ -5,7 +5,8 @@ import sys
 # Black directive
 # fmt: off
 sys.path.append("scm_helper/")
-assert sys.version_info >= (3, 6)
+if sys.version_info < (3, 6):
+    raise AssertionError
 
 # pylint: disable=wrong-import-position
 from scm_helper import main

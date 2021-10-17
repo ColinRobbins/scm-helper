@@ -17,6 +17,9 @@ from scm_helper.config import (
     C_TYPE,
     CTYPE_COACH,
     CTYPE_SWIMMER,
+    CTYPE_MASTER,
+    CTYPE_SYNCHRO,
+    CTYPE_POLO,
     EXCEPTION_GROUPNOSESSION,
     EXCEPTION_NONSWIMMINGMASTER,
     SCM_CSV_DATE_FORMAT,
@@ -149,9 +152,32 @@ class Group(Entity):
                 if check_type(member, xtype):
                     continue
                 if xtype == CTYPE_SWIMMER:  # if swimmers wanted, allow it to be a coach
-                    if check_type(member, CTYPE_COACH) is False:
-                        msg = f"Group: {self.name}, Type required: {xtype}"
-                        issue(member, E_TYPE, msg)
+                    if check_type(member, CTYPE_COACH) is True:
+                        continue
+                msg = f"Group: {self.name}, Type required: {xtype} (fixable)"
+                issue(member, E_TYPE, msg)
+                fix = {}
+                attr = None
+
+                if xtype == CTYPE_MASTER:
+                    attr = "Masters"
+
+                if xtype == CTYPE_SWIMMER:
+                    attr = "IsASwimmer"
+
+                if xtype == CTYPE_SYNCHRO:
+                    attr = "SynchronisedSwimming"
+
+                if xtype == CTYPE_COACH:
+                    attr = "IsACoach"
+
+                if xtype == CTYPE_POLO:
+                    attr = "WaterPolo"
+
+                if attr:
+                    fix[attr] = "1"
+                    member.fixit(fix, f"Add type: {attr}")
+
 
     def check_age(self, swimmer):
         """Check in right age group."""

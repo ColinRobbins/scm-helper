@@ -104,8 +104,8 @@ class API:
             notify(nmsg)
 
         try:
-            with open(cfg) as file:
-                self._config = []
+            with open(cfg, encoding="utf8") as file:
+                self._config = None
                 delete_schema()
                 self._config = yaml.safe_load(file)
         except EnvironmentError:
@@ -152,7 +152,6 @@ class API:
 
     def initialise(self, password):
         """Initialise."""
-
         if self.ipad:
             password = "dummy"  # Can't to crypto on iPad
 
@@ -458,7 +457,6 @@ class API:
 
     def fix_search(self):
         """fix_search_index."""
-
         home = str(Path.home())
         cfg = os.path.join(home, CONFIG_DIR, "fixed_search.txt")
         if os.path.isfile(cfg) is True:
@@ -469,7 +467,7 @@ class API:
         if res is False:
             return res
 
-        with open(cfg, mode="w") as file:
+        with open(cfg, mode="w", encoding="utf8") as file:
             file.write(f"Fixed index: {self.today}")
 
         msg = "Index recreated - give SCM time to process changes before testing."
