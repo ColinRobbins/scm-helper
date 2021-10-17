@@ -849,7 +849,7 @@ class Member(Entity):
         if isa == "1":
             return True
         return False
-        
+
     @property
     def is_parent(self):
         """Is it a swimmer."""
