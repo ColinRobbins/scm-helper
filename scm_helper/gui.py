@@ -901,7 +901,7 @@ class Edit(Frame):  # pylint: disable=too-many-ancestors
         self.text_pad = scrolledtext.ScrolledText(top_group, width=80, height=40)
         self.text_pad.grid(row=0, column=0, sticky=NSEW)
 
-        with open(self.file, FILE_READ) as file:
+        with open(self.file, FILE_READ, encoding="utf8") as file:
             contents = file.read()
             self.text_pad.insert("1.0", contents)
             file.close()
@@ -923,7 +923,7 @@ class Edit(Frame):  # pylint: disable=too-many-ancestors
 
     def save_command(self):
         """Save."""
-        with open(self.file, FILE_WRITE) as file:
+        with open(self.file, FILE_WRITE, encoding="utf8") as file:
             # slice off the last character from get, as an extra return is added
             data = self.text_pad.get("1.0", END)
             file.write(data)
