@@ -15,8 +15,8 @@ jobs:
         python-version: 3.9
     - name: Install dependencies
       run: |
-        python -m pip install --upgrade pip
-        pip3 install pylint schema reqeusts pyyaml cryptography func-timeout selenium
+        python3 -m pip install --upgrade pip
+        python3 -m pip install pylint reqeusts pyyaml cryptography func-timeout selenium schema
         ],
     - name: Analysing the code with pylint
       run: |
