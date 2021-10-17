@@ -234,7 +234,6 @@ class Records:
 
     def read_baseline(self):
         """Read baseline."""
-
         home = str(Path.home())
         mydir = os.path.join(home, CONFIG_DIR, RECORDS_DIR)
 
@@ -251,7 +250,6 @@ class Records:
 
     def read_newtimes(self, filename):
         """Read swimtimes."""
-
         times = SwimTimes(self.records)
         res = times.merge_times(filename, self.scm)
         if self.records.newrecords:
@@ -265,7 +263,6 @@ class Records:
 
     def create_html(self):
         """Create HTML files for records."""
-
         home = str(Path.home())
         mydir = os.path.join(home, CONFIG_DIR, RECORDS_DIR)
 
@@ -358,12 +355,10 @@ class SwimTimes:
 
     def process_row(self, row, count):
         """Process and merge a row into records."""
-
         # pylint: disable=too-many-locals
         # pylint: disable=too-many-return-statements
         # pylint: disable=too-many-branches
         # pylint: disable=too-many-statements
-
         if "Swimmer" not in row:
             if count == 1:
                 notify("Is the header line missing in the CSV?\n")
@@ -503,7 +498,6 @@ class Record:
 
     def __init__(self):
         """Initilaise Records handling."""
-
         self._filename = None
         self.scm = None
         self.records = {}
@@ -548,7 +542,6 @@ class Record:
 
     def check_row(self, row, count):
         """Check a row from the records file."""
-
         event = row[S_EVENT]
         test = event.split()
 
@@ -631,7 +624,6 @@ class Record:
 
     def write_records(self):
         """Write the new reords, and backup old."""
-
         try:
             home = str(Path.home())
             today = datetime.datetime.now()
@@ -801,9 +793,7 @@ class Record:
 
     def print_record(self, stroke, dist, age, course, gender):
         """Print a record."""
-
         # pylint: disable=too-many-arguments
-
         lookup = f"{gender} {age} {dist} {stroke} {course}"
 
         if lookup in self.records:
@@ -853,7 +843,6 @@ class RelayRecord(Record):
 
     def check_row(self, row, count):
         """Check a row from the records file."""
-
         event = row[S_EVENT].split()
         if RELAY_GENDER.get(event[0], None) is None:
             notify(f"Line {count}: unknown gender '{event[0]}'\n")
@@ -868,7 +857,7 @@ class RelayRecord(Record):
             else:
                 event[2] = str(mdist)
 
-        if RELAY_STROKES.get(event[3], None) is None:
+        if RELAY_STROKES.get(event[3]) is None:
             notify(f"Line {count}: unknown event '{event[3]}'\n")
         if COURSE.get(event[4], None) is None:
             notify(f"Line {count}: unknown course '{event[4]}'\n")
@@ -889,10 +878,8 @@ class RelayRecord(Record):
 
     def print_record(self, stroke, dist, age, course, gender):
         """Print a record."""
-
         # pylint: disable=too-many-arguments
         # pylint: disable=too-many-locals
-
         lookup = f"{gender} {age} {dist} {stroke} {course}"
         if lookup in self.records:
             record = self.records[lookup]
@@ -920,7 +907,6 @@ class RelayRecord(Record):
 
 def convert_time(xtime):
     """Convert a time to a number of seconds."""
-
     try:
         hms = xtime.split(":")
         if len(hms) == 2:
