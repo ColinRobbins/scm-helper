@@ -65,7 +65,7 @@ class API:
         # pylint: disable=too-many-instance-attributes
         # Need them all!
         self._options = {}
-        self._config = None
+        self._config = []
         self._key = None
         self.groups = None
         self.lists = None
@@ -105,7 +105,7 @@ class API:
 
         try:
             with open(cfg) as file:
-                self._config = None
+                self._config = []
                 delete_schema()
                 self._config = yaml.safe_load(file)
         except EnvironmentError:
@@ -123,7 +123,7 @@ class API:
     def get_config(self, password):
         """Get API key."""
         # pylint: disable=import-outside-toplevel
-        if self._config is None:
+        if len(self._config) == 0:
             if self.get_config_file() is False:
                 return False
 
