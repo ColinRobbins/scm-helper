@@ -720,7 +720,6 @@ class BackupThread(threading.Thread):
 
 class FacebookThread(threading.Thread):
     """Thread for Facebook."""
-
     def __init__(self, gui):
         """Initialise."""
         threading.Thread.__init__(self)
