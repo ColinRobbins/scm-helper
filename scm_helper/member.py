@@ -253,7 +253,7 @@ class Member(Entity):
         return False
 
     def get_conduct_name(self, find):
-        """get a code of conduct."""
+        """Get a code of conduct."""
         for code in self._conduct:
             if find == code.name:
                 return code

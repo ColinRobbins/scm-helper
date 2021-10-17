@@ -662,7 +662,7 @@ class Record:
         notify(f"Updated records file: {self._filename}\n")
 
     def create_html(self, arg_gender, arg_strokes, arg_ages, arg_relay):
-        """create a records file."""
+        """Create a records file."""
         # Get prefix
 
         # pylint: disable=too-many-locals
