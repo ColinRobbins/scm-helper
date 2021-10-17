@@ -24,6 +24,7 @@ class Files:
         fname = ntpath.basename(self._filename)
         output = ""
 
+        # pylint: disable=consider-using-dict-items
         for error in self._error:
             output += f"{error}:\n"
             for name, extra in sorted(self._error[error]):

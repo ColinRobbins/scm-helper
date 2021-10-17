@@ -71,7 +71,7 @@ class ScmGui:
         self.issues = None
         self.scm = None
         self.gotdata = False
-        self.thread = None
+        self.thread = False
         self.grouping = None
         self.reports = None
         self.menus = []
@@ -266,7 +266,8 @@ class ScmGui:
         if self.scm_init() is False:
             return
 
-        self.thread = AnalysisThread(self, True).start()
+        self.thread = True
+        AnalysisThread(self, True).start()
 
     def swim_england(self):
         """Process Swim England File."""
@@ -312,7 +313,8 @@ class ScmGui:
         if self.prep_report(False) is False:
             return
 
-        self.thread = SwimEnglandThread(self).start()
+        self.thread = True
+        SwimEnglandThread(self).start()
 
     def facebook(self):
         """Window for reports."""
@@ -322,7 +324,8 @@ class ScmGui:
         if self.prep_report(False) is False:
             return
 
-        self.thread = FacebookThread(self).start()
+        self.thread = True
+        FacebookThread(self).start()
 
     def confirm(self):
         """Confirm email Report."""
@@ -384,7 +387,8 @@ class ScmGui:
         if self.thread:
             return  # already running
 
-        self.thread = UpdateThread(self).start()
+        self.thread = True
+        UpdateThread(self).start()
 
     def analyse_window(self):
         """Window for analysis result."""
@@ -394,7 +398,8 @@ class ScmGui:
         if self.scm_init() is False:
             return
 
-        self.thread = AnalysisThread(self, False).start()
+        self.thread = True
+        AnalysisThread(self, False).start()
 
     def analyse_enter(self, event):
         """Window for analysis result."""
@@ -410,7 +415,8 @@ class ScmGui:
             messagebox.showerror("Error", "Analyse data first, before fixing (2)")
             return
 
-        self.thread = SearchThread(self).start()
+        self.thread = True
+        SearchThread(self).start()
 
     def fixit(self):
         """Window for reports."""
@@ -441,7 +447,8 @@ class ScmGui:
         if self.scm_init() is False:
             return
 
-        self.thread = BackupThread(self).start()
+        self.thread = True
+        BackupThread(self).start()
 
     def clear_data(self):
         """Prepare to rerun."""
@@ -596,7 +603,8 @@ class ScmGui:
         if self.thread:
             return  # already running
 
-        self.thread = RecordThread(self, newtimes).start()
+        self.thread = True
+        RecordThread(self, newtimes).start()
 
 
 class AnalysisThread(threading.Thread):
@@ -638,23 +646,23 @@ class AnalysisThread(threading.Thread):
             if wrap(None, self.scm.decrypt, where) is False:
                 messagebox.showerror("Error", f"Cannot read from archive: {where}")
                 self.gui.master.after(AFTER, self.gui.set_normal)
-                self.gui.thread = None
+                self.gui.thread = False
                 return
         else:
             if wrap(None, self.scm.get_data, False) is False:
                 messagebox.showerror("Analysis", "Failed to read data")
                 self.gui.master.after(AFTER, self.gui.set_normal)
-                self.gui.thread = None
+                self.gui.thread = False
                 return
 
         if wrap(10, self.scm.linkage) is False:
             self.gui.master.after(AFTER, self.gui.set_normal)
-            self.gui.thread = None
+            self.gui.thread = False
             return
 
         if wrap(10, self.scm.analyse) is False:
             self.gui.master.after(AFTER, self.gui.set_normal)
-            self.gui.thread = None
+            self.gui.thread = False
             return
 
         self.gui.gotdata = True
@@ -675,7 +683,7 @@ class AnalysisThread(threading.Thread):
         self.gui.issue_window.lift()
         self.gui.master.after(AFTER, self.gui.set_normal)
 
-        self.gui.thread = None
+        self.gui.thread = False
 
         debug("Analyse Thread complete, result posted", 8)
 
@@ -707,12 +715,11 @@ class BackupThread(threading.Thread):
         self.gui.master.update_idletasks()
         self.gui.master.after(AFTER, self.gui.set_normal)
 
-        self.gui.thread = None
+        self.gui.thread = False
 
 
 class FacebookThread(threading.Thread):
     """Thread for Facebook."""
-
     def __init__(self, gui):
         """Initialise."""
         threading.Thread.__init__(self)
@@ -832,7 +839,7 @@ class UpdateThread(threading.Thread):
         self.gui.master.update_idletasks()
         self.gui.master.after(AFTER, self.gui.set_normal)
 
-        self.gui.thread = None
+        self.gui.thread = False
 
 
 class SearchThread(threading.Thread):
@@ -891,7 +898,7 @@ class Edit(Frame):  # pylint: disable=too-many-ancestors
         self.text_pad = scrolledtext.ScrolledText(top_group, width=80, height=40)
         self.text_pad.grid(row=0, column=0, sticky=NSEW)
 
-        with open(self.file, FILE_READ) as file:
+        with open(self.file, FILE_READ, encoding="utf8") as file:
             contents = file.read()
             self.text_pad.insert("1.0", contents)
             file.close()
@@ -913,7 +920,7 @@ class Edit(Frame):  # pylint: disable=too-many-ancestors
 
     def save_command(self):
         """Save."""
-        with open(self.file, FILE_WRITE) as file:
+        with open(self.file, FILE_WRITE, encoding="utf8") as file:
             # slice off the last character from get, as an extra return is added
             data = self.text_pad.get("1.0", END)
             file.write(data)

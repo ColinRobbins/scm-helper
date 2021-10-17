@@ -65,7 +65,7 @@ class API:
         # pylint: disable=too-many-instance-attributes
         # Need them all!
         self._options = {}
-        self._config = None
+        self._config = []
         self._key = None
         self.groups = None
         self.lists = None
@@ -104,7 +104,7 @@ class API:
             notify(nmsg)
 
         try:
-            with open(cfg) as file:
+            with open(cfg, encoding="utf8") as file:
                 self._config = None
                 delete_schema()
                 self._config = yaml.safe_load(file)
@@ -123,7 +123,7 @@ class API:
     def get_config(self, password):
         """Get API key."""
         # pylint: disable=import-outside-toplevel
-        if self._config is None:
+        if len(self._config) == 0:
             if self.get_config_file() is False:
                 return False
 
@@ -467,7 +467,7 @@ class API:
         if res is False:
             return res
 
-        with open(cfg, mode="w") as file:
+        with open(cfg, mode="w", encoding="utf8") as file:
             file.write(f"Fixed index: {self.today}")
 
         msg = "Index recreated - give SCM time to process changes before testing."

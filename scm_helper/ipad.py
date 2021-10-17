@@ -44,7 +44,7 @@ class Crypto:
         if not os.path.exists(filename):
             return self.get_key(filename)
         try:
-            with open(filename, READ_BINARY) as file:
+            with open(filename, READ_BINARY, encoding="utf8") as file:
                 data = file.read()
             file.close()
             return data.strip()
@@ -58,7 +58,7 @@ class Crypto:
         apikey = interact("No SCM API keyfile, creating one.  Enter API key: ")
 
         try:
-            with open(filename, WRITE_BINARY) as file:
+            with open(filename, WRITE_BINARY, encoding="utf8") as file:
                 file.write(apikey)
             file.close()
 

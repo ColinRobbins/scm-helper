@@ -269,7 +269,7 @@ def read_cookies(browser, cookiefile, url, scm):
                 cookies = pickle.loads(data)
         else:
             try:
-                with open(cookiefile, FILE_READ) as file:
+                with open(cookiefile, FILE_READ, encoding="utf8") as file:
                     data = file.read()
                     cookies = json.loads(data)
 
@@ -293,7 +293,7 @@ def write_cookies(browser, cookiefile, scm):
             return
 
         try:
-            with open(cookiefile, FILE_WRITE) as file:
+            with open(cookiefile, FILE_WRITE, encoding="utf8") as file:
                 opt = json.dumps(cookies)
                 file.write(opt)
 

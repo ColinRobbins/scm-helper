@@ -158,22 +158,22 @@ class Group(Entity):
                 issue(member, E_TYPE, msg)
                 fix = {}
                 attr = None
-                
+
                 if xtype == CTYPE_MASTER:
                     attr = "Masters"
-            
+
                 if xtype == CTYPE_SWIMMER:
                     attr = "IsASwimmer"
-            
+
                 if xtype == CTYPE_SYNCHRO:
                     attr = "SynchronisedSwimming"
-            
+
                 if xtype == CTYPE_COACH:
                     attr = "IsACoach"
-            
+
                 if xtype == CTYPE_POLO:
                     attr = "WaterPolo"
-            
+
                 if attr:
                     fix[attr] = "1"
                     member.fixit(fix, f"Add type: {attr}")

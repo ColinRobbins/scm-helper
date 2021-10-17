@@ -569,27 +569,27 @@ class IssueHandler:
     def confirm_email(self):
         """Print email addresses for confirmation errors."""
         matrix = {}
-        for anissue in self.by_error:
-            for anerror in self.by_error[anissue]:
-                pkg = self.by_error[anissue][anerror]
-                for line in pkg:
-                    _, _, report, _, entity = line
-                    if report == R_CONFIRMATION:
-                        key = "Other"
-                        if entity.is_parent:
-                            key = "parent"
-                        if entity.is_polo:
-                            key = "polo"
-                        if entity.is_synchro:
-                            key = "synchro"
-                        if entity.is_swimmer:
-                            key = "swimmer"
-                        if key in matrix:
-                            matrix[key].append(entity)
-                        else:
-                            matrix[key] = [entity]
+        for (anissue, anerror) in self.by_error.items():
+            pkg = self.by_error[anissue][anerror]
+            for line in pkg:
+                _, _, report, _, entity = line
+                if report == R_CONFIRMATION:
+                    key = "Other"
+                    if entity.is_parent:
+                        key = "parent"
+                    if entity.is_polo:
+                        key = "polo"
+                    if entity.is_synchro:
+                        key = "synchro"
+                    if entity.is_swimmer:
+                        key = "swimmer"
+                    if key in matrix:
+                        matrix[key].append(entity)
+                    else:
+                        matrix[key] = [entity]
 
         res = ""
+        # pylint: disable=consider-using-dict-items
         for msg in matrix:
             res += f"{msg}: \n"
             for entity in matrix[msg]:
