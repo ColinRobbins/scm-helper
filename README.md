@@ -3,6 +3,7 @@ Helper tool for [Swim Club Manager](https://www.swimclubmanager.co.uk/).
 
 [![CodeFactor](https://www.codefactor.io/repository/github/colinrobbins/scm-helper/badge)](https://www.codefactor.io/repository/github/colinrobbins/scm-helper)
 [![DeepSource](https://deepsource.io/gh/ColinRobbins/scm-helper.svg/?label=active+issues&show_trend=true&token=GfFGxV7M9Pcu6PBd1k5joIlX)](https://deepsource.io/gh/ColinRobbins/scm-helper/?ref=repository-badge)
+[![Pylint](https://github.com/ColinRobbins/scm-helper/actions/workflows/pylint.yml/badge.svg)](https://github.com/ColinRobbins/scm-helper/actions/workflows/pylint.yml)
 
 Download latest [Windows Version](https://github.com/ColinRobbins/scm-helper/raw/master/download/scm.zip).
 # Features
