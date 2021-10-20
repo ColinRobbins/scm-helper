@@ -259,7 +259,7 @@ class ScmGui:
         return True
 
     def open_archive(self):
-        """Open Archive file."""
+        """Open archive file."""
         if self.thread:
             return  # already running
 
