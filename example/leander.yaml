@@ -96,7 +96,7 @@ parents:
         child: 21     # Age at which child should not longer have a parent
     login:
         mandatory: True         # must have a login to SCM
-        
+
 #############################################
 # Configure Member Checks
 #############################################
@@ -118,7 +118,7 @@ members:
 coaches:
     role:
         mandatory: False # All coaches, must be in a coach role
-   
+
 #############################################
 # Configure Roles
 #############################################
@@ -360,7 +360,7 @@ facebook:
     - https://www.facebook.com/groups/NottinghamLeander/
     - https://www.facebook.com/groups/LeanderMasters/
     - https://www.facebook.com/groups/NottinghamLeanderWaterPolo/
-    
+ 
 #############################################
 # Lists
 #
@@ -454,7 +454,7 @@ types:
 jobtitle:
   ignore:
     - "Vice President"      # If VP, dont need to be a committee member.
-    
+
 #############################################
 # Issue handling
 #
@@ -476,7 +476,7 @@ swim_england:
   base_url: "https://www.swimmingresults.org/"
   check_url: "https://www.swimmingresults.org/membershipcheck/member_details.php?myiref="
   test_id: 516115
-  
+
 ##################################################
 # Selenium
 # Used for Swim England and Facebook checking
@@ -497,7 +497,7 @@ records:
     se_only: true
     all_ages_u18: false
     overall_fastest: false
-    
+
 # Debug level
 # Set to 0 for no debug info
 # A setting of 1 is recommended while getting it working!
