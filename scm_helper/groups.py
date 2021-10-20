@@ -50,7 +50,7 @@ class Groups(Entities):
 
 
 class Group(Entity):
-    """A group."""
+    """Class for a group."""
 
     def linkage(self, members):
         """Link members."""
