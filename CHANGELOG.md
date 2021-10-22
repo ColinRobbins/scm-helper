@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.7.7
+22/10/2021
+* Pylint tidying
+* Fix for issue [43](https://github.com/ColinRobbins/scm-helper/issues/43)
+
 ## 1.7.6
 25/09/2021
 * Added support for "Master" type.

@@ -54,6 +54,15 @@ def check_coach_permissions(coach, role):
     if coach.print_exception(EXCEPTION_PERMISSIONS) is False:
         return
 
+    fix = {}
+    fixed = False
+    data = coach.data["SessionRestrictions"]
+    if data:
+        fix["SessionRestrictions"] = data.copy()
+    else:
+        fix["SessionRestrictions"] = []
+    msg = "Fix permissions:\n"
+
     for session in coach.coach_sessions:
         match = False
         for permission in coach.restricted:
@@ -62,14 +71,9 @@ def check_coach_permissions(coach, role):
                 break
         if match is False:
             issue(coach, E_PERMISSION_MISSING, session.full_name)
-            fix = {}
-            data = coach.data["SessionRestrictions"]
-            if data:
-                fix["SessionRestrictions"] = data.copy()
-            else:
-                fix["SessionRestrictions"] = []
             fix["SessionRestrictions"].append({A_GUID: session.guid})
-            coach.fixit(fix, f"Add permission for {session.name}")
+            msg += f"  Add {session.name}\n"
+            fixed = True
 
     for permission in coach.restricted:
         match = False
@@ -79,9 +83,9 @@ def check_coach_permissions(coach, role):
                 break
         if match is False:
             issue(coach, E_PERMISSION_EXTRA, permission.full_name)
-            fix = {}
-            data = coach.data["SessionRestrictions"]
-            debug(f"Session restriction deletion - before:\n{data}\n", 9)
-            fix["SessionRestrictions"] = data.copy()
             fix["SessionRestrictions"].remove({A_GUID: permission.guid})
-            coach.fixit(fix, f"Remove permission for {permission.name}")
+            fixed = True
+            msg += f"  Remove {session.name}\n"
+
+    if fixed:
+        coach.fixit(fix, msg)
