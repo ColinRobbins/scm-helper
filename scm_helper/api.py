@@ -477,18 +477,10 @@ class API:
 
     def fix_secat(self):
         """fix_se categories."""
-        home = str(Path.home())
-        cfg = os.path.join(home, CONFIG_DIR, "fixed_secat.txt")
-        if os.path.isfile(cfg) is True:
-            notify("Not required - already fixed")
-            return False
 
         res = self.members.fix_secat()
         if res is False:
             return res
-
-        with open(cfg, mode="w", encoding="utf8") as file:
-            file.write(f"Fixed index: {self.today}")
 
         msg = "Fixed SE Catagories"
         notify(f"\n{msg}\n")

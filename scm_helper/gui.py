@@ -764,6 +764,8 @@ class FacebookThread(threading.Thread):
         self.gui.report_text.config(state=DISABLED)
         self.gui.notify_text.config(state=DISABLED)
         self.gui.report_window.lift()
+        
+        self.gui.thread = False
 
 
 class RecordThread(threading.Thread):
@@ -811,6 +813,7 @@ class RecordThread(threading.Thread):
             return
 
         self.gui.notify_text.config(state=DISABLED)
+        self.gui.thread = False
 
 
 class SwimEnglandThread(threading.Thread):
@@ -833,6 +836,7 @@ class SwimEnglandThread(threading.Thread):
         self.gui.report_text.config(state=DISABLED)
         self.gui.notify_text.config(state=DISABLED)
         self.gui.report_window.lift()
+        self.gui.thread = False
 
 
 class UpdateThread(threading.Thread):
@@ -878,6 +882,7 @@ class SearchThread(threading.Thread):
             return
 
         self.gui.set_buttons(NORMAL)
+        self.gui.thread = False
 
 
 class SecatThread(threading.Thread):
@@ -899,6 +904,7 @@ class SecatThread(threading.Thread):
             return
 
         self.gui.set_buttons(NORMAL)
+        self.gui.thread = False
 
 
 class Edit(Frame):  # pylint: disable=too-many-ancestors

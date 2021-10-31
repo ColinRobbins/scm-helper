@@ -50,6 +50,11 @@ E_COACH_WITH_SESSIONS = {
     MESSAGE: "Coach with swim sessions in profile",
     REVERSE: False,
     REPORT: R_COACH}
+E_CATEGORY = {
+    NAME: "E_CATEGORY",
+    MESSAGE: "Unknown SE Category",
+    REVERSE: False,
+    REPORT: R_MEMBER}
 E_COACH_ROLE = {
     NAME: "E_COACH_ROLE",
     MESSAGE: "In coach role, but not a coach",

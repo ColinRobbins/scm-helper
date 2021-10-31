@@ -2,7 +2,8 @@
 
 ## 1.7.8
 31/10/2021
-* Global edit of SE Numbers to new names
+* Global edit of SE Numbers to [new names](https://github.com/ColinRobbins/scm-helper/issues/44)
+* Check SE Numbers are valid
 
 ## 1.7.7
 22/10/2021

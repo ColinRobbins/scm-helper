@@ -57,6 +57,7 @@ from scm_helper.config import (
 )
 from scm_helper.entity import Entity, get_date, print_all
 from scm_helper.issue import (
+    E_CATEGORY,
     E_CONFIRMATION_EXPIRED,
     E_DATE,
     E_DBS_EXPIRED,
@@ -102,7 +103,27 @@ CAT_MAPPING = {
     "CAT 1": "Club Train",
     "CAT 2": "Club Compete",
     "CAT 3": "Club Support",
+    "Train": "Club Train",
+    "Compete": "Club Compete",
+    "Support": "Club Support",
+    "train": "Club Train",
+    "compete": "Club Compete",
+    "support": "Club Support",
+    "club train": "Club Train",
+    "club compete": "Club Compete",
+    "club support": "Club Support",
+    "club Train": "Club Train",
+    "club Compete": "Club Compete",
+    "club Support": "Club Support",
+    "Club train": "Club Train",
+    "Club compete": "Club Compete",
+    "Club support": "Club Support",
 }
+CAT_VALID = [
+    "Club Train",
+    "Club Compete",
+    "Club Support",
+]
 
 
 class Member(Entity):
@@ -448,6 +469,15 @@ class Member(Entity):
             fix["JobTitle"] = xtype.title()
             self.fixit(fix, f"Add jobtitle: {name}")
 
+    def check_category(self):
+        """Check the member categoty."""
+        cat = self.data[A_ASA_CATEGORY]
+        if cat == "":
+            return
+        
+        if cat not in CAT_VALID:
+            issue(self, E_CATEGORY, cat)
+
     @debug_trace(5)
     def analyse(self):
         """Analyse the member."""
@@ -507,6 +537,9 @@ class Member(Entity):
         if self.is_committee_member:
             found = True
             self.check_type(CTYPE_COMMITTEE)
+            
+        if A_ASA_CATEGORY in self.data:
+            self.check_category()
 
         if self.jobtitle:
             if (
@@ -586,7 +619,7 @@ class Member(Entity):
 
             notify("Success.\n")
 
-        return False
+        return True
 
     def add_group(self, group):
         """Add a group to the swimmer."""
