@@ -135,7 +135,7 @@ class Members(Entities):
             if res is False:
                 return False
         return True
-        
+
     def fix_search(self):
         """fix_search_index."""
         for member in self.entities:

@@ -474,7 +474,7 @@ class API:
         notify(f"\n{msg}\n")
 
         return True
-        
+
     def fix_secat(self):
         """fix_se categories."""
         home = str(Path.home())

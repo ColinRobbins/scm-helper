@@ -468,6 +468,7 @@ def debug_trace(level):
 
     def wrap(func):
         """The wrapper..."""
+
         def wrapped_f(self, *args):
             """The wrapped..."""
             name = func.__name__

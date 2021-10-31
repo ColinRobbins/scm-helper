@@ -433,7 +433,7 @@ class ScmGui:
 
         self.thread = True
         SecatThread(self).start()
-        
+
     def fixit(self):
         """Window for reports."""
         if self.thread:
@@ -879,6 +879,7 @@ class SearchThread(threading.Thread):
 
         self.gui.set_buttons(NORMAL)
 
+
 class SecatThread(threading.Thread):
     """Thread to run SE Catagories."""
 
@@ -898,7 +899,8 @@ class SecatThread(threading.Thread):
             return
 
         self.gui.set_buttons(NORMAL)
-        
+
+
 class Edit(Frame):  # pylint: disable=too-many-ancestors
     """Class to edit a frame."""
 
