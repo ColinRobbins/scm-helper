@@ -167,6 +167,10 @@ class ScmGui:
         cmd.add_command(label=label, command=self.fix_search, state=DISABLED)
         self.menus.append([cmd, label])
 
+        label = "Update SE Categories"
+        cmd.add_command(label=label, command=self.fix_secat, state=DISABLED)
+        self.menus.append([cmd, label])
+
         menubar.add_cascade(label="Edit", menu=cmd)
 
         cmd = Menu(menubar, tearoff=0)
@@ -418,6 +422,18 @@ class ScmGui:
         self.thread = True
         SearchThread(self).start()
 
+    def fix_secat(self):
+        """Window for reports."""
+        if self.thread:
+            return  # already running
+
+        if self.gotdata is False:
+            messagebox.showerror("Error", "Analyse data first, before fixing (3)")
+            return
+
+        self.thread = True
+        SecatThread(self).start()
+        
     def fixit(self):
         """Window for reports."""
         if self.thread:
@@ -863,7 +879,26 @@ class SearchThread(threading.Thread):
 
         self.gui.set_buttons(NORMAL)
 
+class SecatThread(threading.Thread):
+    """Thread to run SE Catagories."""
 
+    def __init__(self, gui):
+        """Initialise."""
+        threading.Thread.__init__(self)
+        self.gui = gui
+        self.scm = gui.scm
+
+    def run(self):
+        """Run analyser."""
+        self.gui.set_buttons(DISABLED)
+
+        if wrap(None, self.scm.fix_secat) is False:
+            messagebox.showerror("Error", "fix SE Category error")
+            self.gui.set_buttons(NORMAL)
+            return
+
+        self.gui.set_buttons(NORMAL)
+        
 class Edit(Frame):  # pylint: disable=too-many-ancestors
     """Class to edit a frame."""
 

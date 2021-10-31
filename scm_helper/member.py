@@ -551,6 +551,42 @@ class Member(Entity):
                 notify("Success.\n")
 
         return True
+        
+    def fix_secat(self):
+        """fix_se categories."""
+        
+        CAT_MAPPING = {
+            "1": "Club Train",
+            "2": "Club Compete",
+            "3": "Club Support",
+            "CAT 1": "Club Train",
+            "CAT 2": "Club Compete",
+            "CAT 3": "Club Support",
+        }
+        
+        if A_ASA_CATEGORY not in self.data:
+            return False
+        
+        cat = self.data[A_ASA_CATEGORY]
+
+        if cat in CAT_MAPPING:
+
+            self.newdata = {}
+            self.newdata[A_GUID] = self.guid
+
+            notify(f"Modify Category for {self.name} to {CAT_MAPPING[cat]}...")
+
+            self.newdata[A_ASA_CATEGORY] = CAT_MAPPING[cat]
+
+            res = self.scm.api_write(self, False)
+            if res is False:
+                notify("Hit a snag!\n")
+                return False
+
+            notify("Success.\n")
+            
+        return False
+        
 
     def add_group(self, group):
         """Add a group to the swimmer."""

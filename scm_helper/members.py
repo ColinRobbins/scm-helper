@@ -128,6 +128,14 @@ class Members(Entities):
             # TODO remove when API fixed.
             member.linkage2()
 
+    def fix_secat(self):
+        """fix_se categories."""
+        for member in self.entities:
+            res = member.fix_secat()
+            if res is False:
+                return False
+        return True
+        
     def fix_search(self):
         """fix_search_index."""
         for member in self.entities:

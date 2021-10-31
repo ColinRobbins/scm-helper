@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.7.8
+31/10/2021
+* Global edit of SE Numbers to new names
+
 ## 1.7.7
 22/10/2021
 * Pylint tidying
