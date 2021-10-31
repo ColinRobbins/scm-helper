@@ -474,7 +474,7 @@ class Member(Entity):
         cat = self.data[A_ASA_CATEGORY]
         if cat == "":
             return
-        
+
         if cat not in CAT_VALID:
             issue(self, E_CATEGORY, cat)
 
@@ -537,7 +537,7 @@ class Member(Entity):
         if self.is_committee_member:
             found = True
             self.check_type(CTYPE_COMMITTEE)
-            
+
         if A_ASA_CATEGORY in self.data:
             self.check_category()
 

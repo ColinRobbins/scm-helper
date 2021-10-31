@@ -764,7 +764,7 @@ class FacebookThread(threading.Thread):
         self.gui.report_text.config(state=DISABLED)
         self.gui.notify_text.config(state=DISABLED)
         self.gui.report_window.lift()
-        
+
         self.gui.thread = False
 
 
