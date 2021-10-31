@@ -6,7 +6,7 @@ Helper tool for [Swim Club Manager](https://www.swimclubmanager.co.uk/).
 [![Pylint](https://github.com/ColinRobbins/scm-helper/actions/workflows/pylint.yml/badge.svg)](https://github.com/ColinRobbins/scm-helper/actions/workflows/pylint.yml)
 
 
-Download latest [Windows Version](https://github.com/ColinRobbins/scm-helper/raw/master/download/scm.zip).
+Download latest [Windows Version](https://github.com/ColinRobbins/scm-helper/raw/main/download/scm.zip).
 # Features
 * Works on [Windows](https://github.com/ColinRobbins/scm-helper/wiki/Windows-Installation), [Linux](https://github.com/ColinRobbins/scm-helper/wiki/Linux-Installation) or [Apple](https://github.com/ColinRobbins/scm-helper/wiki/Apple-Installation) devices
 * [Backup and Restore](https://github.com/ColinRobbins/scm-helper/wiki/Backup-and-Restore) of SCM data
