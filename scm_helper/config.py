@@ -81,6 +81,7 @@ EXCEPTION_SE_NAME = "API: Name in SE Database OK"
 SCM_DATE_FORMAT = "%Y-%m-%d"
 PRINT_DATE_FORMAT = "%d-%m-%Y"
 SCM_CSV_DATE_FORMAT = "%d/%m/%Y"
+SCM_ALT_CSV_DATE_FORMAT = "%d %b %Y"
 
 # SCM Data Attributes
 A_ACTIVE = "Active"

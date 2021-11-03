@@ -20,6 +20,7 @@ from scm_helper.config import (
     FILE_WRITE,
     PRINT_DATE_FORMAT,
     RECORDS_DIR,
+    SCM_ALT_CSV_DATE_FORMAT,
     SCM_CSV_DATE_FORMAT,
     get_config,
 )
@@ -286,17 +287,17 @@ class Records:
 
         if self.relay:
             res = self.relay.create_html(RELAY_GENDER, RELAY_STROKES, RELAY_AGES, True)
-            filename = os.path.join(mydir, F_RELAY_RECORDS)
+            r_filename = os.path.join(mydir, F_RELAY_RECORDS)
 
             try:
-                with open(filename, FILE_WRITE, encoding="utf8") as htmlfile:
+                with open(r_filename, FILE_WRITE, encoding="utf8") as htmlfile:
                     htmlfile.write(res)
 
             except EnvironmentError as error:
-                notify(f"Cannot create HTML file: {filename}\n{error}\n")
+                notify(f"Cannot create HTML file: {r_filename}\n{error}\n")
                 return False
 
-            notify(f"Created {filename}...\n")
+            notify(f"Created {r_filename}...\n")
 
         return filename
 
@@ -430,7 +431,10 @@ class SwimTimes:
         if swimage and swimage >= 25:
             age_eoy = True  # Masters are always EOY
 
-        swimdate = datetime.datetime.strptime(xdate, SCM_CSV_DATE_FORMAT)
+        try:
+            swimdate = datetime.datetime.strptime(xdate, SCM_CSV_DATE_FORMAT)
+        except:
+            swimdate = datetime.datetime.strptime(xdate, SCM_ALT_CSV_DATE_FORMAT)
 
         if member and age_eoy:
             yob = member.dob.year

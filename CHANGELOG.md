@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.8.1
+03/11/2021
+* Fix recording procesing [bug](https://github.com/ColinRobbins/scm-helper/issues/45)
+
 ## 1.8
 31/10/2021
 * Global edit of SE Numbers to [new names](https://github.com/ColinRobbins/scm-helper/issues/44)
