@@ -748,7 +748,8 @@ class FacebookThread(threading.Thread):
         fbook = Facebook()
         if wrap(None, fbook.read_data, self.scm) is False:
             messagebox.showerror("Error", "Could not read facebook files")
-            self.gui.report_text.config(state=DISABLED)
+            if self.gui.report_text:
+                self.gui.report_text.config(state=DISABLED)
             self.gui.notify_text.config(state=DISABLED)
             return
 

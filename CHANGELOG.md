@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.8.2
+* Fix error message when using wrong Chrome driver
+
 ## 1.8.1
 03/11/2021
 * Fix recording procesing [bug](https://github.com/ColinRobbins/scm-helper/issues/45)
