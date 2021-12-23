@@ -433,10 +433,10 @@ class SwimTimes:
 
         try:
             swimdate = datetime.datetime.strptime(xdate, SCM_CSV_DATE_FORMAT)
-        except:
+        except ValueError:
             try:
                 swimdate = datetime.datetime.strptime(xdate, SCM_ALT_CSV_DATE_FORMAT)
-            except:
+            except ValueError:
                 swimdate = datetime.datetime.strptime(xdate, "%d-%b-%y")
 
         if member and age_eoy:
