@@ -1,6 +1,9 @@
 # Changelog
 
 ## 1.8.2
+* Fix date format from excel
+
+## 1.8.2
 * Fix error message when using wrong Chrome driver
 
 ## 1.8.1
