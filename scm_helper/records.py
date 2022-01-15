@@ -530,7 +530,7 @@ class Record:
 
         sloc = swim[S_LOCATION]
         newrec = (
-            f"New record: {check_event}, {swim[S_NAME]}, {swim[S_TIMESTR]}, {sloc}\n"
+            f"New record: {check_event}, {swim[S_NAME]}, {swim[S_TIMESTR]}, {sloc}, {swim[S_DATE]}\n"
         )
         self.newrecords[check_event] = newrec
 

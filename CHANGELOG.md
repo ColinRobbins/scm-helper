@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.8.3
+* Fix SE Category Matching
+
 ## 1.8.2
 * Fix date format from excel
 
