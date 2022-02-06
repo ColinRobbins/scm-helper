@@ -105,8 +105,10 @@ A_PARENTS = "Parents"
 A_USERNAME = "Username"
 
 # Config parameters
+C_25M = "25m"
 C_ABSENCE = "absence"
 C_AGE = "age"
+C_AGES = "ages"
 C_AGE_EOY = "age_eoy"
 C_ALIGN_QUARTER = "align_quarter"
 C_ALL_AGES = "all_ages_u18"
@@ -140,6 +142,7 @@ C_EXCLUDE_MAX = "exclude_from_max_sessions"
 C_EXPIRY = "expiry"
 C_FACEBOOK = "facebook"
 C_FILES = "files"
+C_FILTER = "filter"
 C_GENDER = "gender"
 C_GRACE = "grace"
 C_GROUP = "group"
@@ -175,6 +178,7 @@ C_NEWSTARTER = "newstarter"
 C_NO_CLUB_SESSIONS = "no_club_sessions"
 C_NO_SESSION_ALLOWED = "no_session_allowed"
 C_NO_SESSIONS = "no_sessions"
+C_OPENAGE = "open_age"
 C_OVERALL_FASTEST = "overall_fastest"
 C_PARENT = "parent"
 C_PARENTS = "parents"
@@ -182,6 +186,7 @@ C_PASSWORD = "password"
 C_PREFIX = "prefix"
 C_PRIORITY = "priority"
 C_RECORDS = "records"
+C_RECORDSET = "recordset"
 C_REGISTER = "register"
 C_RELAY = "relay"
 C_ROLE = "role"
@@ -439,6 +444,19 @@ SCHEMA = Schema(
             Optional(C_ALL_AGES): bool,
             Optional(C_OVERALL_FASTEST): bool,
         },
+        Optional(C_RECORDSET): {
+            str: {
+                Optional(C_RELAY): bool,
+                Optional(C_AGE_EOY): bool,
+                Optional(C_VERIFY): bool,
+                Optional(C_SE_ONLY): bool,
+                Optional(C_25M): bool,
+                Optional(C_ALL_AGES): bool,
+                Optional(C_OVERALL_FASTEST): bool,
+                Optional(C_FILTER): [str],
+                Optional(C_OPENAGE): int,
+            }
+        }
     }
 )
 

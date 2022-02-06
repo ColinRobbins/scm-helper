@@ -8,10 +8,14 @@ from pathlib import Path
 from shutil import copyfile
 
 from scm_helper.config import (
+    C_25M,
     C_AGE_EOY,
     C_ALL_AGES,
+    C_FILTER,
+    C_OPENAGE,
     C_OVERALL_FASTEST,
     C_RECORDS,
+    C_RECORDSET,
     C_RELAY,
     C_SE_ONLY,
     C_VERIFY,
@@ -41,6 +45,7 @@ RELAY_STROKES = {
 }
 
 DISTANCE = [
+    "25m",
     "50m",
     "100m",
     "200m",
@@ -50,10 +55,10 @@ DISTANCE = [
 ]
 
 STROKE_DISTANCE = {
-    "Free": ["50m", "100m", "200m", "400m", "800m", "1500m"],
-    "Back": ["50m", "100m", "200m"],
-    "Breast": ["50m", "100m", "200m"],
-    "Fly": ["50m", "100m", "200m"],
+    "Free": ["25m", "50m", "100m", "200m", "400m", "800m", "1500m"],
+    "Back": ["25m", "50m", "100m", "200m"],
+    "Breast": ["25m", "50m", "100m", "200m"],
+    "Fly": ["25m", "50m", "100m", "200m"],
     "Medley": ["100m", "200m", "400m"],
 }
 
@@ -155,11 +160,10 @@ S_LOCATION = "location"
 S_DATE = "date"
 
 F_BASELINE = "records.csv"
-F_RECORDS = "records.html"
 F_RELAY_BASELINE = "relay_records.csv"
-F_RELAY_RECORDS = "relay_records.html"
 
 HEADER = "_header.txt"
+
 FOOTER = """<p>
 Records page created using
 <a href="https://github.com/ColinRobbins/scm-helper">SCM Helper</a>.
@@ -203,13 +207,14 @@ WRAP_TABLE_CLOSE = " </div></div>\n"
 
 
 class Records:
-    """Read and process record files."""
+    """Read and process all record files."""
 
-    def __init__(self, scm):
+    def __init__(self, scm, new_times):
         """Initialise."""
         self.scm = scm
-        self.records = None
-        self.relay = None
+        self.folder = None
+        self.recordset = []
+        self.newtimes = new_times
 
         try:
             home = str(Path.home())
@@ -217,42 +222,130 @@ class Records:
 
             if os.path.exists(mydir) is False:
                 os.mkdir(mydir)
-
-            filename = os.path.join(mydir, F_BASELINE)
-            if os.path.isfile(filename) is False:
-                with open(filename, FILE_WRITE, encoding="utf8") as file:
-                    file.write(DEFAULT_RECORDS)
-
-            filename = os.path.splitext(filename)[0]
-            filename += HEADER
-
-            if os.path.isfile(filename) is False:
-                with open(filename, FILE_WRITE, encoding="utf8") as file:
-                    file.write(DEFAULT_HEADER)
+                
+            self.folder = mydir
 
         except EnvironmentError as error:
-            notify(f"Cannot create default records:\n{error}\n")
+            notify(f"Cannot create default record directory:\n{error}\n")
 
+    def process_records(self):
+        """Process all records files."""
+        
+        cfg_set = get_config(self.scm, C_RECORDSET)
+        
+        if cfg_set:
+            for cfg in cfg_set:
+                newset = RecordFile(self.scm, self.folder, cfg)
+                self.recordset.append(newset)
+        else:  # Backwards compat...
+            newset = RecordFile(self.scm, self.folder, None)
+            self.recordset.append(newset)
+    
+        error = False
+        for recordset in self.recordset:
+            res = recordset.read_baseline()
+            if res:
+                create = True
+                if self.newtimes:
+                    create = recordset.read_newtimes(self.newtimes)
+                if create:
+                    if recordset.create_html() is False:
+                        error = True
+                else:
+                    error = True
+            else:
+                error = True
+                    
+        if error:
+            return False
+        return True
+            
+    def delete(self):
+        """Delete."""
+        for record in self.recordset:
+            del record
+
+class RecordFile:
+    """Read and process record files."""
+
+    def __init__(self, scm, mydir, cfg):
+        """Initialise."""
+        self.scm = scm
+        self.records = None
+        self.relay = None
+        self.is_relay = False
+        self.folder = mydir
+        self.record_files = []
+        self.mydir = mydir
+        self.cfg = cfg
+        self.csvfile = None
+        self.header = None
+        self.html = None
+        
+        if cfg is None:
+            cfg_relay = get_config(self.scm, C_RECORDS, C_RELAY)
+            if cfg_relay:
+                baseline = F_RELAY_BASELINE
+                self.is_relay = True
+            else:
+                baseline = F_BASELINE
+                self.is_relay = False
+        else:
+            baseline = cfg + ".csv"
+            cfg_relay = get_config(self.scm, C_RECORDSET, self.cfg, C_RELAY)
+            if cfg_relay:
+                self.is_relay = True
+            else:
+                self.is_relay = False
+                
+        c_open = get_config(self.scm, C_RECORDSET, self.cfg, C_OPENAGE)
+        if c_open:
+            ALL_AGES[f"{c_open}-99"] = 0
+            AGES[f"{c_open}-99"] = 0
+
+        try:
+            self.csvfile = os.path.join(mydir, baseline)
+            if os.path.isfile(self.csvfile) is False:
+                with open(self.csvfile, FILE_WRITE, encoding="utf8") as file:
+                    file.write(DEFAULT_RECORDS)
+
+            self.header = os.path.splitext(self.csvfile)[0]
+            self.header += HEADER
+
+            self.html = os.path.splitext(self.csvfile)[0]
+            self.html += ".html"
+
+            if os.path.isfile(self.header) is False:
+                with open(self.header, FILE_WRITE, encoding="utf8") as file:
+                    file.write(DEFAULT_HEADER)
+                    
+        except EnvironmentError as error:
+            notify(f"Cannot create default records:\n{error}\n")
+            
     def read_baseline(self):
         """Read baseline."""
-        home = str(Path.home())
-        mydir = os.path.join(home, CONFIG_DIR, RECORDS_DIR)
-
-        self.records = Record()
-        filename = os.path.join(mydir, F_BASELINE)
-        res = self.records.read_baseline(filename, self.scm)
-
-        if res and get_config(self.scm, C_RECORDS, C_RELAY):
+        
+        if self.is_relay:
             self.relay = RelayRecord()
-            filename = os.path.join(mydir, F_RELAY_BASELINE)
-            res = self.relay.read_baseline(filename, self.scm)
+            res = self.relay.read_baseline(self.csvfile, self.scm, self.cfg)
+        else:
+            self.records = Record()
+            res = self.records.read_baseline(self.csvfile, self.scm, self.cfg)
 
         return res
 
-    def read_newtimes(self, filename):
+    def read_newtimes(self, newtimes):
         """Read swimtimes."""
-        times = SwimTimes(self.records)
-        res = times.merge_times(filename, self.scm)
+        
+        if self.is_relay:
+            return True
+        
+        times = SwimTimes(self.records, self.cfg)
+        res = times.merge_times(newtimes, self.scm)
+        
+        if res is False:
+            return False
+            
         if self.records.newrecords:
             for record in sorted(self.records.newrecords):
                 notify(self.records.newrecords[record])
@@ -260,46 +353,41 @@ class Records:
             self.records.write_records()
 
         del times
-        return res
+        return True
+
 
     def create_html(self):
         """Create HTML files for records."""
-        home = str(Path.home())
-        mydir = os.path.join(home, CONFIG_DIR, RECORDS_DIR)
-
-        if get_config(self.scm, C_RECORDS, C_ALL_AGES):
+        mydir = self.folder
+        
+        
+        cfg_set = get_config(self.scm, C_RECORDSET)
+        if cfg_set:
+            age_check = get_config(self.scm, C_RECORDSET, self.cfg, C_ALL_AGES)
+        else:
+            age_check = get_config(self.scm, C_RECORDS, C_ALL_AGES)
+            
+        if age_check:
             ages = ALL_AGES
         else:
             ages = AGES
 
-        res = self.records.create_html(GENDER, STROKES, ages, False)
-        filename = os.path.join(mydir, F_RECORDS)
+        if self.is_relay:
+            res = self.relay.create_html(RELAY_GENDER, RELAY_STROKES, RELAY_AGES, True)
+        else:
+            res = self.records.create_html(GENDER, STROKES, ages, False)
 
         try:
-            with open(filename, FILE_WRITE, encoding="utf8") as htmlfile:
+            with open(self.html, FILE_WRITE, encoding="utf8") as htmlfile:
                 htmlfile.write(res)
 
         except EnvironmentError as error:
-            notify(f"Cannot create HTML file: {filename}\n{error}\n")
+            notify(f"Cannot create HTML file: {self.html}\n{error}\n")
             return False
 
-        notify(f"Created {filename}...\n")
+        notify(f"Created {self.html}...\n")
 
-        if self.relay:
-            res = self.relay.create_html(RELAY_GENDER, RELAY_STROKES, RELAY_AGES, True)
-            r_filename = os.path.join(mydir, F_RELAY_RECORDS)
-
-            try:
-                with open(r_filename, FILE_WRITE, encoding="utf8") as htmlfile:
-                    htmlfile.write(res)
-
-            except EnvironmentError as error:
-                notify(f"Cannot create HTML file: {r_filename}\n{error}\n")
-                return False
-
-            notify(f"Created {r_filename}...\n")
-
-        return filename
+        return True
 
     def delete(self):
         """Delete."""
@@ -307,15 +395,18 @@ class Records:
         if self.relay:
             del self.relay
 
-
 class SwimTimes:
     """Read SwimTimes, and merge into Records."""
 
-    def __init__(self, records):
+    def __init__(self, records, cfg):
         """Initilaise Records handling."""
         self._filename = None
         self.scm = None
         self.records = records
+        self.filter = None
+        self.cfg = cfg
+        
+        
 
     def merge_times(self, filename, scm):
         """Read Facebook file."""
@@ -323,6 +414,8 @@ class SwimTimes:
         self.scm = scm
 
         notify(f"Reading {filename}...\n")
+        
+        self.filter = get_config(self.scm, C_RECORDSET, self.cfg, C_FILTER)
 
         try:
             count = 0
@@ -376,6 +469,16 @@ class SwimTimes:
         location = row["Location"]
         gender = row["Gender"]
         gala = row["Gala"]
+        
+        want = True
+        if self.filter:
+            want = False
+            for item in self.filter:
+                if re.search(item, location, re.IGNORECASE):
+                    want = True
+                    
+        if want is False:
+            return
 
         swimage = None
         if row["Age"]:
@@ -385,9 +488,6 @@ class SwimTimes:
             return
 
         if "NT" in timestr:
-            return
-
-        if dist == "25m":
             return
 
         if relay == "Yes":
@@ -411,10 +511,24 @@ class SwimTimes:
             debug(f"Line {count}: Unknown stroke {stroke}", 1)
             return
 
-        verify = get_config(self.scm, C_RECORDS, C_VERIFY)
-        age_eoy = get_config(self.scm, C_RECORDS, C_AGE_EOY)
-        se_only = get_config(self.scm, C_RECORDS, C_SE_ONLY)
-        all_ages = get_config(self.scm, C_RECORDS, C_ALL_AGES)
+        cfg_set = get_config(self.scm, C_RECORDSET)
+        if cfg_set:
+            verify = get_config(self.scm, C_RECORDSET, self.cfg, C_VERIFY)
+            age_eoy = get_config(self.scm, C_RECORDSET, self.cfg, C_AGE_EOY)
+            se_only = get_config(self.scm, C_RECORDSET, self.cfg, C_SE_ONLY)
+            all_ages = get_config(self.scm, C_RECORDSET, self.cfg, C_ALL_AGES)
+            c_25m = get_config(self.scm, C_RECORDSET, self.cfg, C_25M)
+            c_open = get_config(self.scm, C_RECORDSET, self.cfg, C_OPENAGE)
+        else:
+            verify = get_config(self.scm, C_RECORDS, C_VERIFY)
+            age_eoy = get_config(self.scm, C_RECORDS, C_AGE_EOY)
+            se_only = get_config(self.scm, C_RECORDS, C_SE_ONLY)
+            all_ages = get_config(self.scm, C_RECORDS, C_ALL_AGES)
+            c_25m = False
+            c_open = False
+            
+        if c_25m is False and dist == "25m":
+            return
 
         member = None
         if asa not in self.scm.members.by_asa:
@@ -471,6 +585,13 @@ class SwimTimes:
                 end_age = 24
             else:
                 end_age = start_age + 4
+        
+        if c_open:
+            if end_age > c_open:
+                end_age = 99
+                
+            if start_age > c_open:
+                start_age = c_open
 
         agegroup = f"{start_age}-{end_age}"
 
@@ -533,8 +654,14 @@ class Record:
             f"New record: {check_event}, {swim[S_NAME]}, {swim[S_TIMESTR]}, {sloc}, {swim[S_DATE]}\n"
         )
         self.newrecords[check_event] = newrec
+        
+        cfg_set = get_config(self.scm, C_RECORDSET)
+        if cfg_set:
+            overall = get_config(self.scm, C_RECORDSET, self.cfg, C_OVERALL_FASTEST)
+        else:
+            overall = get_config(self.scm, C_RECORDS, C_OVERALL_FASTEST)
 
-        if get_config(self.scm, C_RECORDS, C_OVERALL_FASTEST):
+        if overall:
             split_event = swim[S_EVENT].split()
             split_event[1] = OVERALL
             o_event = " ".join(str(item) for item in split_event)
@@ -556,7 +683,13 @@ class Record:
             notify(f"Line {count}: unknown gender '{test[0]}'\n")
             return
 
-        if get_config(self.scm, C_RECORDS, C_ALL_AGES):
+        cfg_set = get_config(self.scm, C_RECORDSET)
+        if cfg_set:
+            c_all_ages = get_config(self.scm, C_RECORDSET, self.cfg, C_ALL_AGES)
+        else:
+            c_all_ages = get_config(self.scm, C_RECORDS, C_ALL_AGES)
+        
+        if c_all_ages:
             ages = ALL_AGES
         else:
             ages = AGES
@@ -585,10 +718,11 @@ class Record:
         row[S_FTIME] = convert_time(row[S_TIMESTR])
         self.records[event] = row
 
-    def read_baseline(self, filename, scm):
+    def read_baseline(self, filename, scm, cfg):
         """Read Facebook file."""
         self._filename = filename
         self.scm = scm
+        self.cfg = cfg
 
         try:
             count = 0
@@ -690,7 +824,15 @@ class Record:
 
         res = prefix
 
-        overall = get_config(self.scm, C_RECORDS, C_OVERALL_FASTEST)
+        cfg_set = get_config(self.scm, C_RECORDSET)
+        if cfg_set:
+            overall = get_config(self.scm, C_RECORDSET, self.cfg, C_OVERALL_FASTEST)
+            c_25m = get_config(self.scm, C_RECORDSET, self.cfg, C_25M)
+        else:
+            overall = get_config(self.scm, C_RECORDS, C_OVERALL_FASTEST)
+            c_25m = False
+
+        
         if overall is None:
             overall = False
 
@@ -707,14 +849,19 @@ class Record:
                 for dist in loopdist:
                     o_age = ""
                     tag = TAG_INNER_ODD
+                    
+                    if dist == "25m" and c_25m is False:
+                        continue
+                    
                     for age in arg_ages:
 
                         if overall is False:
                             if age == OVERALL:
                                 continue
 
+                        
                         if (arg_relay is False) and (arg_ages[age] == 0):
-                            continue
+                           continue
 
                         opt = ""
                         opt_sc = self.print_record(stroke, dist, age, "25", gender)

@@ -237,13 +237,16 @@ def cmd(argv=None):
         sys.exit()
 
     if scm.option("--records"):
-        record = Records(scm)
-        if record.read_baseline() is False:
-            sys.exit(2)
-        if scm.option("--newtimes"):
-            if record.read_newtimes(scm.option("--newtimes")) is False:
-                sys.exit(2)
-        record.create_html()
+        
+        record = Records(scm, None)
+        filename = scm.option("--newtimes")
+        if filename:
+            record = Records(scm, filename)
+        else:
+            record = Records(scm, None)
+            
+        record.process_records()
+
         sys.exit()
 
     scm.analyse()

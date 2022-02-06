@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.9
+* Add support for filters in records
+
 ## 1.8.3
 * Fix SE Category Matching
 

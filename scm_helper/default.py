@@ -353,6 +353,7 @@ issues:
 ##################################################
 
 #records:
+#  record:
 #    relay: false
 #    age_eoy: true   # Calculate age at EOY, not age from SCM export file (where possible)
 #    verify: true  # Check a club member at time of swim (where possible)
