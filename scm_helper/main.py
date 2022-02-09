@@ -237,14 +237,14 @@ def cmd(argv=None):
         sys.exit()
 
     if scm.option("--records"):
-        
+
         record = Records(scm, None)
         filename = scm.option("--newtimes")
         if filename:
             record = Records(scm, filename)
         else:
             record = Records(scm, None)
-            
+
         record.process_records()
 
         sys.exit()

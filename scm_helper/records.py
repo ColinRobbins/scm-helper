@@ -66,6 +66,7 @@ RELAY_DISTANCE = {"200": 200, "400": 400, "800": 800}
 PRINT_DISTANCE = {"200": "4 x 50", "400": "4 x 100", "800": "4 x 200"}
 OVERALL = "Overall"
 
+
 AGES = {
     OVERALL: 1,
     "6-7": 0,
@@ -222,7 +223,7 @@ class Records:
 
             if os.path.exists(mydir) is False:
                 os.mkdir(mydir)
-                
+
             self.folder = mydir
 
         except EnvironmentError as error:
@@ -230,9 +231,9 @@ class Records:
 
     def process_records(self):
         """Process all records files."""
-        
+
         cfg_set = get_config(self.scm, C_RECORDSET)
-        
+
         if cfg_set:
             for cfg in cfg_set:
                 newset = RecordFile(self.scm, self.folder, cfg)
@@ -240,7 +241,7 @@ class Records:
         else:  # Backwards compat...
             newset = RecordFile(self.scm, self.folder, None)
             self.recordset.append(newset)
-    
+
         error = False
         for recordset in self.recordset:
             res = recordset.read_baseline()
@@ -255,15 +256,16 @@ class Records:
                     error = True
             else:
                 error = True
-                    
+
         if error:
             return False
         return True
-            
+
     def delete(self):
         """Delete."""
         for record in self.recordset:
             del record
+
 
 class RecordFile:
     """Read and process record files."""
@@ -281,7 +283,8 @@ class RecordFile:
         self.csvfile = None
         self.header = None
         self.html = None
-        
+        self.ages = None
+
         if cfg is None:
             cfg_relay = get_config(self.scm, C_RECORDS, C_RELAY)
             if cfg_relay:
@@ -298,10 +301,23 @@ class RecordFile:
             else:
                 self.is_relay = False
                 
+        cfg_set = get_config(self.scm, C_RECORDSET)
+        if cfg_set:
+            all_ages = get_config(self.scm, C_RECORDSET, self.cfg, C_ALL_AGES)
+        else:
+            all_ages = get_config(self.scm, C_RECORDS, C_ALL_AGES)
+
+        if all_ages:
+            self.ages = ALL_AGES.copy()
+        else:
+            self.ages = AGES.copy()
+
         c_open = get_config(self.scm, C_RECORDSET, self.cfg, C_OPENAGE)
+
         if c_open:
-            ALL_AGES[f"{c_open}-99"] = 0
+            self.ages[f"{c_open}-99"] = 0
             AGES[f"{c_open}-99"] = 0
+            ALL_AGES[f"{c_open}-99"] = 0
 
         try:
             self.csvfile = os.path.join(mydir, baseline)
@@ -318,34 +334,34 @@ class RecordFile:
             if os.path.isfile(self.header) is False:
                 with open(self.header, FILE_WRITE, encoding="utf8") as file:
                     file.write(DEFAULT_HEADER)
-                    
+
         except EnvironmentError as error:
             notify(f"Cannot create default records:\n{error}\n")
-            
+
     def read_baseline(self):
         """Read baseline."""
-        
+
         if self.is_relay:
-            self.relay = RelayRecord()
+            self.relay = RelayRecord(self.ages)
             res = self.relay.read_baseline(self.csvfile, self.scm, self.cfg)
         else:
-            self.records = Record()
+            self.records = Record(self.ages)
             res = self.records.read_baseline(self.csvfile, self.scm, self.cfg)
 
         return res
 
     def read_newtimes(self, newtimes):
         """Read swimtimes."""
-        
+
         if self.is_relay:
             return True
-        
+
         times = SwimTimes(self.records, self.cfg)
-        res = times.merge_times(newtimes, self.scm)
-        
+        res = times.merge_times(newtimes, self.scm, self.ages)
+
         if res is False:
             return False
-            
+
         if self.records.newrecords:
             for record in sorted(self.records.newrecords):
                 notify(self.records.newrecords[record])
@@ -355,27 +371,14 @@ class RecordFile:
         del times
         return True
 
-
     def create_html(self):
         """Create HTML files for records."""
         mydir = self.folder
-        
-        
-        cfg_set = get_config(self.scm, C_RECORDSET)
-        if cfg_set:
-            age_check = get_config(self.scm, C_RECORDSET, self.cfg, C_ALL_AGES)
-        else:
-            age_check = get_config(self.scm, C_RECORDS, C_ALL_AGES)
-            
-        if age_check:
-            ages = ALL_AGES
-        else:
-            ages = AGES
 
         if self.is_relay:
             res = self.relay.create_html(RELAY_GENDER, RELAY_STROKES, RELAY_AGES, True)
         else:
-            res = self.records.create_html(GENDER, STROKES, ages, False)
+            res = self.records.create_html(GENDER, STROKES, self.ages, False)
 
         try:
             with open(self.html, FILE_WRITE, encoding="utf8") as htmlfile:
@@ -395,6 +398,7 @@ class RecordFile:
         if self.relay:
             del self.relay
 
+
 class SwimTimes:
     """Read SwimTimes, and merge into Records."""
 
@@ -405,16 +409,15 @@ class SwimTimes:
         self.records = records
         self.filter = None
         self.cfg = cfg
-        
-        
 
-    def merge_times(self, filename, scm):
+    def merge_times(self, filename, scm, ages):
         """Read Facebook file."""
         self._filename = filename
         self.scm = scm
+        self.ages = ages
 
         notify(f"Reading {filename}...\n")
-        
+
         self.filter = get_config(self.scm, C_RECORDSET, self.cfg, C_FILTER)
 
         try:
@@ -469,14 +472,14 @@ class SwimTimes:
         location = row["Location"]
         gender = row["Gender"]
         gala = row["Gala"]
-        
+
         want = True
         if self.filter:
             want = False
             for item in self.filter:
                 if re.search(item, location, re.IGNORECASE):
                     want = True
-                    
+
         if want is False:
             return
 
@@ -526,7 +529,7 @@ class SwimTimes:
             all_ages = get_config(self.scm, C_RECORDS, C_ALL_AGES)
             c_25m = False
             c_open = False
-            
+
         if c_25m is False and dist == "25m":
             return
 
@@ -585,11 +588,11 @@ class SwimTimes:
                 end_age = 24
             else:
                 end_age = start_age + 4
-        
+
         if c_open:
             if end_age > c_open:
                 end_age = 99
-                
+
             if start_age > c_open:
                 start_age = c_open
 
@@ -598,10 +601,12 @@ class SwimTimes:
         if all_ages:
             if swimage <= 18:
                 agegroup = str(swimage)
-            ALL_AGES[agegroup] += 1
-        else:
-            AGES[agegroup] += 1
 
+        if agegroup in self.ages:
+            self.ages[agegroup] += 1
+        else:
+            self.ages[agegroup] = 1
+            
         event = f"{gender} {agegroup} {dist} {stroke} {pool}"
 
         swim = {
@@ -624,7 +629,7 @@ class Record:
 
     # pylint: disable=too-many-instance-attributes
 
-    def __init__(self):
+    def __init__(self, ages):
         """Initilaise Records handling."""
         self._filename = None
         self.scm = None
@@ -638,6 +643,8 @@ class Record:
         self.britishrecord = 0
 
         self.date = None
+        
+        self.ages = ages
 
     def check_swim(self, swim):
         """Check a swim time to see if it as a record."""
@@ -650,11 +657,9 @@ class Record:
         self.records[check_event] = swim
 
         sloc = swim[S_LOCATION]
-        newrec = (
-            f"New record: {check_event}, {swim[S_NAME]}, {swim[S_TIMESTR]}, {sloc}, {swim[S_DATE]}\n"
-        )
+        newrec = f"New record: {check_event}, {swim[S_NAME]}, {swim[S_TIMESTR]}, {sloc}, {swim[S_DATE]}\n"
         self.newrecords[check_event] = newrec
-        
+
         cfg_set = get_config(self.scm, C_RECORDSET)
         if cfg_set:
             overall = get_config(self.scm, C_RECORDSET, self.cfg, C_OVERALL_FASTEST)
@@ -682,7 +687,7 @@ class Record:
         if GENDER.get(test[0]) is None:
             notify(f"Line {count}: unknown gender '{test[0]}'\n")
             return
-
+        
         cfg_set = get_config(self.scm, C_RECORDSET)
         if cfg_set:
             c_all_ages = get_config(self.scm, C_RECORDSET, self.cfg, C_ALL_AGES)
@@ -714,7 +719,11 @@ class Record:
             notify(f"Line {count}: duplicate '{event}'\n")
             return
 
-        ages[test[1]] += 1
+        if test[1] in self.ages:
+            self.ages[test[1]] += 1
+        else:
+            self.ages[test[1]] = 1
+            
         row[S_FTIME] = convert_time(row[S_TIMESTR])
         self.records[event] = row
 
@@ -832,7 +841,6 @@ class Record:
             overall = get_config(self.scm, C_RECORDS, C_OVERALL_FASTEST)
             c_25m = False
 
-        
         if overall is None:
             overall = False
 
@@ -849,20 +857,20 @@ class Record:
                 for dist in loopdist:
                     o_age = ""
                     tag = TAG_INNER_ODD
-                    
+                    got_result = False
+
                     if dist == "25m" and c_25m is False:
                         continue
-                    
+
                     for age in arg_ages:
 
                         if overall is False:
                             if age == OVERALL:
                                 continue
 
-                        
                         if (arg_relay is False) and (arg_ages[age] == 0):
-                           continue
-
+                            continue
+                        
                         opt = ""
                         opt_sc = self.print_record(stroke, dist, age, "25", gender)
                         opt_lc = self.print_record(stroke, dist, age, "50", gender)
@@ -876,6 +884,9 @@ class Record:
                                 opt += opt_lc
                             if arg_relay:
                                 opt += WRAP_TABLE_CLOSE
+                                
+                            got_result = True
+
                         else:
                             opt += " -\n"
 
@@ -893,7 +904,7 @@ class Record:
                         html = re.sub("XX_OPT_XX", opt, html)
                         o_age += html
 
-                    if o_age:
+                    if o_age and got_result:
                         html = AGE_WRAP
                         if arg_relay:
                             html = re.sub("XX_DIST_XX", PRINT_DISTANCE[dist], html)

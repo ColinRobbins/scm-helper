@@ -456,7 +456,7 @@ SCHEMA = Schema(
                 Optional(C_FILTER): [str],
                 Optional(C_OPENAGE): int,
             }
-        }
+        },
     }
 )
 

@@ -794,7 +794,7 @@ class RecordThread(threading.Thread):
             record = Records(self.scm, filename)
         else:
             record = Records(self.scm, None)
-            
+
         output = wrap(None, record.process_records)
         if output is False:
             self.gui.notify_text.config(state=DISABLED)
