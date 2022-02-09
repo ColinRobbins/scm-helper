@@ -270,8 +270,13 @@ class Records:
 class RecordFile:
     """Read and process record files."""
 
+    # pylint: disable=too-many-instance-attributes
+
     def __init__(self, scm, mydir, cfg):
         """Initialise."""
+        # pylint: disable=too-many-branches
+        # pylint: disable=too-many-statements
+
         self.scm = scm
         self.records = None
         self.relay = None
@@ -300,7 +305,7 @@ class RecordFile:
                 self.is_relay = True
             else:
                 self.is_relay = False
-                
+
         cfg_set = get_config(self.scm, C_RECORDSET)
         if cfg_set:
             all_ages = get_config(self.scm, C_RECORDSET, self.cfg, C_ALL_AGES)
@@ -373,8 +378,6 @@ class RecordFile:
 
     def create_html(self):
         """Create HTML files for records."""
-        mydir = self.folder
-
         if self.is_relay:
             res = self.relay.create_html(RELAY_GENDER, RELAY_STROKES, RELAY_AGES, True)
         else:
@@ -409,6 +412,7 @@ class SwimTimes:
         self.records = records
         self.filter = None
         self.cfg = cfg
+        self.ages = None
 
     def merge_times(self, filename, scm, ages):
         """Read Facebook file."""
@@ -593,6 +597,8 @@ class SwimTimes:
             if end_age > c_open:
                 end_age = 99
 
+            # pylint: disable=consider-using-min-builtin
+
             if start_age > c_open:
                 start_age = c_open
 
@@ -606,7 +612,7 @@ class SwimTimes:
             self.ages[agegroup] += 1
         else:
             self.ages[agegroup] = 1
-            
+
         event = f"{gender} {agegroup} {dist} {stroke} {pool}"
 
         swim = {
@@ -643,8 +649,9 @@ class Record:
         self.britishrecord = 0
 
         self.date = None
-        
+
         self.ages = ages
+        self.cfg = None
 
     def check_swim(self, swim):
         """Check a swim time to see if it as a record."""
@@ -657,7 +664,10 @@ class Record:
         self.records[check_event] = swim
 
         sloc = swim[S_LOCATION]
-        newrec = f"New record: {check_event}, {swim[S_NAME]}, {swim[S_TIMESTR]}, {sloc}, {swim[S_DATE]}\n"
+        stime = swim[S_TIMESTR]
+        sdate = swim[S_DATE]
+        sname = swim[S_NAME]
+        newrec = f"New record: {check_event}, {sname}, {stime}, {sloc}, {sdate}\n"
         self.newrecords[check_event] = newrec
 
         cfg_set = get_config(self.scm, C_RECORDSET)
@@ -687,13 +697,13 @@ class Record:
         if GENDER.get(test[0]) is None:
             notify(f"Line {count}: unknown gender '{test[0]}'\n")
             return
-        
+
         cfg_set = get_config(self.scm, C_RECORDSET)
         if cfg_set:
             c_all_ages = get_config(self.scm, C_RECORDSET, self.cfg, C_ALL_AGES)
         else:
             c_all_ages = get_config(self.scm, C_RECORDS, C_ALL_AGES)
-        
+
         if c_all_ages:
             ages = ALL_AGES
         else:
@@ -723,7 +733,7 @@ class Record:
             self.ages[test[1]] += 1
         else:
             self.ages[test[1]] = 1
-            
+
         row[S_FTIME] = convert_time(row[S_TIMESTR])
         self.records[event] = row
 
@@ -870,7 +880,7 @@ class Record:
 
                         if (arg_relay is False) and (arg_ages[age] == 0):
                             continue
-                        
+
                         opt = ""
                         opt_sc = self.print_record(stroke, dist, age, "25", gender)
                         opt_lc = self.print_record(stroke, dist, age, "50", gender)
@@ -884,7 +894,7 @@ class Record:
                                 opt += opt_lc
                             if arg_relay:
                                 opt += WRAP_TABLE_CLOSE
-                                
+
                             got_result = True
 
                         else:
