@@ -608,12 +608,22 @@ class SwimTimes:
             if swimage <= 18:
                 agegroup = str(swimage)
 
+        event = f"{gender} {agegroup} {dist} {stroke} {pool}"
+
+        if all_ages:
+            if agegroup not in ALL_AGES:
+                notify (f"Invalid Age group for {swimmer} {event}\n")
+                return
+        else:
+            if agegroup not in AGES:
+                notify (f"Invalid Age group for {swimmer} {event}\n")
+                return
+
         if agegroup in self.ages:
             self.ages[agegroup] += 1
         else:
             self.ages[agegroup] = 1
 
-        event = f"{gender} {agegroup} {dist} {stroke} {pool}"
 
         swim = {
             S_EVENT: event,
