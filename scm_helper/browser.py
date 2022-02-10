@@ -226,7 +226,7 @@ def check_member(browser, member):
     if member.gender and (gender != GENDER[member.gender]):
         res += f"   Gender: SCM-> {member.name}, SE-> {gender}\n"
 
-    mycat = f"SE Category {member.asa_category}"
+    mycat = f"SE {member.asa_category}"
     if category != mycat:
         res += f"   Category: SCM-> {mycat}, SE-> {category}\n"
 

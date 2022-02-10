@@ -490,13 +490,39 @@ selenium:
 # Records
 # Used to configure swimming records
 ##################################################
-records:
-    relay: false
-    age_eoy: true   # Calculate age at EOY, not age from SCM export file (where possible)
-    verify: true  # Check a club member at time of swim (where possible)
-    se_only: true
-    all_ages_u18: false
-    overall_fastest: false
+recordset:
+    "records":
+      relay: false
+      age_eoy: true   # Calculate age at EOY, not age from SCM export file (where possible)
+      verify: true  # Check a club member at time of swim (where possible)
+      se_only: true
+      all_ages_u18: false
+      overall_fastest: false
+      25m: false
+    "relay_records":
+      relay: true
+    "club_champs":
+      filter:
+        - "Club Champs"
+        - "Club Championship"
+      relay: false
+      age_eoy: false   # Calculate age at EOY, not age from SCM export file (where possible)
+      verify: true  # Check a club member at time of swim (where possible)
+      se_only: true
+      all_ages_u18: false
+      overall_fastest: false
+      25m: false
+      open_age: 17
+    "junior_gala":
+      filter:
+        - "Junior Gala"
+      relay: false
+      age_eoy: false   # Calculate age at EOY, not age from SCM export file (where possible)
+      verify: true  # Check a club member at time of swim (where possible)
+      se_only: true
+      all_ages_u18: true
+      overall_fastest: false
+      25m: true
 
 # Debug level
 # Set to 0 for no debug info

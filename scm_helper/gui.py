@@ -748,7 +748,8 @@ class FacebookThread(threading.Thread):
         fbook = Facebook()
         if wrap(None, fbook.read_data, self.scm) is False:
             messagebox.showerror("Error", "Could not read facebook files")
-            self.gui.report_text.config(state=DISABLED)
+            if self.gui.report_text:
+                self.gui.report_text.config(state=DISABLED)
             self.gui.notify_text.config(state=DISABLED)
             return
 
@@ -783,14 +784,6 @@ class RecordThread(threading.Thread):
         self.gui.notify_text.config(state=NORMAL)
         self.gui.notify_text.delete("1.0", END)
 
-        record = Records(self.scm)
-
-        output = wrap(None, record.read_baseline)
-        if output is False:
-            self.gui.notify_text.config(state=DISABLED)
-            messagebox.showerror("Error", "Cannot read records baseline")
-            return
-
         dir_opt = {}
         dir_opt["title"] = "Locate new swim times CSV file from SCM"
         dir_opt["parent"] = self.gui.master
@@ -798,18 +791,14 @@ class RecordThread(threading.Thread):
 
         if self.newtimes:
             filename = filedialog.askopenfilename(**dir_opt)
-            output = wrap(None, record.read_newtimes, filename)
-            if output is False:
-                self.gui.notify_text.config(state=DISABLED)
-                messagebox.showerror("Error", "Cannot read new swim times")
-                return
-
-        output = wrap(None, record.create_html)
-        if output:
-            webbrowser.open_new(output)
+            record = Records(self.scm, filename)
         else:
+            record = Records(self.scm, None)
+
+        output = wrap(None, record.process_records)
+        if output is False:
             self.gui.notify_text.config(state=DISABLED)
-            messagebox.showerror("Error", "Cannot Create HTML")
+            messagebox.showerror("Error", "Error creating records file")
             return
 
         self.gui.notify_text.config(state=DISABLED)

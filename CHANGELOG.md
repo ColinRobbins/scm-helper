@@ -1,5 +1,21 @@
 # Changelog
 
+## 1.9
+* Add support for filters in records
+
+## 1.8.3
+* Fix SE Category Matching
+
+## 1.8.2
+* Fix date format from excel
+
+## 1.8.2
+* Fix error message when using wrong Chrome driver
+
+## 1.8.1
+03/11/2021
+* Fix recording procesing [bug](https://github.com/ColinRobbins/scm-helper/issues/45)
+
 ## 1.8
 31/10/2021
 * Global edit of SE Category to [new names](https://github.com/ColinRobbins/scm-helper/issues/44)
