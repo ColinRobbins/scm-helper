@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.9.1
+16/03/2022
+* Fix date format in records.
+
 ## 1.9
 * Add support for filters in records
 
