@@ -12,6 +12,7 @@ from scm_helper.config import (
     C_AGE_EOY,
     C_ALL_AGES,
     C_FILTER,
+    C_IGNORE_GROUP,
     C_OPENAGE,
     C_OVERALL_FASTEST,
     C_RECORDS,
@@ -526,11 +527,13 @@ class SwimTimes:
             all_ages = get_config(self.scm, C_RECORDSET, self.cfg, C_ALL_AGES)
             c_25m = get_config(self.scm, C_RECORDSET, self.cfg, C_25M)
             c_open = get_config(self.scm, C_RECORDSET, self.cfg, C_OPENAGE)
+            c_ignore = get_config(self.scm, C_RECORDSET, self.cfg, C_IGNORE_GROUP)
         else:
             verify = get_config(self.scm, C_RECORDS, C_VERIFY)
             age_eoy = get_config(self.scm, C_RECORDS, C_AGE_EOY)
             se_only = get_config(self.scm, C_RECORDS, C_SE_ONLY)
             all_ages = get_config(self.scm, C_RECORDS, C_ALL_AGES)
+            c_ignore = get_config(self.scm, C_RECORDSET, C_IGNORE_GROUP)
             c_25m = False
             c_open = False
 
@@ -570,6 +573,9 @@ class SwimTimes:
             return
 
         if swimage is None:
+            return
+        
+        if c_ignore is not None and member.find_group(c_ignore):
             return
 
         if swimage < 18:

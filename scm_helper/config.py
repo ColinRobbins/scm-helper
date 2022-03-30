@@ -443,6 +443,7 @@ SCHEMA = Schema(
             Optional(C_SE_ONLY): bool,
             Optional(C_ALL_AGES): bool,
             Optional(C_OVERALL_FASTEST): bool,
+            Optional(C_IGNORE_GROUP): group,
         },
         Optional(C_RECORDSET): {
             str: {
@@ -455,6 +456,7 @@ SCHEMA = Schema(
                 Optional(C_OVERALL_FASTEST): bool,
                 Optional(C_FILTER): [str],
                 Optional(C_OPENAGE): int,
+                Optional(C_IGNORE_GROUP): group,
             }
         },
     }
