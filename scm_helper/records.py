@@ -632,7 +632,7 @@ class SwimTimes:
             S_TIMESTR: timestr,
             S_FTIME: convert_time(timestr),
             S_LOCATION: location,
-            S_DATE: swimdate.strftime(PRINT_DATE_FORMAT),
+            S_DATE: swimdate.strftime(SCM_CSV_DATE_FORMAT),
         }
 
         self.records.check_swim(swim)
