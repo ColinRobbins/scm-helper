@@ -874,17 +874,17 @@ class Member(Entity):
 
     @property
     def homephone(self):
-        """Set Username."""
+        """Set homephone."""
         return self.check_attribute("HomePhone")
 
     @property
     def mobilephone(self):
-        """Set Username."""
+        """Set mobilephone."""
         return self.check_attribute("MobilePhone")
 
     @property
     def address(self):
-        """Set Username."""
+        """Set address."""
         return self.check_attribute("Address1")
 
     @property

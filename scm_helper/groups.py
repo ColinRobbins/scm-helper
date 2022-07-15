@@ -2,12 +2,14 @@
 import datetime
 
 from scm_helper.config import (
+    A_USERNAME,
     C_CHECK_DBS,
     C_CONFIRMATION,
     C_GROUP,
     C_GROUPS,
     C_IGNORE_GROUP,
     C_IGNORE_SWIMMER,
+    C_LOGIN,
     C_MAX_AGE,
     C_MIN_AGE,
     C_NO_CLUB_SESSIONS,
@@ -28,6 +30,7 @@ from scm_helper.config import (
 from scm_helper.entity import Entities, Entity, check_type
 from scm_helper.issue import (
     E_CONFIRMATION_EXPIRED,
+    E_NO_LOGIN,
     E_NO_SWIMMERS,
     E_NOT_IN_SESSION,
     E_SESSIONS,
@@ -83,6 +86,7 @@ class Group(Entity):
         xtype = None
         ignore = None
         confirm = None
+        login = None
 
         if self.config:
             ignore = self.config_item(C_IGNORE_GROUP)
@@ -92,6 +96,7 @@ class Group(Entity):
             allowed = self.config_item(C_NO_SESSION_ALLOWED)
             xtype = self.config_item(C_TYPE)
             confirm = self.config_item(C_CONFIRMATION)
+            login = self.config_item(C_LOGIN)
 
         if ignore:
             debug(f"Ignoring group {self.name}", 7)
@@ -148,6 +153,14 @@ class Group(Entity):
                             issue(member, E_NOT_IN_SESSION, f"Group: {self.name}")
                     break
 
+            if login:
+                if member.username is None:
+                    issue(member, E_NO_LOGIN, f"Group: {self.name}")
+                    fix = {}
+                    fix[A_USERNAME] = member.email
+                    member.fixit(fix, f"Create login, username: {member.email}")
+            
+            
             if xtype:
                 if check_type(member, xtype):
                     continue
