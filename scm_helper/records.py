@@ -574,7 +574,7 @@ class SwimTimes:
 
         if swimage is None:
             return
-        
+
         if c_ignore is not None and member.find_group(c_ignore):
             return
 
@@ -618,18 +618,17 @@ class SwimTimes:
 
         if all_ages:
             if agegroup not in ALL_AGES:
-                notify (f"Invalid Age group for {swimmer} {event}\n")
+                notify(f"Invalid Age group for {swimmer} {event}\n")
                 return
         else:
             if agegroup not in AGES:
-                notify (f"Invalid Age group for {swimmer} {event}\n")
+                notify(f"Invalid Age group for {swimmer} {event}\n")
                 return
 
         if agegroup in self.ages:
             self.ages[agegroup] += 1
         else:
             self.ages[agegroup] = 1
-
 
         swim = {
             S_EVENT: event,

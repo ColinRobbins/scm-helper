@@ -565,7 +565,6 @@ class IssueHandler:
 
     def check_issue(self, xissue):
         """Check if this is a valid issue."""
-        # pylint: disable=no-self-use
         # if it was a function, you end up with circualr imports
         for anissue in ISSUE_LIST:
             if anissue[NAME] == xissue:

@@ -724,7 +724,6 @@ class Member(Entity):
 
     def print_links(self):
         """Print links."""
-        # pylint: disable=no-self-use
         # override if anything needs doing
         res = "You will need to restore the following manually\n"
         res += "Sessions: "

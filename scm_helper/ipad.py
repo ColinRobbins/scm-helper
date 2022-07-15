@@ -9,7 +9,6 @@ WRITE_BINARY = "w"
 READ_BINARY = "r"
 
 # pylint: disable=unused-argument
-# pylint: disable=no-self-use
 
 
 class Crypto:

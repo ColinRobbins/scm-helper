@@ -159,8 +159,7 @@ class Group(Entity):
                     fix = {}
                     fix[A_USERNAME] = member.email
                     member.fixit(fix, f"Create login, username: {member.email}")
-            
-            
+
             if xtype:
                 if check_type(member, xtype):
                     continue

@@ -169,7 +169,6 @@ class Entity:
     def print_exception(self, exception):
         """Is the exception allowable."""
         # pylint: disable=unused-argument
-        # pylint: disable=no-self-use
         # Override uses exception
         return True
 
@@ -216,13 +215,11 @@ class Entity:
 
     def delete(self):
         """Delete."""
-        # pylint: disable=no-self-use
         # override if anything needs doing
         return
 
     def print_links(self):
         """Print links."""
-        # pylint: disable=no-self-use
         # override if anything needs doing
         return ""
 
