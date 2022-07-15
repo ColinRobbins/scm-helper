@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.9.2
+15/07/2022
+* Added check for login for select groups
+
 ## 1.9.1
 16/03/2022
 * Fix date format in records.
