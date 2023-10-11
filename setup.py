@@ -31,7 +31,7 @@ setuptools.setup(
         "pyyaml>=5.3",
         "cryptography>=2.8",
         "func-timeout>=4.3.5",
-        "selenium>=3.141.0",
+        "selenium>=4.12.0",
     ],
     classifiers=[
         "Programming Language :: Python :: 3",

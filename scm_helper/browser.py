@@ -9,7 +9,10 @@ from pathlib import Path
 import selenium
 
 # pylint: disable=unused-import   #it is used!!!
+from selenium import webdriver
+from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
+
 
 from scm_helper.config import (
     C_BASE_URL,
@@ -76,7 +79,7 @@ def se_check(scm, members):
 
     browser.get(f"{check_url}{test_id_url}")
     try:
-        browser.find_element_by_xpath("//table[1]/tbody/tr[2]/td[2]")
+        browser.find_element(By.XPATH, "//table[1]/tbody/tr[2]/td[2]")
 
     except selenium.common.exceptions.NoSuchElementException:
         msg = """Please solve the 'I am not a robot', and then press enter here.
@@ -139,7 +142,7 @@ def fb_read_url(scm, url):
 
     browser.get(url)
     try:
-        browser.find_element_by_xpath(m_xpath)
+        browser.find_element(By.XPATH, m_xpath)
     except selenium.common.exceptions.NoSuchElementException:
         interact_yesno("Please logon to Facebook and then press enter here.")
         write_cookies(browser, cookiefile, scm)
@@ -155,7 +158,7 @@ def fb_read_url(scm, url):
 
     count = 0
     for path in [m_elements, m_elements2]:
-        elements = browser.find_elements_by_xpath(path)
+        elements = browser.find_elements(By.XPATH, path)
         for element in elements:
             if element.text not in users:
                 count += 1
@@ -198,11 +201,11 @@ def check_member(browser, member):
     notify(f"Checking {member.name}...\n")
 
     try:
-        name = browser.find_element_by_xpath("//table[1]/tbody/tr[2]/td[2]").text
-        knownas = browser.find_element_by_xpath("//table[1]/tbody/tr[2]/td[4]").text
-        gender = browser.find_element_by_xpath("//table[1]/tbody/tr[3]/td[4]").text
-        current = browser.find_element_by_xpath("//table[2]/tbody/tr[2]/td[4]").text
-        category = browser.find_element_by_xpath("//table[2]/tbody/tr[3]/td[4]").text
+        name = browser.find_element(By.XPATH, "//table[1]/tbody/tr[2]/td[2]").text
+        knownas = browser.find_element(By.XPATH, "//table[1]/tbody/tr[2]/td[4]").text
+        gender = browser.find_element(By.XPATH, "//table[1]/tbody/tr[3]/td[4]").text
+        current = browser.find_element(By.XPATH, "//table[2]/tbody/tr[2]/td[4]").text
+        category = browser.find_element(By.XPATH, "//table[2]/tbody/tr[3]/td[4]").text
 
     except selenium.common.exceptions.NoSuchElementException:
         if member.print_exception(EXCEPTION_SE_HIDDEN) is False:
@@ -241,7 +244,10 @@ def check_member(browser, member):
 
 def start_browser(scm):
     """Start Browser."""
-    web_driver = get_config(scm, C_SELENIUM, C_WEB_DRIVER)
+    # web_driver = get_config(scm, C_SELENIUM, C_WEB_DRIVER)
+    # CJR OCt 2023
+    web_driver = webdriver.Chrome()
+
     client = get_config(scm, C_SELENIUM, C_BROWSER)
 
     if client is False:
@@ -251,7 +257,8 @@ def start_browser(scm):
     browser = getattr(selenium.webdriver, client)
 
     try:
-        return browser(web_driver)
+        # return browser(web_driver)
+        return web_driver
 
     except selenium.common.exceptions.WebDriverException as error:
         notify(f"Failed to open {client} browser with: {web_driver}\n{error}\n")

@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.9.3
+11/10/2023
+* Fixed Selenium Driver downlaod (Issue #57)
+
 ## 1.9.2
 15/07/2022
 * Added check for login for select groups

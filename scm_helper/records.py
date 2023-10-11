@@ -541,6 +541,7 @@ class SwimTimes:
             return
 
         member = None
+
         if asa not in self.scm.members.by_asa:
             debug(f"Line {count}: No SE Number {swimmer}", 2)
             # We can't check, so go with it...
