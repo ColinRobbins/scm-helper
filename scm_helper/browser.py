@@ -244,7 +244,7 @@ def start_browser(scm):
         return webdriver.Chrome()
 
     except selenium.common.exceptions.WebDriverException as error:
-        notify(f"Failed to open {client} browser with: {web_driver}\n{error}\n")
+        notify(f"Failed to open Chrome: {error}\n")
         return None
 
 
