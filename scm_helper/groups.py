@@ -166,9 +166,10 @@ class Group(Entity):
                 if xtype == CTYPE_SWIMMER:  # if swimmers wanted, allow it to be a coach
                     if check_type(member, CTYPE_COACH) is True:
                         continue
-                msg = f"Group: {self.name}, Type required: {xtype} (fixable)"
+                # msg = f"Group: {self.name}, Type required: {xtype} (fixable)"
+                msg = f"Group: {self.name}, Type required: {xtype}"
                 issue(member, E_TYPE, msg)
-                fix = {}
+                # fix = {}
                 attr = None
 
                 if xtype == CTYPE_MASTER:
