@@ -203,7 +203,6 @@ def check_member(browser, member):
     try:
         name = browser.find_element(By.XPATH, "//table[1]/tbody/tr[2]/td[2]").text
         knownas = browser.find_element(By.XPATH, "//table[1]/tbody/tr[2]/td[4]").text
-        gender = browser.find_element(By.XPATH, "//table[1]/tbody/tr[3]/td[4]").text
         current = browser.find_element(By.XPATH, "//table[2]/tbody/tr[2]/td[4]").text
         category = browser.find_element(By.XPATH, "//table[2]/tbody/tr[3]/td[4]").text
 
@@ -226,9 +225,6 @@ def check_member(browser, member):
             if knownas != firstname[0]:  # in SE they are the same if no knownas
                 res += f"   Knownas: SCM-> {member.knownas_only}, SE-> {knownas}\n"
 
-    if member.gender and (gender != GENDER[member.gender]):
-        res += f"   Gender: SCM-> {member.name}, SE-> {gender}\n"
-
     mycat = f"SE {member.asa_category}"
     if category != mycat:
         res += f"   Category: SCM-> {mycat}, SE-> {category}\n"
@@ -244,21 +240,8 @@ def check_member(browser, member):
 
 def start_browser(scm):
     """Start Browser."""
-    # web_driver = get_config(scm, C_SELENIUM, C_WEB_DRIVER)
-    # CJR OCt 2023
-    web_driver = webdriver.Chrome()
-
-    client = get_config(scm, C_SELENIUM, C_BROWSER)
-
-    if client is False:
-        notify("Selenium config missing\n")
-        return None
-
-    browser = getattr(selenium.webdriver, client)
-
     try:
-        # return browser(web_driver)
-        return web_driver
+        return webdriver.Chrome()
 
     except selenium.common.exceptions.WebDriverException as error:
         notify(f"Failed to open {client} browser with: {web_driver}\n{error}\n")
