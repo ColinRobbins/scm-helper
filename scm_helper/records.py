@@ -369,6 +369,7 @@ class RecordFile:
             return False
 
         if self.records.newrecords:
+            notify("New Records:\n")
             for record in sorted(self.records.newrecords):
                 notify(self.records.newrecords[record])
 
@@ -683,7 +684,12 @@ class Record:
         stime = swim[S_TIMESTR]
         sdate = swim[S_DATE]
         sname = swim[S_NAME]
-        newrec = f"New record: {check_event}, {sname}, {stime}, {sloc}, {sdate}\n"
+        
+        print_event = re.sub('50$','LC', check_event)
+        print_event = re.sub('50$','SC', print_event)
+        print_loc = re.sub(' +',' ', sloc)
+        newrec = f"{print_event}, {sname}, {stime}, {print_loc}, {sdate}\n"
+        
         self.newrecords[check_event] = newrec
 
         cfg_set = get_config(self.scm, C_RECORDSET)
