@@ -121,6 +121,8 @@ class Group(Entity):
                     f"*** Error in date format in config file for groups config: {confirm} ***\n"
                 )
                 confirm = None
+                
+        fix = {}
 
         for member in self.members:
             self.check_age(member)
@@ -156,7 +158,6 @@ class Group(Entity):
             if login:
                 if member.username is None:
                     issue(member, E_NO_LOGIN, f"Group: {self.name}")
-                    fix = {}
                     fix[A_USERNAME] = member.email
                     member.fixit(fix, f"Create login, username: {member.email}")
 
@@ -169,7 +170,6 @@ class Group(Entity):
                 # msg = f"Group: {self.name}, Type required: {xtype} (fixable)"
                 msg = f"Group: {self.name}, Type required: {xtype}"
                 issue(member, E_TYPE, msg)
-                # fix = {}
                 attr = None
 
                 if xtype == CTYPE_MASTER:
