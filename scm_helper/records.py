@@ -686,7 +686,7 @@ class Record:
         sname = swim[S_NAME]
         
         print_event = re.sub('50$','LC', check_event)
-        print_event = re.sub('50$','SC', print_event)
+        print_event = re.sub('25$','SC', print_event)
         print_loc = re.sub(' +',' ', sloc)
         newrec = f"{print_event}, {sname}, {stime}, {print_loc}, {sdate}\n"
         
