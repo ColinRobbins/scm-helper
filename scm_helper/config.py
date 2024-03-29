@@ -1,4 +1,5 @@
 """Configuration stuff."""
+
 from schema import And, Optional, Regex, Schema, SchemaError
 
 from scm_helper.notify import notify

@@ -1,4 +1,5 @@
 """Encryption stuff."""
+
 import base64
 import getpass
 import json

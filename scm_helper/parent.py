@@ -1,4 +1,5 @@
 """Parent routines."""
+
 from scm_helper.config import (
     A_ISPARENT,
     A_USERNAME,

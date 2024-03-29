@@ -1,4 +1,5 @@
 """Coach routines."""
+
 from scm_helper.config import (
     A_ISCOACH,
     A_GUID,

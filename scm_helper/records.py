@@ -1,4 +1,5 @@
 """Process club records."""
+
 import csv
 import datetime
 import os

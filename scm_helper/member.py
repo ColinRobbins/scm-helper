@@ -1,4 +1,5 @@
 """SCM Members."""
+
 # pylint: disable=too-many-lines
 import datetime
 import re

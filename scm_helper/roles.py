@@ -1,4 +1,5 @@
 """SCM Role."""
+
 from scm_helper.coach import check_coach_permissions
 from scm_helper.config import (
     A_GUID,

@@ -1,4 +1,5 @@
 """SCM entity superclass."""
+
 import csv
 import datetime
 import json

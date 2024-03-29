@@ -1,4 +1,5 @@
 """Null Encryption stuff for ipad."""
+
 import os.path
 from pathlib import Path
 

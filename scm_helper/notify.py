@@ -1,4 +1,5 @@
 """Notify."""
+
 import sys
 
 try:

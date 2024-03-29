@@ -1,4 +1,5 @@
 """SCM Group."""
+
 import datetime
 
 from scm_helper.config import (

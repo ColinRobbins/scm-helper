@@ -1,4 +1,5 @@
 """Interface to SCM API."""
+
 import os.path
 import platform
 from datetime import date, datetime

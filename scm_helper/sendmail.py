@@ -1,4 +1,5 @@
 """Send email."""
+
 import smtplib
 
 from scm_helper.config import (

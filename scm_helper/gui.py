@@ -1,4 +1,5 @@
 """Windows GUI."""
+
 # pylint: disable=too-many-lines
 import os.path
 import sys

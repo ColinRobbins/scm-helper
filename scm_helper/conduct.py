@@ -1,4 +1,5 @@
 """SCM Conduct."""
+
 import datetime
 
 from scm_helper.config import (

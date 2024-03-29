@@ -1,4 +1,5 @@
 """SCM List."""
+
 from scm_helper.config import (
     A_GUID,
     A_MEMBERS,

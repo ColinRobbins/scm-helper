@@ -1,4 +1,5 @@
 """Issue handling."""
+
 from datetime import datetime
 
 from scm_helper.config import C_IGNORE_ERROR, C_ISSUES, EXCEPTION_GENERAL, O_NEWSTARTER

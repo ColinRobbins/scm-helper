@@ -1,4 +1,5 @@
 """SCM Members."""
+
 from scm_helper.config import (
     A_ACTIVE,
     A_FIRSTNAME,
