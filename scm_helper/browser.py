@@ -67,7 +67,7 @@ def se_check(scm, members):
 
     notify(f"Opening browser for {base_url}...\n")
 
-    browser = start_browser(scm)
+    browser = start_browser()
 
     if browser is None:
         return None
@@ -119,7 +119,7 @@ def fb_read_url(scm, url):
 
     url += MEMBERS_SUFFIX
 
-    browser = start_browser(scm)
+    browser = start_browser()
 
     if browser is None:
         return None
@@ -238,7 +238,7 @@ def check_member(browser, member):
     return res
 
 
-def start_browser(scm):
+def start_browser():
     """Start Browser."""
     try:
         return webdriver.Chrome()

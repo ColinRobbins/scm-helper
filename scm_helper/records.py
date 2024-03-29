@@ -698,6 +698,8 @@ class Record:
 
     def check_swim(self, swim):
         """Check a swim time to see if it as a record."""
+        # pylint: disable=too-many-locals
+
         check_event = swim[S_EVENT]
         if check_event in self.records:
             event = self.records[check_event]
