@@ -531,14 +531,18 @@ class SwimTimes:
             c_25m = get_config(self.scm, C_RECORDSET, self.cfg, C_25M)
             c_open = get_config(self.scm, C_RECORDSET, self.cfg, C_OPENAGE)
             c_ignore = get_config(self.scm, C_RECORDSET, self.cfg, C_IGNORE_GROUP)
-            c_ignore_no_sessions = get_config(self.scm, C_RECORDSET, self.cfg, C_IGNORE_NO_SESSIONS)
+            c_ignore_no_sessions = get_config(
+                self.scm, C_RECORDSET, self.cfg, C_IGNORE_NO_SESSIONS
+            )
         else:
             verify = get_config(self.scm, C_RECORDS, C_VERIFY)
             age_eoy = get_config(self.scm, C_RECORDS, C_AGE_EOY)
             se_only = get_config(self.scm, C_RECORDS, C_SE_ONLY)
             all_ages = get_config(self.scm, C_RECORDS, C_ALL_AGES)
             c_ignore = get_config(self.scm, C_RECORDSET, C_IGNORE_GROUP)
-            c_ignore_no_sessions = get_config(self.scm, C_RECORDSET, C_IGNORE_NO_SESSIONS)
+            c_ignore_no_sessions = get_config(
+                self.scm, C_RECORDSET, C_IGNORE_NO_SESSIONS
+            )
             c_25m = False
             c_open = False
 
@@ -580,20 +584,28 @@ class SwimTimes:
 
         if swimage is None:
             return
-            
+
         exception_allow = False
         if member.print_exception(EXCEPTION_ALLOW_RECORDS) is False:
             exception_allow = True
 
-        if c_ignore is not None and member.find_group(c_ignore) and exception_allow is False:
+        if (
+            c_ignore is not None
+            and member.find_group(c_ignore)
+            and exception_allow is False
+        ):
             return
-            
-        if c_ignore_no_sessions and (len(member.sessions) == 0) and exception_allow is False:
+
+        if (
+            c_ignore_no_sessions
+            and (len(member.sessions) == 0)
+            and exception_allow is False
+        ):
             return
-            
+
         if location.find("PB on joining") >= 0:
             return
-        
+
         if swimage < 18:
             start_age = int(swimage / 2) * 2
             end_age = start_age + 1
@@ -698,12 +710,12 @@ class Record:
         stime = swim[S_TIMESTR]
         sdate = swim[S_DATE]
         sname = swim[S_NAME]
-        
-        print_event = re.sub('50$','LC', check_event)
-        print_event = re.sub('25$','SC', print_event)
-        print_loc = re.sub(' +',' ', sloc)
+
+        print_event = re.sub("50$", "LC", check_event)
+        print_event = re.sub("25$", "SC", print_event)
+        print_loc = re.sub(" +", " ", sloc)
         newrec = f"{print_event}, {sname}, {stime}, {print_loc}, {sdate}\n"
-        
+
         self.newrecords[check_event] = newrec
 
         cfg_set = get_config(self.scm, C_RECORDSET)

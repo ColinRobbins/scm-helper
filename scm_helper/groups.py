@@ -121,7 +121,7 @@ class Group(Entity):
                     f"*** Error in date format in config file for groups config: {confirm} ***\n"
                 )
                 confirm = None
-                
+
         fix = {}
 
         for member in self.members:
