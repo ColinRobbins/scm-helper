@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.9.4
+29/03/2024
+* Added more options to exclude swimmer not entitled to records
+
 ## 1.9.3
 11/10/2023
 * Fixed Selenium Driver downlaod (Issue #57)
