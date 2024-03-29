@@ -74,6 +74,7 @@ class Lists(Entities):
     def delete(self):
         """Delete all members."""
         super().delete()
+        # pylint: disable=modified-iterating-list
         for entity in self.newlists:
             entity.delete()
             del entity

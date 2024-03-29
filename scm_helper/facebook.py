@@ -82,6 +82,8 @@ class Facebook:
 
     def delete(self):
         """Delete."""
+
+        # pylint: disable=modified-iterating-list
         for facebook in self.facebook:
             del facebook
 

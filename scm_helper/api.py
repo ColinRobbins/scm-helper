@@ -408,7 +408,7 @@ class API:
         debug(f"URL:\n{url}", 9)
         debug(f"Headers:\n{headers}", 8)
 
-        response = requests.get(url, headers=headers)
+        response = requests.get(url, headers=headers, timeout=30)
         if response.ok:
             return response.json()
 
@@ -441,10 +441,10 @@ class API:
         data = entity.newdata
         if create:
             debug(f"Post request:\n{data}", 7)
-            response = requests.post(entity.url, json=data, headers=headers)
+            response = requests.post(entity.url, json=data, headers=headers, timeout=30)
         else:
             debug(f"Put request:\n{data}", 7)
-            response = requests.put(entity.url, json=data, headers=headers)
+            response = requests.put(entity.url, json=data, headers=headers, timeout=30)
         if response.ok:
             return response
 

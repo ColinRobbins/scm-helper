@@ -267,6 +267,8 @@ class Records:
 
     def delete(self):
         """Delete."""
+
+        # pylint: disable=modified-iterating-list
         for record in self.recordset:
             del record
 

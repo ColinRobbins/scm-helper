@@ -108,6 +108,8 @@ class Entities:
 
     def delete(self):
         """Delete all members."""
+
+        # pylint: disable=modified-iterating-list
         for entity in self.entities:
             entity.delete()
             del entity

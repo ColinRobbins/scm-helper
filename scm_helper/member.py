@@ -671,8 +671,7 @@ class Member(Entity):
         if self._lastseen is None:
             self._lastseen = when
             return
-        if when > self._lastseen:
-            self._lastseen = when
+        self._lastseen = max(self._lastseen, when)
 
     def set_confirmed(self, date):
         """Set confirmed date."""
