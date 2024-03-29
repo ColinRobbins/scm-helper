@@ -77,6 +77,7 @@ EXCEPTION_PERMISSIONS = "API: Coach permission OK"
 EXCEPTION_TWOGROUPS = "API: two groups OK"
 EXCEPTION_SE_HIDDEN = "API: Hidden in SE Database"
 EXCEPTION_SE_NAME = "API: Name in SE Database OK"
+EXCEPTION_ALLOW_RECORDS = "API: Allow records"
 
 SCM_DATE_FORMAT = "%Y-%m-%d"
 PRINT_DATE_FORMAT = "%d-%m-%Y"
@@ -153,6 +154,7 @@ C_IGNORE_COACH = "ignore_coach"
 C_IGNORE_COMMITTEE = "ignore_committee"
 C_IGNORE_ERROR = "ignore_error"
 C_IGNORE_GROUP = "ignore_group"
+C_IGNORE_NO_SESSIONS = "ignore_no_sessions"
 C_IGNORE_SWIMMER = "ignore_swimmer"
 C_IGNORE_UNKNOWN = "ignore_unknown"
 C_INACTIVE = "inactive"
@@ -458,6 +460,7 @@ SCHEMA = Schema(
                 Optional(C_FILTER): [str],
                 Optional(C_OPENAGE): int,
                 Optional(C_IGNORE_GROUP): group,
+                Optional(C_IGNORE_NO_SESSIONS): bool,
             }
         },
     }

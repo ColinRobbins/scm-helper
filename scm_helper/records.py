@@ -13,6 +13,7 @@ from scm_helper.config import (
     C_ALL_AGES,
     C_FILTER,
     C_IGNORE_GROUP,
+    C_IGNORE_NO_SESSIONS,
     C_OPENAGE,
     C_OVERALL_FASTEST,
     C_RECORDS,
@@ -21,6 +22,7 @@ from scm_helper.config import (
     C_SE_ONLY,
     C_VERIFY,
     CONFIG_DIR,
+    EXCEPTION_ALLOW_RECORDS,
     FILE_READ,
     FILE_WRITE,
     PRINT_DATE_FORMAT,
@@ -529,12 +531,14 @@ class SwimTimes:
             c_25m = get_config(self.scm, C_RECORDSET, self.cfg, C_25M)
             c_open = get_config(self.scm, C_RECORDSET, self.cfg, C_OPENAGE)
             c_ignore = get_config(self.scm, C_RECORDSET, self.cfg, C_IGNORE_GROUP)
+            c_ignore_no_sessions = get_config(self.scm, C_RECORDSET, self.cfg, C_IGNORE_NO_SESSIONS)
         else:
             verify = get_config(self.scm, C_RECORDS, C_VERIFY)
             age_eoy = get_config(self.scm, C_RECORDS, C_AGE_EOY)
             se_only = get_config(self.scm, C_RECORDS, C_SE_ONLY)
             all_ages = get_config(self.scm, C_RECORDS, C_ALL_AGES)
             c_ignore = get_config(self.scm, C_RECORDSET, C_IGNORE_GROUP)
+            c_ignore_no_sessions = get_config(self.scm, C_RECORDSET, C_IGNORE_NO_SESSIONS)
             c_25m = False
             c_open = False
 
@@ -576,10 +580,20 @@ class SwimTimes:
 
         if swimage is None:
             return
+            
+        exception_allow = False
+        if member.print_exception(EXCEPTION_ALLOW_RECORDS) is False:
+            exception_allow = True
 
-        if c_ignore is not None and member.find_group(c_ignore):
+        if c_ignore is not None and member.find_group(c_ignore) and exception_allow is False:
             return
-
+            
+        if c_ignore_no_sessions and (len(member.sessions) == 0) and exception_allow is False:
+            return
+            
+        if location.find("PB on joining") >= 0:
+            return
+        
         if swimage < 18:
             start_age = int(swimage / 2) * 2
             end_age = start_age + 1

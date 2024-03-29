@@ -490,7 +490,9 @@ recordset:
       se_only: true
       all_ages_u18: false
       overall_fastest: false
+      ignore_group: "Membership Only"   # Use to remove "flag of convenience" swimmers
       25m: false
+      ignore_no_sessions: true  # Ignore if they have no training sessions with us
     "relay_records":
       relay: true
     "club_champs":
