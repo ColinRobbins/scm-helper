@@ -584,6 +584,10 @@ class SwimTimes:
         if verify and member and member.date_joined and (swimdate < member.date_joined):
             debug(f"Line {count}: Ignored, not a member at time of swim", 2)
             return
+            
+        if verify and member and member.is_active is False:
+            debug(f"Line {count}: Ignored, inactive member", 2)
+            return
 
         if swimage is None:
             return
