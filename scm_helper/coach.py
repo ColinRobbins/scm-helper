@@ -86,7 +86,7 @@ def check_coach_permissions(coach, role):
             issue(coach, E_PERMISSION_EXTRA, permission.full_name)
             fix["SessionRestrictions"].remove({A_GUID: permission.guid})
             fixed = True
-            msg += f"  Remove {session.name}\n"
+            msg += f"  Remove {permission.full_name}\n"
 
     if fixed:
         coach.fixit(fix, msg)
