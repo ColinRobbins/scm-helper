@@ -9,7 +9,7 @@ with open("scm_helper/version.py") as fh:
     exec(fh.read(), VERSION)
 
 setuptools.setup(
-    name="scm-helper",
+    name="scm_helper",
     version=VERSION["VERSION"],
     author="Colin Robbins",
     author_email="colin.john.robbins@gmail.com",
