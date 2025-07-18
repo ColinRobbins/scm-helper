@@ -283,8 +283,7 @@ def write_cookies(browser, cookiefile, scm):
 
         try:
             with open(cookiefile, FILE_WRITE, encoding="utf8") as file:
-                opt = json.dumps(cookies)
-                file.write(opt)
+                json.dump(cookies, file)
 
         except EnvironmentError as error:
             notify(f"Failed to write {cookiefile}\n{error}\n")
