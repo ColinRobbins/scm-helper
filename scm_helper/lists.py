@@ -7,6 +7,7 @@ from scm_helper.config import (
     C_EDIT,
     C_GENDER,
     C_GROUP,
+    C_GROUPS,
     C_LIST,
     C_LISTS,
     C_MAX_AGE,
@@ -17,6 +18,7 @@ from scm_helper.config import (
     C_MIN_YEAR,
     C_SUFFIX,
     C_TYPE,
+    C_TYPES,
     C_UNIQUE,
     EXCEPTION_NOEMAIL,
     get_config,
@@ -198,15 +200,28 @@ class NewList(Entity):
             if member.dob and (member.dob.year < min_year):
                 continue
 
+            found = True
+            xgroups = []
             if C_GROUP in cfg:
-                if member.find_group(cfg[C_GROUP]) is False:
-                    continue
-                if C_UNIQUE in cfg:
-                    if len(member.groups) > 1:
-                        if C_ALLOW_GROUP not in cfg:
-                            continue
-                        if member.find_group(cfg[C_ALLOW_GROUP]) is False:
-                            continue
+                xgroups = [ cfg[C_GROUP] ] 
+                found = False
+            if C_GROUPS in cfg: 
+                xgroups = cfg[C_GROUPS]
+                found = False
+
+            end_loop = False   
+            for xgroup in xgroups:
+                if member.find_group(xgroup) is True:
+                    found = True
+                    if C_UNIQUE in cfg:
+                        if len(member.groups) > 1:
+                            if C_ALLOW_GROUP not in cfg:
+                                end_loop = True
+                            if member.find_group(cfg[C_ALLOW_GROUP]) is False:
+                                end_loop = True
+                            
+            if end_loop or not found:
+                continue
 
             if C_GENDER in cfg:
                 gender = cfg[C_GENDER]
@@ -215,11 +230,22 @@ class NewList(Entity):
                     xgender = "M"
                 if member.gender != xgender:
                     continue
-
+                    
+            found = True
+            xtypes = []
             if C_TYPE in cfg:
-                xtype = cfg[C_TYPE]
-                if check_type(member, xtype) is False:
-                    continue
+                xtypes = [ cfg[C_TYPE] ] 
+                found = False
+            if C_GROUPS in cfg: 
+                xtypes = cfg[C_TYPE]
+                found = False       
+
+            for xtype in xtypes:
+                if check_type(member, xtype) is True:
+                    found = True
+                    
+            if not found:
+                continue
 
             if member.email is None:
                 if member.print_exception(EXCEPTION_NOEMAIL):
