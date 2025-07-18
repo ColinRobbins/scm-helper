@@ -420,6 +420,7 @@ SCHEMA = Schema(
                 str: {
                     Optional(C_GENDER): And(str, lambda s: s in ("male", "female")),
                     Optional(C_GROUP): group,
+                    Optional(C_GROUPS): [group],
                     Optional(C_ALLOW_GROUP): group,
                     Optional(C_UNIQUE): bool,
                     Optional(C_MAX_AGE): int,
@@ -429,6 +430,7 @@ SCHEMA = Schema(
                     Optional(C_MIN_AGE_EOY): int,
                     Optional(C_MIN_YEAR): int,
                     Optional(C_TYPE): member_type,
+                    Optional(C_TYPES): [member_type],
                 }
             },
         },
