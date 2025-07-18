@@ -37,8 +37,7 @@ def analyse_parent(parent):
     if active is False:
         if inactive is None:
             issue(parent, E_NO_CHILD, "fixable")
-            fix = {}
-            fix[A_ISPARENT] = SCM_FALSE
+            fix = {A_ISPARENT: SCM_FALSE}
             parent.fixit(fix, "Remove 'is parent'")
         else:
             issue(parent, E_INACTIVE, f"child {inactive}")
@@ -64,6 +63,5 @@ def analyse_parent(parent):
     login = get_config(parent.scm, C_PARENTS, C_LOGIN, C_MANDATORY)
     if login and (parent.username is None) and parent.email:
         issue(parent, E_NO_LOGIN, "Parent (fixable)")
-        fix = {}
-        fix[A_USERNAME] = parent.email
+        fix = {A_USERNAME: parent.email}
         parent.fixit(fix, f"Create login, username: {parent.email}")
