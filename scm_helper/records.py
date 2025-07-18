@@ -235,7 +235,6 @@ class Records:
 
     def process_records(self):
         """Process all records files."""
-
         cfg_set = get_config(self.scm, C_RECORDSET)
 
         if cfg_set:
@@ -267,7 +266,6 @@ class Records:
 
     def delete(self):
         """Delete."""
-
         # pylint: disable=modified-iterating-list
         for record in self.recordset:
             del record
@@ -351,7 +349,6 @@ class RecordFile:
 
     def read_baseline(self):
         """Read baseline."""
-
         if self.is_relay:
             self.relay = RelayRecord(self.ages)
             res = self.relay.read_baseline(self.csvfile, self.scm, self.cfg)
@@ -363,7 +360,6 @@ class RecordFile:
 
     def read_newtimes(self, newtimes):
         """Read swimtimes."""
-
         if self.is_relay:
             return True
 
