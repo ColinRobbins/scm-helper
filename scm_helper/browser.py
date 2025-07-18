@@ -11,23 +11,19 @@ import selenium
 # pylint: disable=unused-import   #it is used!!!
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
 
 
 from scm_helper.config import (
     C_BASE_URL,
-    C_BROWSER,
     C_CHECK_URL,
     C_DEBUG_LEVEL,
     C_ELEMENTS,
     C_ELEMENTS2,
     C_FACEBOOK,
     C_PREFIX,
-    C_SELENIUM,
     C_SUFFIX,
     C_SWIM_ENGLAND,
     C_TEST_ID,
-    C_WEB_DRIVER,
     C_XPATH,
     CONFIG_DIR,
     EXCEPTION_SE_HIDDEN,
