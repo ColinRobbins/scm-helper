@@ -5,6 +5,8 @@
 * SCM API breaking change: Boolean type (Issue #59)
 * Enhancement: Issue 50 - multiple types in a Group
 * Enhancement: Issue 54 - multiple groups or types in search for creating a list.
+* Latest PyLint fixes.
+* Removed leagacy features no longer needed (Covid and fix index)
 
 ## 1.9.5
 01/3/2025
