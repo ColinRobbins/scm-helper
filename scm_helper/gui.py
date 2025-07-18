@@ -288,11 +288,7 @@ class ScmGui:
         home = str(Path.home())
         cfg = os.path.join(home, CONFIG_DIR)
 
-        dir_opt = {}
-        dir_opt["title"] = "Find Swim England File"
-        dir_opt["initialdir"] = cfg
-        dir_opt["parent"] = self.report_window
-        dir_opt["defaultextension"] = ".csv"
+        dir_opt = {"title": "Find Swim England File", "initialdir": cfg, "parent": self.report_window, "defaultextension": ".csv"}
 
         where = filedialog.askopenfilename(**dir_opt)
         if csv.readfile(where, self.scm) is False:
@@ -658,10 +654,7 @@ class AnalysisThread(threading.Thread):
             home = str(Path.home())
             backup = os.path.join(home, CONFIG_DIR, BACKUP_DIR)
 
-            dir_opt = {}
-            dir_opt["initialdir"] = backup
-            dir_opt["mustexist"] = True
-            dir_opt["parent"] = self.gui.master
+            dir_opt = {"initialdir": backup, "mustexist": True, "parent": self.gui.master}
 
             where = filedialog.askdirectory(**dir_opt)
             if wrap(None, self.scm.decrypt, where) is False:
@@ -789,10 +782,7 @@ class RecordThread(threading.Thread):
         self.gui.notify_text.config(state=NORMAL)
         self.gui.notify_text.delete("1.0", END)
 
-        dir_opt = {}
-        dir_opt["title"] = "Locate new swim times CSV file from SCM"
-        dir_opt["parent"] = self.gui.master
-        dir_opt["defaultextension"] = ".csv"
+        dir_opt = {"title": "Locate new swim times CSV file from SCM", "parent": self.gui.master, "defaultextension": ".csv"}
 
         if self.newtimes:
             filename = filedialog.askopenfilename(**dir_opt)

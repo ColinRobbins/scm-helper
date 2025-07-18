@@ -43,8 +43,7 @@ def check_coach_permissions(coach, role):
     debug(f"Permission check: {coach.name}, {role.name}", 7)
     if coach.is_coach is False:
         issue(coach, E_NOT_A_COACH, f"Role: {role.name} (fixable)")
-        fix = {}
-        fix[A_ISCOACH] = SCM_TRUE
+        fix = {A_ISCOACH: SCM_TRUE}
         coach.fixit(fix, "Add 'Is a coach'")
 
     coach.set_in_coach_role()

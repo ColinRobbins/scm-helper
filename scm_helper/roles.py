@@ -80,8 +80,7 @@ class Role(Entity):
         if get_config(self.scm, C_ROLES, C_VOLUNTEER, C_MANDATORY):
             if member.is_volunteer is False:
                 issue(member, E_VOLUNTEER, f"Role: {self.name} (fixable)")
-                fix = {}
-                fix[A_ISVOLUNTEER] = SCM_TRUE
+                fix = {A_ISVOLUNTEER: SCM_TRUE}
                 member.fixit(fix, "Mark as volunteer")
 
         if member.last_login:
