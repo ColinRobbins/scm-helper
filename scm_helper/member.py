@@ -598,7 +598,6 @@ class Member(Entity):
 
     def fix_secat(self):
         """fix_se categories."""
-
         if A_ASA_CATEGORY not in self.data:
             return False
 

@@ -478,7 +478,6 @@ class API:
 
     def fix_secat(self):
         """fix_se categories."""
-
         res = self.members.fix_secat()
         if res is False:
             return res
