@@ -18,6 +18,7 @@ from scm_helper.config import (
     C_NO_SESSIONS,
     C_SESSIONS,
     C_TYPE,
+    C_TYPES,
     CTYPE_COACH,
     CTYPE_SWIMMER,
     CTYPE_MASTER,
@@ -87,6 +88,7 @@ class Group(Entity):
         wanted_sessions = None
         allowed = None
         xtype = None
+        xtypes = None
         ignore = None
         confirm = None
         login = None
@@ -98,6 +100,7 @@ class Group(Entity):
             wanted_sessions = self.config_item(C_SESSIONS)
             allowed = self.config_item(C_NO_SESSION_ALLOWED)
             xtype = self.config_item(C_TYPE)
+            xtypes = self.config_item(C_TYPES)
             confirm = self.config_item(C_CONFIRMATION)
             login = self.config_item(C_LOGIN)
 
@@ -164,7 +167,11 @@ class Group(Entity):
                     fix[A_USERNAME] = member.email
                     member.fixit(fix, f"Create login, username: {member.email}")
 
-            if xtype:
+            if xtypes is None:
+                xtypes = [xtype]
+            
+            for xtype in xtypes:
+                
                 if check_type(member, xtype):
                     continue
                 if xtype == CTYPE_SWIMMER:  # if swimmers wanted, allow it to be a coach

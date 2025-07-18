@@ -356,6 +356,7 @@ SCHEMA = Schema(
                     Optional(C_NO_SESSIONS): bool,
                     Optional(C_SESSIONS): [session],
                     Optional(C_TYPE): member_type,
+                    Optional(C_TYPES): [member_type],
                     Optional(C_UNIQUE): bool,
                     Optional(C_LOGIN): bool,
                 }

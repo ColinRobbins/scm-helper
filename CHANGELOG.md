@@ -2,7 +2,8 @@
 
 ## 1.10.0
 18/07/2025
-* Pre-emptive updates for SCM API change
+* SCM API breaking change: Boolean type (Issue #59)
+* Enhancement: Issue 50 - multiple types in a Group
 
 ## 1.9.5
 01/3/2025
@@ -14,7 +15,7 @@
 
 ## 1.9.3
 11/10/2023
-* Fixed Selenium Driver downlaod (Issue #57)
+* Fixed Selenium Driver download (Issue #57)
 
 ## 1.9.2
 15/07/2022
