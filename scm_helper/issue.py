@@ -606,6 +606,7 @@ class IssueHandler:
 
 def create_dict(xdict, key1, key2, val1, val2, rpt, rev, entity):
     """Create 2 dimensiaonal dictionary."""
+    # pylint: disable=too-many-positional-arguments
     # pylint: disable=too-many-arguments
     if key1 not in xdict:
         xdict[key1] = {}

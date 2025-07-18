@@ -251,6 +251,9 @@ def start_browser():
 def read_cookies(browser, cookiefile, url, scm):
     """Read cookies."""
     if os.path.isfile(cookiefile):
+
+        cookies = None
+
         browser.get(url)
 
         if scm:

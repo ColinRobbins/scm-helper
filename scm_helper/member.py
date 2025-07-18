@@ -54,7 +54,6 @@ from scm_helper.config import (
     EXCEPTION_NOSAFEGUARD,
     PRINT_DATE_FORMAT,
     SCM_DATE_FORMAT,
-    SCM_TRUE,
     get_config,
 )
 from scm_helper.entity import Entity, get_date, print_all

@@ -84,6 +84,7 @@ class Group(Entity):
         no_session = False
         check_dbs = False
         wanted_session = None
+        wanted_sessions = None
         allowed = None
         xtype = None
         ignore = None

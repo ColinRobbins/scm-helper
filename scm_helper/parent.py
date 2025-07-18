@@ -10,7 +10,7 @@ from scm_helper.config import (
     C_MIN_AGE,
     C_PARENTS,
     get_config,
-    SCM_FALSE
+    SCM_FALSE,
 )
 from scm_helper.issue import (
     E_INACTIVE,

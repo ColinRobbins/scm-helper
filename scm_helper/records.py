@@ -584,7 +584,7 @@ class SwimTimes:
         if verify and member and member.date_joined and (swimdate < member.date_joined):
             debug(f"Line {count}: Ignored, not a member at time of swim", 2)
             return
-            
+
         if verify and member and member.is_active is False:
             debug(f"Line {count}: Ignored, inactive member", 2)
             return
@@ -1025,6 +1025,7 @@ class Record:
 
     def print_record(self, stroke, dist, age, course, gender):
         """Print a record."""
+        # pylint: disable=too-many-positional-arguments
         # pylint: disable=too-many-arguments
         lookup = f"{gender} {age} {dist} {stroke} {course}"
 
@@ -1110,6 +1111,7 @@ class RelayRecord(Record):
 
     def print_record(self, stroke, dist, age, course, gender):
         """Print a record."""
+        # pylint: disable=too-many-positional-arguments
         # pylint: disable=too-many-arguments
         # pylint: disable=too-many-locals
         lookup = f"{gender} {age} {dist} {stroke} {course}"
