@@ -164,9 +164,11 @@ class ScmGui:
         cmd.add_command(label="Fix Errors", command=self.fixit, state=DISABLED)
         self.menu_fixit = [cmd, "Fix Errors"]
 
-        label = "Fix Search index"
-        cmd.add_command(label=label, command=self.fix_search, state=DISABLED)
-        self.menus.append([cmd, label])
+        ### NO LONGER NEEDED
+        ###
+        ### label = "Fix Search index"
+        ### cmd.add_command(label=label, command=self.fix_search, state=DISABLED)
+        ### self.menus.append([cmd, label])
 
         label = "Update SE Categories"
         cmd.add_command(label=label, command=self.fix_secat, state=DISABLED)
@@ -190,9 +192,11 @@ class ScmGui:
         cmd.add_command(label="List Coaches", command=self.coaches, state=DISABLED)
         self.menus.append([cmd, "List Coaches"])
 
-        label = "Show Swimmers Covid Declaration per session"
-        cmd.add_command(label=label, command=self.covid, state=DISABLED)
-        self.menus.append([cmd, label])
+        ### NO LONGER NEEDED
+        ###
+        ### label = "Show Swimmers Covid Declaration per session"
+        ### cmd.add_command(label=label, command=self.covid, state=DISABLED)
+        ### self.menus.append([cmd, label])
 
         label = "List Swimmers sessions"
         cmd.add_command(label=label, command=self.sessions, state=DISABLED)
