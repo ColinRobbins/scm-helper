@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.10.1
+18/7/2025
+* Code quality changes
+
 ## 1.10.0
 18/07/2025
 * SCM API breaking change: Boolean type (Issue #59)
