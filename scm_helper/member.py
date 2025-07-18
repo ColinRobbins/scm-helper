@@ -54,6 +54,7 @@ from scm_helper.config import (
     EXCEPTION_NOSAFEGUARD,
     PRINT_DATE_FORMAT,
     SCM_DATE_FORMAT,
+    SCM_TRUE,
     get_config,
 )
 from scm_helper.entity import Entity, get_date, print_all
@@ -892,6 +893,8 @@ class Member(Entity):
         isa = self.check_attribute(A_ACTIVE)
         if isa == "1":
             return True
+        if isa == "Yes":
+            return True
         return False
 
     @property
@@ -899,6 +902,8 @@ class Member(Entity):
         """Is it a swimmer."""
         isa = self.check_attribute("IsASwimmer")
         if isa == "1":
+            return True
+        if isa == "Yes":
             return True
         return False
 
@@ -908,6 +913,8 @@ class Member(Entity):
         isa = self.check_attribute(A_ISCOACH)
         if isa == "1":
             return True
+        if isa == "Yes":
+            return True
         return False
 
     @property
@@ -915,6 +922,8 @@ class Member(Entity):
         """Is it a Master."""
         isa = self.check_attribute(A_ISMASTER)
         if isa == "1":
+            return True
+        if isa == "Yes":
             return True
         return False
 
@@ -924,6 +933,8 @@ class Member(Entity):
         isa = self.check_attribute(A_ISPARENT)
         if isa == "1":
             return True
+        if isa == "Yes":
+            return True
         return False
 
     @property
@@ -931,6 +942,8 @@ class Member(Entity):
         """Is it a syncro swimmer."""
         isa = self.check_attribute("SynchronisedSwimming")
         if isa == "1":
+            return True
+        if isa == "Yes":
             return True
         return False
 
@@ -940,6 +953,8 @@ class Member(Entity):
         isa = self.check_attribute("LTSTeacher")
         if isa == "1":
             return True
+        if isa == "Yes":
+            return True
         return False
 
     @property
@@ -947,6 +962,8 @@ class Member(Entity):
         """Is it a Open Water swimmer."""
         isa = self.check_attribute("OpenWater")
         if isa == "1":
+            return True
+        if isa == "Yes":
             return True
         return False
 
@@ -956,6 +973,8 @@ class Member(Entity):
         isa = self.check_attribute("LifeSaving")
         if isa == "1":
             return True
+        if isa == "Yes":
+            return True
         return False
 
     @property
@@ -963,6 +982,8 @@ class Member(Entity):
         """Is it a polo player."""
         isa = self.check_attribute("WaterPolo")
         if isa == "1":
+            return True
+        if isa == "Yes":
             return True
         return False
 
@@ -972,6 +993,8 @@ class Member(Entity):
         isa = self.check_attribute("CommitteeMember")
         if isa == "1":
             return True
+        if isa == "Yes":
+            return True
         return False
 
     @property
@@ -979,6 +1002,8 @@ class Member(Entity):
         """Is it a Volunteer."""
         isa = self.check_attribute(A_ISVOLUNTEER)
         if isa == "1":
+            return True
+        if isa == "Yes":
             return True
         return False
 

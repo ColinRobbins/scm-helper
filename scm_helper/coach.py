@@ -9,6 +9,7 @@ from scm_helper.config import (
     EXCEPTION_NOSESSIONS,
     EXCEPTION_PERMISSIONS,
     get_config,
+    SCM_TRUE,
 )
 from scm_helper.issue import (
     E_COACH_WITH_SESSIONS,
@@ -43,7 +44,7 @@ def check_coach_permissions(coach, role):
     if coach.is_coach is False:
         issue(coach, E_NOT_A_COACH, f"Role: {role.name} (fixable)")
         fix = {}
-        fix[A_ISCOACH] = "1"
+        fix[A_ISCOACH] = SCM_TRUE
         coach.fixit(fix, "Add 'Is a coach'")
 
     coach.set_in_coach_role()

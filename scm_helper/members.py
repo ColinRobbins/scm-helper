@@ -7,6 +7,8 @@ from scm_helper.config import (
     C_NAME,
     C_TYPES,
     CTYPE_SYNCHRO,
+    SCM_FALSE,
+    SCM_TRUE,
     get_config,
 )
 from scm_helper.entity import Entities
@@ -55,20 +57,20 @@ class Members(Entities):
         lastname = member[A_LASTNAME]
         name = f"{firtname} {lastname}"
         if name in self.by_name:
-            if member[A_ACTIVE] == "1" and self.by_name[name].is_active:
+            if member[A_ACTIVE] == SCM_TRUE and self.by_name[name].is_active:
                 act1 = member[A_ACTIVE]
                 act2 = self.by_name[name].is_active
                 debug(f"{name}: {act1}-{act2}", 6)
                 issue(self.by_name[name], E_DUPLICATE, name)
             else:
                 active = self.by_name[name].is_active
-                if member[A_ACTIVE] == "0" and active is False:
+                if member[A_ACTIVE] == SCM_FALSE and active is False:
                     issue(self.by_name[name], E_DUPLICATE, "BOTH inactive", 9)
                 else:
                     issue(self.by_name[name], E_DUPLICATE, "One is inactive", -1)
             return
         if name in self.knownas:
-            if member[A_ACTIVE] == "1" and self.knownas[name].is_active:
+            if member[A_ACTIVE] == SCM_TRUE and self.knownas[name].is_active:
                 issue(self.knownas[name], E_DUPLICATE, name, 0, "(Known as)")
             else:
                 issue(self.knownas[name], E_DUPLICATE, "One is inactive (Known as)", -1)

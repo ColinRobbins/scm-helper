@@ -15,6 +15,7 @@ from scm_helper.config import (
     C_UNUSED,
     C_VOLUNTEER,
     get_config,
+    SCM_TRUE,
 )
 from scm_helper.entity import Entities, Entity
 from scm_helper.issue import (
@@ -80,7 +81,7 @@ class Role(Entity):
             if member.is_volunteer is False:
                 issue(member, E_VOLUNTEER, f"Role: {self.name} (fixable)")
                 fix = {}
-                fix[A_ISVOLUNTEER] = "1"
+                fix[A_ISVOLUNTEER] = SCM_TRUE
                 member.fixit(fix, "Mark as volunteer")
 
         if member.last_login:

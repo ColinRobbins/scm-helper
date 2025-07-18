@@ -84,6 +84,9 @@ SCM_DATE_FORMAT = "%Y-%m-%d"
 PRINT_DATE_FORMAT = "%d-%m-%Y"
 SCM_CSV_DATE_FORMAT = "%d/%m/%Y"
 SCM_ALT_CSV_DATE_FORMAT = "%d %b %Y"
+SCM_FALSE = "0"
+SCM_TRUE = "1"
+
 
 # SCM Data Attributes
 A_ACTIVE = "Active"

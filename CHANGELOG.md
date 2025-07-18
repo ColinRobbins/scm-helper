@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.10.0
+18/07/2025
+* Pre-emptive updates for SCM API change
+
+## 1.9.5
+01/3/2025
+* Fixed errors in coaces fixit
+
 ## 1.9.4
 29/03/2024
 * Added more options to exclude swimmer not entitled to records

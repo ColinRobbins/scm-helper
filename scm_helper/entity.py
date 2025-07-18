@@ -238,10 +238,10 @@ class Entity:
 
         # API inconsistent in use of Archive or Active - check both.
         if A_ACTIVE in self.newdata:
-            self.newdata[A_ACTIVE] = "1"  # Make sure active
+            self.newdata[A_ACTIVE] = "Yes"  # Make sure active
 
         if A_ARCHIVED in self.newdata:
-            self.newdata[A_ARCHIVED] = "1"  # Make sure active
+            self.newdata[A_ARCHIVED] = "Yes"  # Make sure active
 
         if old is False:
             del self.newdata[A_GUID]  # Will need a new GUID
@@ -252,14 +252,14 @@ class Entity:
             return self.scm.api_write(self, True)
 
         if A_ACTIVE in old:
-            if old[A_ACTIVE] == "1":
+            if old[A_ACTIVE] == "1" or old[A_ACTIVE] == "Yes":
                 return self.scm.api_write(self, False)
 
             notify("Error: Already exist, just inactive.  Re-activate in SCM.\n")
             return False
 
         if A_ARCHIVED in old:
-            if old[A_ARCHIVED] == 0:
+            if old[A_ARCHIVED] == 0 or old[A_ARCHIVED] == "No":
                 # API is inconsistent here too - no quotes for this one.
                 return self.scm.api_write(self, False)
 

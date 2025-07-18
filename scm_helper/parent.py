@@ -10,6 +10,7 @@ from scm_helper.config import (
     C_MIN_AGE,
     C_PARENTS,
     get_config,
+    SCM_FALSE
 )
 from scm_helper.issue import (
     E_INACTIVE,
@@ -37,7 +38,7 @@ def analyse_parent(parent):
         if inactive is None:
             issue(parent, E_NO_CHILD, "fixable")
             fix = {}
-            fix[A_ISPARENT] = "0"
+            fix[A_ISPARENT] = SCM_FALSE
             parent.fixit(fix, "Remove 'is parent'")
         else:
             issue(parent, E_INACTIVE, f"child {inactive}")

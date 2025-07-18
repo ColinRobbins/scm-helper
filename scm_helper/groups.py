@@ -26,6 +26,7 @@ from scm_helper.config import (
     EXCEPTION_GROUPNOSESSION,
     EXCEPTION_NONSWIMMINGMASTER,
     SCM_CSV_DATE_FORMAT,
+    SCM_TRUE,
     get_config,
 )
 from scm_helper.entity import Entities, Entity, check_type
@@ -189,7 +190,7 @@ class Group(Entity):
                     attr = "WaterPolo"
 
                 if attr:
-                    fix[attr] = "1"
+                    fix[attr] = SCM_TRUE
                     member.fixit(fix, f"Add type: {attr}")
 
     def check_age(self, swimmer):
