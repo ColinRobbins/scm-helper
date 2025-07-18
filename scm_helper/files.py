@@ -17,8 +17,7 @@ class Files:
         if error in self._error:
             self._error[error].append([name, extra])
         else:
-            self._error[error] = []
-            self._error[error].append([name, extra])
+            self._error[error] = [[name, extra]]
 
     def print_errors(self):
         """Print errors."""
