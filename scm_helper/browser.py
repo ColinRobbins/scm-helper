@@ -259,8 +259,7 @@ def read_cookies(browser, cookiefile, url, scm):
         else:
             try:
                 with open(cookiefile, FILE_READ, encoding="utf8") as file:
-                    data = file.read()
-                    cookies = json.loads(data)
+                    cookies = json.load(file)
 
             except EnvironmentError as error:
                 notify(f"Failed to read {cookiefile}\n{error}\n")
