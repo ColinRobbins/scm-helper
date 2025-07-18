@@ -169,9 +169,9 @@ class Group(Entity):
 
             if xtypes is None:
                 xtypes = [xtype]
-            
+
             for xtype in xtypes:
-                
+
                 if check_type(member, xtype):
                     continue
                 if xtype == CTYPE_SWIMMER:  # if swimmers wanted, allow it to be a coach

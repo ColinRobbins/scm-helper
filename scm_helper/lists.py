@@ -147,6 +147,7 @@ class NewList(Entity):
     def populate(self):
         """Search for entries and fill the list."""
         # pylint: disable=too-many-branches, too-many-statements
+        # pylint: disable=too-many-locals
         cfg = get_config(self.scm, C_LISTS, C_LIST, self.name)
 
         # set defaults
@@ -174,6 +175,7 @@ class NewList(Entity):
         if C_MAX_YEAR in cfg:
             max_year = cfg[C_MAX_YEAR]
 
+        # pylint: disable=too-many-nested-blocks
         for member in self.scm.members.entities:
 
             if member.is_active is False:
@@ -203,13 +205,13 @@ class NewList(Entity):
             found = True
             xgroups = []
             if C_GROUP in cfg:
-                xgroups = [ cfg[C_GROUP] ] 
+                xgroups = [cfg[C_GROUP]]
                 found = False
-            if C_GROUPS in cfg: 
+            if C_GROUPS in cfg:
                 xgroups = cfg[C_GROUPS]
                 found = False
 
-            end_loop = False   
+            end_loop = False
             for xgroup in xgroups:
                 if member.find_group(xgroup) is True:
                     found = True
@@ -219,7 +221,7 @@ class NewList(Entity):
                                 end_loop = True
                             if member.find_group(cfg[C_ALLOW_GROUP]) is False:
                                 end_loop = True
-                            
+
             if end_loop or not found:
                 continue
 
@@ -230,20 +232,20 @@ class NewList(Entity):
                     xgender = "M"
                 if member.gender != xgender:
                     continue
-                    
+
             found = True
             xtypes = []
             if C_TYPE in cfg:
-                xtypes = [ cfg[C_TYPE] ] 
+                xtypes = [cfg[C_TYPE]]
                 found = False
-            if C_GROUPS in cfg: 
-                xtypes = cfg[C_TYPE]
-                found = False       
+            if C_GROUPS in cfg:
+                xtypes = cfg[C_TYPES]
+                found = False
 
             for xtype in xtypes:
                 if check_type(member, xtype) is True:
                     found = True
-                    
+
             if not found:
                 continue
 
