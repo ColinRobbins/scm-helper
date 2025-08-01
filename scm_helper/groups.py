@@ -175,7 +175,7 @@ class Group(Entity):
                 if xtype is None:
                     # Edge case, must be a better way, but a simple check.
                     continue
-                
+
                 if check_type(member, xtype):
                     continue
                 if xtype == CTYPE_SWIMMER:  # if swimmers wanted, allow it to be a coach
