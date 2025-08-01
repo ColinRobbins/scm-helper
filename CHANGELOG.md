@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.10.2
+1/8/2025 
+* bug fix if type is None in check groups.
+
 ## 1.10.1
 18/7/2025
 * Code quality changes
