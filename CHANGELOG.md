@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.10.3
+15/8/2025
+* Fix issue #70
+
 ## 1.10.2
 1/8/2025 
 * bug fix if type is None in check groups.

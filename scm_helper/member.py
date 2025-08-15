@@ -415,12 +415,15 @@ class Member(Entity):
         lastname = self.data[A_LASTNAME]
         knownas = self.data[A_KNOWNAS]
         ka_upper = True
+        fn_upper = True
+        ln_upper = True
 
         if knownas:
             ka_upper = knownas[0].isupper()
-
-        fn_upper = firstname[0].isupper()
-        ln_upper = lastname[0].isupper()
+        if firstname:
+            fn_upper = firstname[0].isupper()
+        if lastname:
+            ln_upper = lastname[0].isupper()
 
         if fn_upper and ln_upper and ka_upper:
             return
