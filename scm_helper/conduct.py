@@ -22,7 +22,13 @@ from scm_helper.config import (
     get_config,
 )
 from scm_helper.entity import Entities, Entity
-from scm_helper.issue import E_NO_CONDUCT, E_NO_CONDUCT_DATE, debug_trace, issue
+from scm_helper.issue import (
+    E_NO_CONDUCT,
+    E_NO_CONDUCT_DATE,
+    E_NO_SWIMMERS,
+    debug_trace,
+    issue,
+)
 from scm_helper.notify import notify
 
 
@@ -45,6 +51,9 @@ class CodesOfConduct(Entities):
             return False
         page = 1
 
+        if self.j_head and self.j_head in entities:
+            entities = entities[self.j_head]
+
         for entity in entities:
             guid = entity["Guid"]
             notify(f"{page} ")
@@ -52,6 +61,7 @@ class CodesOfConduct(Entities):
             api_data = self.scm.api_read(f"{self._url}/{guid}", 1)
             if api_data is None:
                 return False
+
             self._raw_data += [api_data]
 
             data = self.new_entity(api_data)
@@ -101,12 +111,18 @@ class Conduct(Entity):
         # the attribute to the swimmer in linkage.
         # This approach breaks the model. Oh well.
 
+        # pylint: disable=too-many-branches
+
         ignores = get_config(self.scm, C_CONDUCT, self.name, C_IGNORE_GROUP)
         c_date_str = get_config(self.scm, C_CONDUCT, self.name, C_DATE)
 
         if c_date_str is None:
             c_date_str = "1900-01-01"
         c_date = datetime.datetime.strptime(c_date_str, SCM_DATE_FORMAT)
+
+        if A_MEMBERS not in self.data:
+            issue(self, E_NO_SWIMMERS, "Code of Conduct")
+            return
 
         for member in self.data[A_MEMBERS]:
 
@@ -192,6 +208,9 @@ def check_conduct(member, my_codes):
                         fix = code.newdata
                     else:
                         fix = {}
+
+                    if A_MEMBERS not in code.data:
+                        break
 
                     fix[A_MEMBERS] = code.data[A_MEMBERS].copy()
                     add = {A_GUID: member.guid}

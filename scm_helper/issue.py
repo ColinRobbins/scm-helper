@@ -240,7 +240,7 @@ E_NO_SWIMMERS = {
     NAME: "E_NO_SWIMMERS",
     MESSAGE: "No swimmers",
     REVERSE: False,
-    REPORT: R_SESSION}
+    REPORT: R_MEMBER}
 E_TOO_MANY_SWIMMERS = {
     NAME: "E_TOO_MANY_SWIMMERS",
     MESSAGE: "Max swimmers exceeded",

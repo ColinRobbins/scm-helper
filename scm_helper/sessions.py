@@ -33,6 +33,7 @@ from scm_helper.issue import (
     E_NOT_ATTENDED,
     E_NOT_IN_GROUP,
     E_TOO_MANY_SWIMMERS,
+    debug,
     debug_trace,
     issue,
 )
@@ -108,7 +109,9 @@ class Session(Entity):
 
     def linkage(self, members):
         """Link coaches and swimmers."""
+
         if self.is_active is False:
+            debug(f"Inactive Session: {self.name}", 9)
             return
 
         super().linkage(members)
@@ -321,14 +324,20 @@ class Session(Entity):
     def is_active(self):
         """Is the entry active..."""
         if A_ARCHIVED in self.data:
-            if self.data[A_ARCHIVED] == 0:
+            if self.data[A_ARCHIVED] == 0:  # Old API
                 return True
+            if self.data[A_ARCHIVED] == "Yes":  # New API
+                return False
+            return True
         return False
 
     @property
     def max_members(self):
         """Is the entry active..."""
         if A_MAX_MEMBERS in self.data:
-            return self.data[A_MAX_MEMBERS]
+            num = self.data[A_MAX_MEMBERS]
+            if isinstance(num, int):
+                return num
+            return int(num)
 
         return 9999

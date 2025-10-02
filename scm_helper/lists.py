@@ -33,9 +33,9 @@ A_LISTNAME = "ListName"
 class Lists(Entities):
     """Lists."""
 
-    def __init__(self, scm, name, url):
+    def __init__(self, scm, name, url, j_head):
         """Initilaise."""
-        super().__init__(scm, name, url)
+        super().__init__(scm, name, url, j_head)
         self._suffix = None
         self.by_name = {}
         self.newlists = []
@@ -71,7 +71,8 @@ class Lists(Entities):
             xlist.generate_data(self._suffix)
 
             if xlist.upload() is None:
-                pass  # not sure what to do, just carry on!
+                notify(f"List update failed: {xlist.name}")
+                # not sure what to do, just carry on!
 
     def delete(self):
         """Delete all members."""
@@ -268,12 +269,17 @@ class NewList(Entity):
         xlist = None
         if listname in self.scm.lists.by_name:
             xlist = self.scm.lists.by_name[listname]
-            self.newdata[A_GUID] = xlist.guid
+            #self.newdata[A_GUID] = xlist.guid
             self.new_list = False
+            self.url = f"{self.url}/{xlist.guid}"
 
     def upload(self):
         """Create data to upload."""
-        notify(f"Creating / Updating list: {self.name}\n")
+        if self.new_list:
+            notify(f"Creating list: {self.name}\n")
+        else:
+            notify(f"Updating list: {self.name}\n")
+
         return self.scm.api_write(self, self.new_list)
 
     def add_member(self, member):

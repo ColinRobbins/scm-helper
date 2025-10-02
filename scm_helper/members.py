@@ -23,7 +23,7 @@ class Members(Entities):
     # pylint: disable=too-many-instance-attributes
     # Need them all!
 
-    def __init__(self, scm, name, url):
+    def __init__(self, scm, name, url, j_head):
         """Initialize."""
         # pylint: disable=W0231
         # DO NOT call super() - it re-reads the data in the wrong class.
@@ -37,6 +37,7 @@ class Members(Entities):
         self._name = name
         self._url = url
         self._raw_data = []
+        self.j_head = j_head
 
         self.facebook = {}
         self.count_coaches = 0

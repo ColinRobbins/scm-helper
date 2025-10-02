@@ -6,21 +6,22 @@ from scm_helper.notify import notify
 from scm_helper.version import VERSION
 
 # SCM access URLs etc
+NEW_BASE = "https://api2.swimclubmanager.co.uk/api"
 URL_BASE = "https://api.swimclubmanager.co.uk"
 
-URL_CONDUCT = f"{URL_BASE}/CodeOfConduct"
-URL_EVENTS = f"{URL_BASE}/ClubEvents"
-URL_GROUPS = f"{URL_BASE}/ClubGroups"
-URL_INCIDENTBOOK = f"{URL_BASE}/IncidentBook"
-URL_LISTS = f"{URL_BASE}/EmailLists"
-URL_MEETS = f"{URL_BASE}/Meets"
+URL_CONDUCT = f"{NEW_BASE}/CodeOfConduct"
+URL_EVENTS = f"{NEW_BASE}/ClubEvents"
+URL_GROUPS = f"{NEW_BASE}/ClubGroups"
+URL_INCIDENTBOOK = f"{NEW_BASE}/IncidentBook"
+URL_LISTS = f"{NEW_BASE}/EmailLists"
+URL_MEETS = f"{NEW_BASE}/Meets"
 URL_MEMBERS = f"{URL_BASE}/Members"
-URL_NOTICE = f"{URL_BASE}/NoticeBoard"
-URL_ROLES = f"{URL_BASE}/ClubRoles"
-URL_SESSIONS = f"{URL_BASE}/ClubSessions"
-URL_TRIALS = f"{URL_BASE}/TrialRequests"
-URL_WAITINGLIST = f"{URL_BASE}/WaitingList"
-URL_WHO = f"{URL_BASE}/WhosWho"
+URL_NOTICE = f"{NEW_BASE}/NoticeBoard"
+URL_ROLES = f"{NEW_BASE}/ClubRoles"
+URL_SESSIONS = f"{NEW_BASE}/ClubSessions"
+URL_TRIALS = f"{NEW_BASE}/TrialRequests"
+URL_WAITINGLIST = f"{NEW_BASE}/WaitingList"
+URL_WHO = f"{NEW_BASE}/WhosWho"
 
 HELPURL = "https://github.com/ColinRobbins/scm-helper/wiki"
 

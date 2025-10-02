@@ -34,7 +34,7 @@ class Entities:
     # pylint: disable=too-many-instance-attributes
     # Need them all!
 
-    def __init__(self, scm, name, url):
+    def __init__(self, scm, name, url, j_head):
         """Initialize."""
         self.entities = []
         self.by_guid = {}
@@ -45,6 +45,7 @@ class Entities:
         self._url = url
         self.count = 0
         self._raw_data = []
+        self.j_head = j_head
 
     def get_data(self):
         """Get data."""
@@ -58,8 +59,13 @@ class Entities:
             data = self.scm.api_read(self._url, page)
             if data is None:
                 return False
-            loop = self.create_entities(data)
-            self._raw_data += data
+            xdata = data
+
+            if self.j_head and self.j_head in data:
+                xdata = data[self.j_head]
+
+            loop = self.create_entities(xdata)
+            self._raw_data += xdata
             page += 1
             count += loop
 
@@ -177,7 +183,11 @@ class Entity:
     @debug_trace(6)
     def linkage(self, members):
         """Link members."""
-        if (A_MEMBERS in self.data) and (len(self.data[A_MEMBERS]) > 0):
+        if (
+            (A_MEMBERS in self.data)
+            and (self.data[A_MEMBERS] is not None)
+            and (len(self.data[A_MEMBERS]) > 0)
+        ):
             for swimmer in self.data[A_MEMBERS]:
                 if swimmer[A_GUID] not in members.by_guid:
                     msg = (
@@ -189,17 +199,27 @@ class Entity:
                 if guid.is_active:
                     self.members.append(guid)
                 else:
-                    name = guid.name
-                    issue(self, E_INACTIVE, f"member {name}", 0, "Fixable")
-
                     if self.newdata and (A_MEMBERS in self.newdata):
                         fix = self.newdata
                     else:
                         fix = {}
                         fix[A_MEMBERS] = self.data[A_MEMBERS].copy()
+
                     remove = {A_GUID: guid.guid}
-                    fix[A_MEMBERS].remove(remove)
-                    self.fixit(fix, f"Delete {guid.name} (inactive)")
+                    name = guid.name
+
+                    if remove in fix[A_MEMBERS]:
+                        issue(self, E_INACTIVE, f"member {name}", 0, "Fixable")
+                        fix[A_MEMBERS].remove(remove)
+                        self.fixit(fix, f"Delete {guid.name} (inactive)")
+                    else:
+                        if guid.is_archived:
+                            debug(f"{name} not in {self.name} - archived", 6)
+                        else:
+                            debug(
+                                f"{name} not in {self.name} - not archived, so who are they?",
+                                6,
+                            )
 
     def check_attribute(self, attribute):
         """Return the value, if there is one."""
@@ -322,6 +342,11 @@ class Entity:
     def is_active(self):
         """Is the entity active - True unless overridden."""
         return True
+
+    @property
+    def is_archived(self):
+        """Is the entity archived - False unless overridden."""
+        return False
 
     @property
     def newstarter(self):

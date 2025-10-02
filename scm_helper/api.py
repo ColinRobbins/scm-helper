@@ -160,17 +160,17 @@ class API:
             return False
 
         mapping = [
-            [SESSIONS, URL_SESSIONS, Sessions],
-            [GROUPS, URL_GROUPS, Groups],
-            [LISTS, URL_LISTS, Lists],
-            [ROLES, URL_ROLES, Roles],
-            [CODES_OF_CONDUCT, URL_CONDUCT, CodesOfConduct],
-            [MEMBERS, URL_MEMBERS, Members],
+            [SESSIONS, URL_SESSIONS, Sessions, "Sessions"],
+            [GROUPS, URL_GROUPS, Groups, "Groups"],
+            [LISTS, URL_LISTS, Lists, "EmailLists"],
+            [ROLES, URL_ROLES, Roles, "Roles"],
+            [CODES_OF_CONDUCT, URL_CONDUCT, CodesOfConduct, "CodeOfConduct"],
+            [MEMBERS, URL_MEMBERS, Members, None],
         ]
 
         for item in mapping:
-            name, url, xclass = item
-            res = xclass(self, name, url)
+            name, url, xclass, j_head = item
+            res = xclass(self, name, url, j_head)
             self.classes.append(res)
 
             # Ugly, but can's see how else to do it
@@ -193,14 +193,14 @@ class API:
 
         for xclass in BACKUP_URLS:
             name, url = xclass
-            entity = Entities(self, name, url)
+            entity = Entities(self, name, url, None)  # TODO add j_head here
             self.backup_classes.append(entity)
             name = name.rstrip("s")  # remove any plural!
             name = name.lower()
             self.class_byname[name] = entity
 
         # Finally who's who
-        entity = Who(self, WHO, URL_WHO)
+        entity = Who(self, WHO, URL_WHO, None)  # TODO add j_head here
         self.backup_classes.append(entity)
         name = WHO.lower()
         self.class_byname[name] = entity
@@ -401,19 +401,28 @@ class API:
 
         headers = {
             "User-Agent": user_agent,
-            "Authorization-Token": self._key,
+            "Authorization": self._key,
+            "Authorization-token": self._key,
             "Page": str(page),
         }
 
-        debug(f"URL:\n{url}", 9)
+        purl = url
+        if page != 1:
+            purl = f"{url}?page={page}"
+
+        debug(f"URL:\n{purl}", 5)
         debug(f"Headers:\n{headers}", 8)
 
-        response = requests.get(url, headers=headers, timeout=30)
+        response = requests.get(purl, headers=headers, timeout=30)
+
+        debug(f"Get response {response}, {response.status_code}", 6)
+
+        if response.status_code == 404:  # Worked, but not found - old API
+            debug(f"Page not found:\n{purl}", 1)
+            return None
+
         if response.ok:
             return response.json()
-
-        if response.status_code == 404:  # Worked, but not found
-            return False
 
         notify(f"\nErroring getting data from {url}, page:{page}\n")
         notify(response.reason)
@@ -428,6 +437,7 @@ class API:
         headers = {
             "content-type": "application/json",
             "User-Agent": user_agent,
+            "Authorization": self._key,
             "Authorization-Token": self._key,
         }
 
@@ -435,7 +445,7 @@ class API:
             notify("Update prohibited by config.\n")
             return None
 
-        debug(f"URL:\n{entity.url}", 9)
+        debug(f"URL:\n{entity.url}", 1)
         debug(f"Headers:\n{headers}", 8)
 
         data = entity.newdata
@@ -445,11 +455,14 @@ class API:
         else:
             debug(f"Put request:\n{data}", 7)
             response = requests.put(entity.url, json=data, headers=headers, timeout=30)
-        if response.ok:
-            return response
+
+        debug(f"Write response {response}, {response.status_code}", 1)
 
         if response.status_code == 404:  # Worked, but not found
-            return False
+            return None
+
+        if response.ok:
+            return response
 
         notify(f"\nErroring posting data {entity.name}\n")
         notify(response.reason)

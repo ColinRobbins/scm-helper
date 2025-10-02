@@ -8,6 +8,7 @@ from scm_helper.coach import analyse_coach
 from scm_helper.conduct import check_conduct
 from scm_helper.config import (
     A_ACTIVE,
+    A_ARCHIVED,
     A_ASA_CATEGORY,
     A_ASA_NUMBER,
     A_DOB,
@@ -892,6 +893,16 @@ class Member(Entity):
     def is_active(self):
         """Is the entry active..."""
         isa = self.check_attribute(A_ACTIVE)
+        if isa == "1":
+            return True
+        if isa == "Yes":
+            return True
+        return False
+
+    @property
+    def is_archived(self):
+        """Is the entry arcchived..."""
+        isa = self.check_attribute(A_ARCHIVED)
         if isa == "1":
             return True
         if isa == "Yes":
