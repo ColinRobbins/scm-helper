@@ -200,14 +200,14 @@ class API:
 
         for xclass in BACKUP_URLS:
             name, url, jtag = xclass
-            entity = Entities(self, name, url, jtag) 
+            entity = Entities(self, name, url, jtag)
             self.backup_classes.append(entity)
             name = name.rstrip("s")  # remove any plural!
             name = name.lower()
             self.class_byname[name] = entity
 
         # Finally who's who
-        entity = Who(self, WHO, URL_WHO, JTAG_WHO)  
+        entity = Who(self, WHO, URL_WHO, JTAG_WHO)
         self.backup_classes.append(entity)
         name = WHO.lower()
         self.class_byname[name] = entity

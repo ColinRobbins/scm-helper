@@ -25,7 +25,6 @@ from scm_helper.config import (
 )
 from scm_helper.entity import Entities, Entity
 from scm_helper.issue import (
-    E_INACTIVE,
     E_NEVER_ATTENDED,
     E_NO_COACH,
     E_NO_REGISTER,
@@ -111,7 +110,7 @@ class Session(Entity):
         """Link coaches and swimmers."""
 
         if self.is_active is False:
-            debug(f"Inactive Session: {self.name}", 9)
+            debug(f"Inactive Session: {self.name}", 4)
             return
 
         super().linkage(members)
@@ -124,7 +123,8 @@ class Session(Entity):
                     guid.add_coach_session(self)
                 else:
                     if self.ignore_attendance is False:
-                        issue(self, E_INACTIVE, "(Coach)")
+                        debug(f"Session Coach: {guid.name} is inactive: {self.name}", 3)
+
                 if A_LAST_ATTENDED in coach:
                     lastseen = coach[A_LAST_ATTENDED]
                     if lastseen:
@@ -260,6 +260,9 @@ class Session(Entity):
             if person.newstarter:
                 continue
 
+            if person.is_active is False:
+                continue
+
             if groups:
                 for group in groups:
                     if person.find_group(group):
@@ -324,8 +327,8 @@ class Session(Entity):
     def is_active(self):
         """Is the entry active..."""
         if A_ARCHIVED in self.data:
-            if self.data[A_ARCHIVED] == 0:  # Old API
-                return True
+            if self.data[A_ARCHIVED] == 1:  # Old API
+                return False
             if self.data[A_ARCHIVED] == "Yes":  # New API
                 return False
             return True

@@ -31,7 +31,8 @@ from scm_helper.issue import (
 )
 from scm_helper.notify import notify
 
-A_DATEAGREED = "LastAttended" # TODO remove - temporary workaround
+A_DATEAGREED = "LastAttended"  # TODO
+
 
 class CodesOfConduct(Entities):
     """Conduct."""
@@ -42,8 +43,9 @@ class CodesOfConduct(Entities):
 
         For some reason the (old) API behaved differently,
         we need to read each one...
-        
-        When the New API is the only option, this method can be deleted, as the default will be fine.
+
+        When the New API is the only option, this method can be deleted, 
+        as the default will be fine.
         """
         self._raw_data = []
 
@@ -56,12 +58,12 @@ class CodesOfConduct(Entities):
 
         if self.jtag and self.jtag in entities:
             entities = entities[self.jtag]
-            
+
         inline = True
 
         for entity in entities:
             guid = entity["Guid"]
-            
+
             if A_MEMBERS in entity:
                 # New API
                 data = self.new_entity(entity)
@@ -80,7 +82,7 @@ class CodesOfConduct(Entities):
                 api_data = self.scm.api_read(f"{self._url}/{guid}", 1)
                 if api_data is None:
                     return False
-                    
+
                 self._raw_data += [api_data]
 
                 data = self.new_entity(api_data)
