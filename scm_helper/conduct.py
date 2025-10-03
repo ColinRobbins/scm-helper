@@ -31,6 +31,7 @@ from scm_helper.issue import (
 )
 from scm_helper.notify import notify
 
+A_DATEAGREED = "LastAttended" # TODO remove - temporary workaround
 
 class CodesOfConduct(Entities):
     """Conduct."""
@@ -39,8 +40,10 @@ class CodesOfConduct(Entities):
         """
         Get member data.
 
-        For some reason the API behaves differently,
+        For some reason the (old) API behaved differently,
         we need to read each one...
+        
+        When the New API is the only option, this method can be deleted, as the default will be fine.
         """
         self._raw_data = []
 
@@ -51,29 +54,48 @@ class CodesOfConduct(Entities):
             return False
         page = 1
 
-        if self.j_head and self.j_head in entities:
-            entities = entities[self.j_head]
+        if self.jtag and self.jtag in entities:
+            entities = entities[self.jtag]
+            
+        inline = True
 
         for entity in entities:
             guid = entity["Guid"]
-            notify(f"{page} ")
+            
+            if A_MEMBERS in entity:
+                # New API
+                data = self.new_entity(entity)
+                if data:
+                    self.entities.append(data)
+                    if data.guid:  # Who's who does not have a GUID
+                        self.by_guid[data.guid] = data
+                    self.by_name[data.name] = data
+                    if data.is_active:
+                        self.count += 1
+            else:
+                # Old API
+                notify(f"{page} ")
+                inline = False
 
-            api_data = self.scm.api_read(f"{self._url}/{guid}", 1)
-            if api_data is None:
-                return False
+                api_data = self.scm.api_read(f"{self._url}/{guid}", 1)
+                if api_data is None:
+                    return False
+                    
+                self._raw_data += [api_data]
 
-            self._raw_data += [api_data]
+                data = self.new_entity(api_data)
+                self.entities.append(data)
+                self.by_guid[data.guid] = data
+                self.by_name[data.name] = data
 
-            data = self.new_entity(api_data)
-            self.entities.append(data)
-            self.by_guid[data.guid] = data
-            self.by_name[data.name] = data
+                if data.is_active:
+                    self.count += 1
+                page += 1
 
-            if data.is_active:
-                self.count += 1
-            page += 1
-
-        notify("\n")
+        if inline:
+            notify(f"{self.count}\n")
+        else:
+            notify("\n")
 
         return True
 

@@ -33,9 +33,9 @@ A_LISTNAME = "ListName"
 class Lists(Entities):
     """Lists."""
 
-    def __init__(self, scm, name, url, j_head):
+    def __init__(self, scm, name, url, jtag):
         """Initilaise."""
-        super().__init__(scm, name, url, j_head)
+        super().__init__(scm, name, url, jtag)
         self._suffix = None
         self.by_name = {}
         self.newlists = []
@@ -269,7 +269,7 @@ class NewList(Entity):
         xlist = None
         if listname in self.scm.lists.by_name:
             xlist = self.scm.lists.by_name[listname]
-            #self.newdata[A_GUID] = xlist.guid
+            self.newdata[A_GUID] = xlist.guid
             self.new_list = False
             self.url = f"{self.url}/{xlist.guid}"
 

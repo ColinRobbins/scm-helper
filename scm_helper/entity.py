@@ -34,7 +34,7 @@ class Entities:
     # pylint: disable=too-many-instance-attributes
     # Need them all!
 
-    def __init__(self, scm, name, url, j_head):
+    def __init__(self, scm, name, url, jtag):
         """Initialize."""
         self.entities = []
         self.by_guid = {}
@@ -45,7 +45,7 @@ class Entities:
         self._url = url
         self.count = 0
         self._raw_data = []
-        self.j_head = j_head
+        self.jtag = jtag
 
     def get_data(self):
         """Get data."""
@@ -61,8 +61,8 @@ class Entities:
                 return False
             xdata = data
 
-            if self.j_head and self.j_head in data:
-                xdata = data[self.j_head]
+            if self.jtag and self.jtag in data:
+                xdata = data[self.jtag]
 
             loop = self.create_entities(xdata)
             self._raw_data += xdata

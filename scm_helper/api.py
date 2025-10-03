@@ -20,6 +20,13 @@ from scm_helper.config import (
     CONFIG_DIR,
     CONFIG_FILE,
     GROUPS,
+    JTAG_SESSIONS,
+    JTAG_GROUPS,
+    JTAG_LISTS,
+    JTAG_ROLES,
+    JTAG_CODES_OF_CONDUCT,
+    JTAG_MEMBERS,
+    JTAG_WHO,
     KEYFILE,
     LISTS,
     MEMBERS,
@@ -160,17 +167,17 @@ class API:
             return False
 
         mapping = [
-            [SESSIONS, URL_SESSIONS, Sessions, "Sessions"],
-            [GROUPS, URL_GROUPS, Groups, "Groups"],
-            [LISTS, URL_LISTS, Lists, "EmailLists"],
-            [ROLES, URL_ROLES, Roles, "Roles"],
-            [CODES_OF_CONDUCT, URL_CONDUCT, CodesOfConduct, "CodeOfConduct"],
-            [MEMBERS, URL_MEMBERS, Members, None],
+            [SESSIONS, URL_SESSIONS, Sessions, JTAG_SESSIONS],
+            [GROUPS, URL_GROUPS, Groups, JTAG_GROUPS],
+            [LISTS, URL_LISTS, Lists, JTAG_LISTS],
+            [ROLES, URL_ROLES, Roles, JTAG_ROLES],
+            [CODES_OF_CONDUCT, URL_CONDUCT, CodesOfConduct, JTAG_CODES_OF_CONDUCT],
+            [MEMBERS, URL_MEMBERS, Members, JTAG_MEMBERS],
         ]
 
         for item in mapping:
-            name, url, xclass, j_head = item
-            res = xclass(self, name, url, j_head)
+            name, url, xclass, jtag = item
+            res = xclass(self, name, url, jtag)
             self.classes.append(res)
 
             # Ugly, but can's see how else to do it
@@ -192,15 +199,15 @@ class API:
             self.class_byname[name] = res
 
         for xclass in BACKUP_URLS:
-            name, url = xclass
-            entity = Entities(self, name, url, None)  # TODO add j_head here
+            name, url, jtag = xclass
+            entity = Entities(self, name, url, jtag) 
             self.backup_classes.append(entity)
             name = name.rstrip("s")  # remove any plural!
             name = name.lower()
             self.class_byname[name] = entity
 
         # Finally who's who
-        entity = Who(self, WHO, URL_WHO, None)  # TODO add j_head here
+        entity = Who(self, WHO, URL_WHO, JTAG_WHO)  
         self.backup_classes.append(entity)
         name = WHO.lower()
         self.class_byname[name] = entity
@@ -414,7 +421,6 @@ class API:
         debug(f"Headers:\n{headers}", 8)
 
         response = requests.get(purl, headers=headers, timeout=30)
-
         debug(f"Get response {response}, {response.status_code}", 6)
 
         if response.status_code == 404:  # Worked, but not found - old API
@@ -445,7 +451,7 @@ class API:
             notify("Update prohibited by config.\n")
             return None
 
-        debug(f"URL:\n{entity.url}", 1)
+        debug(f"URL:\n{entity.url}", 5)
         debug(f"Headers:\n{headers}", 8)
 
         data = entity.newdata
@@ -456,7 +462,7 @@ class API:
             debug(f"Put request:\n{data}", 7)
             response = requests.put(entity.url, json=data, headers=headers, timeout=30)
 
-        debug(f"Write response {response}, {response.status_code}", 1)
+        debug(f"Write response {response}, {response.status_code}", 6)
 
         if response.status_code == 404:  # Worked, but not found
             return None

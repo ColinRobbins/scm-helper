@@ -20,8 +20,8 @@ URL_NOTICE = f"{NEW_BASE}/NoticeBoard"
 URL_ROLES = f"{NEW_BASE}/ClubRoles"
 URL_SESSIONS = f"{NEW_BASE}/ClubSessions"
 URL_TRIALS = f"{NEW_BASE}/TrialRequests"
-URL_WAITINGLIST = f"{NEW_BASE}/WaitingList"
-URL_WHO = f"{NEW_BASE}/WhosWho"
+URL_WAITINGLIST = f"{URL_BASE}/WaitingList"
+URL_WHO = f"{URL_BASE}/WhosWho"
 
 HELPURL = "https://github.com/ColinRobbins/scm-helper/wiki"
 
@@ -49,15 +49,22 @@ TRIALS = "Trial Requests"
 WAITINGLIST = "Waiting List"
 WHO = "Whos Who"
 
-BACKUP_URLS = [
-    [INCIDENTBOOK, URL_INCIDENTBOOK],
-    [EVENTS, URL_EVENTS],
-    [MEETS, URL_MEETS],
-    [TRIALS, URL_TRIALS],
-    [WAITINGLIST, URL_WAITINGLIST],
-    [NOTICE, URL_NOTICE],
-]
+JTAG_SESSIONS = "Sessions"
+JTAG_GROUPS = "Groups"
+JTAG_LISTS = "EmailLists"
+JTAG_ROLES = "Roles"
+JTAG_CODES_OF_CONDUCT = "CodeOfConduct"
+JTAG_MEMBERS = "Members"
+JTAG_WHO = "Who"
 
+BACKUP_URLS = [
+    [INCIDENTBOOK, URL_INCIDENTBOOK, "IncidentBooks"],
+    [EVENTS, URL_EVENTS, "ClubEvents"],
+    [MEETS, URL_MEETS, "Meets"],
+    [TRIALS, URL_TRIALS, "TrialRequests"],
+    [WAITINGLIST, URL_WAITINGLIST, "WaitingLists"],
+    [NOTICE, URL_NOTICE, None],
+]
 
 FILE_READ = "r"
 FILE_WRITE = "w"
