@@ -6,22 +6,7 @@ from scm_helper.notify import notify
 from scm_helper.version import VERSION
 
 # SCM access URLs etc
-NEW_BASE = "https://api2.swimclubmanager.co.uk/api"
-URL_BASE = "https://api.swimclubmanager.co.uk"
-
-URL_CONDUCT = f"{NEW_BASE}/CodeOfConduct"
-URL_EVENTS = f"{NEW_BASE}/ClubEvents"
-URL_GROUPS = f"{NEW_BASE}/ClubGroups"
-URL_INCIDENTBOOK = f"{NEW_BASE}/IncidentBook"
-URL_LISTS = f"{NEW_BASE}/EmailLists"
-URL_MEETS = f"{NEW_BASE}/Meets"
-URL_MEMBERS = f"{URL_BASE}/Members"
-URL_NOTICE = f"{NEW_BASE}/NoticeBoard"
-URL_ROLES = f"{NEW_BASE}/ClubRoles"
-URL_SESSIONS = f"{NEW_BASE}/ClubSessions"
-URL_TRIALS = f"{NEW_BASE}/TrialRequests"
-URL_WAITINGLIST = f"{URL_BASE}/WaitingList"
-URL_WHO = f"{URL_BASE}/WhosWho"
+SCMAPI_URL = "https://api.swimclubmanager.co.uk"
 
 HELPURL = "https://github.com/ColinRobbins/scm-helper/wiki"
 VERSIONURL = "https://github.com/ColinRobbins/scm-helper/raw/main/scm_helper/version.py"
@@ -29,6 +14,34 @@ VERSIONURL = "https://github.com/ColinRobbins/scm-helper/raw/main/scm_helper/ver
 USER_AGENT = f"SCM-Helper-v{VERSION} ###CLUB_NAME###"
 
 # Do not change below here...
+
+ENDPOINT_CONDUCT = "CodeOfConduct"
+ENDPOINT_EVENTS = "ClubEvents"
+ENDPOINT_GROUPS = "ClubGroups"
+ENDPOINT_INCIDENTBOOK = "IncidentBook"
+ENDPOINT_LISTS = "EmailLists"
+ENDPOINT_MEETS = "Meets"
+ENDPOINT_MEMBERS = "Members"
+ENDPOINT_NOTICE = "NoticeBoard"
+ENDPOINT_ROLES = "ClubRoles"
+ENDPOINT_SESSIONS = "ClubSessions"
+ENDPOINT_TRIALS = "TrialRequests"
+ENDPOINT_WAITINGLIST = "WaitingList"
+ENDPOINT_WHO = "WhosWho"
+
+JTAG_SESSIONS = "Sessions"
+JTAG_GROUPS = "Groups"
+JTAG_LISTS = "EmailLists"
+JTAG_ROLES = "Roles"
+JTAG_CODES_OF_CONDUCT = "CodeOfConduct"
+JTAG_MEMBERS = "Members"
+JTAG_WHO = "Who"
+JTAG_INCIDENTBOOK = "IncidentBooks"
+JTAG_EVENTS = "ClubEvents"
+JTAG_MEETS = "Meets"
+JTAG_TRIALS = "TrialRequests"
+JTAG_WAITINGLIST = "WaitingLists"
+JTAG_NOTICE = "Notice"
 
 BACKUP_DIR = "backups"
 CONFIG_DIR = "scm-helper"
@@ -49,23 +62,6 @@ SESSIONS = "Sessions"
 TRIALS = "Trial Requests"
 WAITINGLIST = "Waiting List"
 WHO = "Whos Who"
-
-JTAG_SESSIONS = "Sessions"
-JTAG_GROUPS = "Groups"
-JTAG_LISTS = "EmailLists"
-JTAG_ROLES = "Roles"
-JTAG_CODES_OF_CONDUCT = "CodeOfConduct"
-JTAG_MEMBERS = "Members"
-JTAG_WHO = "Who"
-
-BACKUP_URLS = [
-    [INCIDENTBOOK, URL_INCIDENTBOOK, "IncidentBooks"],
-    [EVENTS, URL_EVENTS, "ClubEvents"],
-    [MEETS, URL_MEETS, "Meets"],
-    [TRIALS, URL_TRIALS, "TrialRequests"],
-    [WAITINGLIST, URL_WAITINGLIST, "WaitingLists"],
-    [NOTICE, URL_NOTICE, None],
-]
 
 FILE_READ = "r"
 FILE_WRITE = "w"
@@ -206,6 +202,7 @@ C_REGISTER = "register"
 C_RELAY = "relay"
 C_ROLE = "role"
 C_ROLES = "roles"
+C_SCM_URL = "scm_url"
 C_SE_ONLY = "se_only"
 C_SELENIUM = "selenium"
 C_SEND_TO = "send_to"
@@ -310,6 +307,7 @@ def member_type(data):
 SCHEMA = Schema(
     {
         C_CLUB: str,
+        Optional(C_SCM_URL): str,
         C_ALLOW_UPDATE: bool,
         Optional(C_DEBUG_LEVEL): int,
         Optional(C_EMAIL): {

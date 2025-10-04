@@ -13,38 +13,57 @@ import yaml
 from scm_helper.conduct import CodesOfConduct
 from scm_helper.config import (
     BACKUP_DIR,
-    BACKUP_URLS,
     C_ALLOW_UPDATE,
     C_CLUB,
     C_DEBUG_LEVEL,
+    C_SCM_URL,
     CODES_OF_CONDUCT,
     CONFIG_DIR,
     CONFIG_FILE,
+    ENDPOINT_CONDUCT,
+    ENDPOINT_EVENTS,
+    ENDPOINT_GROUPS,
+    ENDPOINT_INCIDENTBOOK,
+    ENDPOINT_LISTS,
+    ENDPOINT_MEETS,
+    ENDPOINT_MEMBERS,
+    ENDPOINT_NOTICE,
+    ENDPOINT_ROLES,
+    ENDPOINT_SESSIONS,
+    ENDPOINT_TRIALS,
+    ENDPOINT_WAITINGLIST,
+    ENDPOINT_WHO,
+    EVENTS,
     GROUPS,
+    INCIDENTBOOK,
     JTAG_CODES_OF_CONDUCT,
+    JTAG_EVENTS,
     JTAG_GROUPS,
+    JTAG_INCIDENTBOOK,
     JTAG_LISTS,
+    JTAG_MEETS,
     JTAG_MEMBERS,
+    JTAG_NOTICE,
     JTAG_ROLES,
     JTAG_SESSIONS,
+    JTAG_TRIALS,
+    JTAG_WAITINGLIST,
     JTAG_WHO,
     KEYFILE,
     LISTS,
+    MEETS,
     MEMBERS,
+    NOTICE,
     O_FIX,
     O_FORMAT,
     O_VERIFY,
     ROLES,
+    SCMAPI_URL,
     SESSIONS,
-    URL_CONDUCT,
-    URL_GROUPS,
-    URL_LISTS,
-    URL_MEMBERS,
-    URL_ROLES,
-    URL_SESSIONS,
-    URL_WHO,
+    TRIALS,
     USER_AGENT,
     VERSIONURL,
+    WAITINGLIST,
     WHO,
     delete_schema,
     get_config,
@@ -162,19 +181,31 @@ class API:
 
     def initialise(self, password):
         """Initialise."""
+        # pylint: disable=too-many-locals
         if self.ipad:
             password = "dummy"  # Can't to crypto on iPad
 
         if self.get_config(password) is False:
             return False
 
+        scm_url = SCMAPI_URL
+        if C_SCM_URL in self._config:
+            scm_url = self._config[C_SCM_URL]
+
+        url_sessions = f"{scm_url}/{ENDPOINT_SESSIONS}"
+        url_groups = f"{scm_url}/{ENDPOINT_GROUPS}"
+        url_lists = f"{scm_url}/{ENDPOINT_LISTS}"
+        url_roles = f"{scm_url}/{ENDPOINT_ROLES}"
+        url_conduct = f"{scm_url}/{ENDPOINT_CONDUCT}"
+        url_members = f"{SCMAPI_URL}/{ENDPOINT_MEMBERS}"  # TODO - update
+
         mapping = [
-            [SESSIONS, URL_SESSIONS, Sessions, JTAG_SESSIONS],
-            [GROUPS, URL_GROUPS, Groups, JTAG_GROUPS],
-            [LISTS, URL_LISTS, Lists, JTAG_LISTS],
-            [ROLES, URL_ROLES, Roles, JTAG_ROLES],
-            [CODES_OF_CONDUCT, URL_CONDUCT, CodesOfConduct, JTAG_CODES_OF_CONDUCT],
-            [MEMBERS, URL_MEMBERS, Members, JTAG_MEMBERS],
+            [SESSIONS, url_sessions, Sessions, JTAG_SESSIONS],
+            [GROUPS, url_groups, Groups, JTAG_GROUPS],
+            [LISTS, url_lists, Lists, JTAG_LISTS],
+            [ROLES, url_roles, Roles, JTAG_ROLES],
+            [CODES_OF_CONDUCT, url_conduct, CodesOfConduct, JTAG_CODES_OF_CONDUCT],
+            [MEMBERS, url_members, Members, JTAG_MEMBERS],
         ]
 
         for item in mapping:
@@ -200,7 +231,23 @@ class API:
             name = name.lower()
             self.class_byname[name] = res
 
-        for xclass in BACKUP_URLS:
+        url_incident = f"{scm_url}/{ENDPOINT_INCIDENTBOOK}"
+        url_events = f"{scm_url}/{ENDPOINT_EVENTS}"
+        url_meets = f"{scm_url}/{ENDPOINT_MEETS}"
+        url_trials = f"{scm_url}/{ENDPOINT_TRIALS}"
+        url_wait = f"{SCMAPI_URL}/{ENDPOINT_WAITINGLIST}"
+        url_notice = f"{SCMAPI_URL}/{ENDPOINT_NOTICE}"  # TODO - update
+
+        mapping = [
+            [INCIDENTBOOK, url_incident, JTAG_INCIDENTBOOK],
+            [EVENTS, url_events, JTAG_EVENTS],
+            [MEETS, url_meets, JTAG_MEETS],
+            [TRIALS, url_trials, JTAG_TRIALS],
+            [WAITINGLIST, url_wait, JTAG_WAITINGLIST],
+            [NOTICE, url_notice, JTAG_NOTICE],
+        ]
+
+        for xclass in mapping:
             name, url, jtag = xclass
             entity = Entities(self, name, url, jtag)
             self.backup_classes.append(entity)
@@ -209,7 +256,9 @@ class API:
             self.class_byname[name] = entity
 
         # Finally who's who
-        entity = Who(self, WHO, URL_WHO, JTAG_WHO)
+        url_who = f"{SCMAPI_URL}/{ENDPOINT_WHO}"  # TODO - update
+
+        entity = Who(self, WHO, url_who, JTAG_WHO)
         self.backup_classes.append(entity)
         name = WHO.lower()
         self.class_byname[name] = entity
@@ -239,7 +288,9 @@ class API:
         if latest == VERSION:
             debug(f"(version: {VERSION})", 1)
         else:
-            notify(f"*** Running {VERSION} whereas {latest} is latest release. ***\n")
+            notify(
+                f"*** Running {VERSION} whereas {latest} is the latest release. ***\n"
+            )
 
     def get_data(self, backup):
         """Get data."""

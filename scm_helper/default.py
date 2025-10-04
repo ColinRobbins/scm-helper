@@ -67,6 +67,13 @@ club: "###CLUB_NAME###"
 allow_update:  False   # Set to true if this tool is allowed to edit SCM
                        # Set to false if you don't trust the software to be reliable.
 
+#############################################
+# SCM URL
+# The default is the old URL. 
+# You will need to add this for the new URL from sometime in 2025.
+#############################################
+
+scm_url: "https://api.swimclubmanager.co.uk/api"
 
 ################################################################
 # Email config.
