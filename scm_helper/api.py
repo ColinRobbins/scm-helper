@@ -303,10 +303,11 @@ class API:
         try:
             response = requests.get(SCMAPI_URL, timeout=30)
 
-            if response.status_code == 404:  # Worked, but not found - old API
+            if response.status_code == 404:  # Must be the new API?
                 debug(f"Cannot access {SCMAPI_URL}", 1)
-                return 0
+                return 2
 
+            # HACK.   New API gives XML, old API this text.
             msg = "You do not have permission to view this directory or page."
             if response.text == msg:
                 return 1
