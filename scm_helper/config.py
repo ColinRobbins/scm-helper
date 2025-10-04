@@ -15,6 +15,8 @@ USER_AGENT = f"SCM-Helper-v{VERSION} ###CLUB_NAME###"
 
 # Do not change below here...
 
+API_SUFFIX = "api"
+
 ENDPOINT_CONDUCT = "CodeOfConduct"
 ENDPOINT_EVENTS = "ClubEvents"
 ENDPOINT_GROUPS = "ClubGroups"

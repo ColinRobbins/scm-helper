@@ -12,6 +12,7 @@ import yaml
 
 from scm_helper.conduct import CodesOfConduct
 from scm_helper.config import (
+    API_SUFFIX,
     BACKUP_DIR,
     C_ALLOW_UPDATE,
     C_CLUB,
@@ -182,6 +183,7 @@ class API:
     def initialise(self, password):
         """Initialise."""
         # pylint: disable=too-many-locals
+        # pylint: disable=too-many-statements
         if self.ipad:
             password = "dummy"  # Can't to crypto on iPad
 
@@ -189,6 +191,10 @@ class API:
             return False
 
         scm_url = SCMAPI_URL
+
+        if self.api_version() == 2:
+            scm_url = f"{SCMAPI_URL}/{API_SUFFIX}"
+
         if C_SCM_URL in self._config:
             scm_url = self._config[C_SCM_URL]
 
@@ -291,6 +297,25 @@ class API:
             notify(
                 f"*** Running {VERSION} whereas {latest} is the latest release. ***\n"
             )
+
+    def api_version(self):
+        """Check if using the old or new API"""
+        try:
+            response = requests.get(SCMAPI_URL, timeout=30)
+
+            if response.status_code == 404:  # Worked, but not found - old API
+                debug(f"Cannot access {SCMAPI_URL}", 1)
+                return 0
+
+            msg = "You do not have permission to view this directory or page."
+            if response.text == msg:
+                return 1
+            return 2
+
+        # pylint: disable=bare-except
+        except:
+            debug("Cannot detect API version, assuming new API", 1)
+            return 2
 
     def get_data(self, backup):
         """Get data."""
