@@ -1,15 +1,15 @@
 """Coach routines."""
 
 from scm_helper.config import (
-    A_ISCOACH,
     A_GUID,
+    A_ISCOACH,
     C_COACHES,
     C_MANDATORY,
     C_ROLE,
     EXCEPTION_NOSESSIONS,
     EXCEPTION_PERMISSIONS,
-    get_config,
     SCM_TRUE,
+    get_config,
 )
 from scm_helper.issue import (
     E_COACH_WITH_SESSIONS,

@@ -6,6 +6,7 @@ from datetime import date, datetime
 from pathlib import Path
 from shutil import copyfile
 
+import parse
 import requests
 import yaml
 
@@ -20,12 +21,12 @@ from scm_helper.config import (
     CONFIG_DIR,
     CONFIG_FILE,
     GROUPS,
-    JTAG_SESSIONS,
+    JTAG_CODES_OF_CONDUCT,
     JTAG_GROUPS,
     JTAG_LISTS,
-    JTAG_ROLES,
-    JTAG_CODES_OF_CONDUCT,
     JTAG_MEMBERS,
+    JTAG_ROLES,
+    JTAG_SESSIONS,
     JTAG_WHO,
     KEYFILE,
     LISTS,
@@ -43,6 +44,7 @@ from scm_helper.config import (
     URL_SESSIONS,
     URL_WHO,
     USER_AGENT,
+    VERSIONURL,
     WHO,
     delete_schema,
     get_config,
@@ -214,9 +216,35 @@ class API:
 
         return True
 
+    def version_check(self):
+        """Check we are the latest version by fetching version from GitHub repo"""
+        latest = None
+        try:
+            response = requests.get(VERSIONURL, timeout=30)
+
+            if response.status_code == 404:  # Worked, but not found - old API
+                debug(f"Cannot access {VERSIONURL}", 1)
+                return
+
+            lines = response.text.splitlines()
+            latest = parse.parse('VERSION = "{}"', lines[2])
+            latest = latest[0]
+
+        # pylint: disable=bare-except
+        except:
+            debug(f"Running version: {VERSION}", 1)
+            debug("Error geting latest available version", 1)
+            return
+
+        if latest == VERSION:
+            debug(f"(version: {VERSION})", 1)
+        else:
+            notify(f"*** Running {VERSION} whereas {latest} is latest release. ***\n")
+
     def get_data(self, backup):
         """Get data."""
-        debug(f"(version: {VERSION})", 1)
+        self.version_check()
+
         notify("Reading Data...\n")
 
         loop = self.classes
@@ -456,10 +484,10 @@ class API:
 
         data = entity.newdata
         if create:
-            debug(f"Post request:\n{data}", 7)
+            debug(f"Post request:\n{data}", 5)
             response = requests.post(entity.url, json=data, headers=headers, timeout=30)
         else:
-            debug(f"Put request:\n{data}", 7)
+            debug(f"Put request:\n{data}", 5)
             response = requests.put(entity.url, json=data, headers=headers, timeout=30)
 
         debug(f"Write response {response}, {response.status_code}", 6)

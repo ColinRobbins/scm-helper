@@ -24,7 +24,14 @@ from scm_helper.config import (
     get_config,
 )
 from scm_helper.entity import Entities, Entity, check_type
-from scm_helper.issue import E_LIST_ERROR, E_NO_SWIMMERS, debug_trace, issue
+from scm_helper.issue import (
+    E_INACTIVE,
+    E_LIST_ERROR,
+    E_NO_SWIMMERS,
+    debug,
+    debug_trace,
+    issue,
+)
 from scm_helper.notify import notify
 
 A_LISTNAME = "ListName"
@@ -97,6 +104,49 @@ class Lists(Entities):
 
 class List(Entity):
     """An existing list."""
+
+    @debug_trace(6)
+    def linkage(self, members):
+        """Link members."""
+        if (
+            (A_MEMBERS in self.data)
+            and (self.data[A_MEMBERS] is not None)
+            and (len(self.data[A_MEMBERS]) > 0)
+        ):
+
+            for swimmer in self.data[A_MEMBERS]:
+                if swimmer[A_GUID] not in members.by_guid:
+                    msg = (
+                        f"GUID {swimmer[A_GUID]} missing in list - email address only?"
+                    )
+                    debug(msg, 7)
+                    continue
+                guid = members.by_guid[swimmer[A_GUID]]
+
+                if guid.is_archived:
+                    continue  # Should net see archived entries, but double check.
+
+                if guid.is_active:
+                    self.members.append(guid)
+                else:
+                    name = guid.name
+                    issue(self, E_INACTIVE, f"member {name}", 0, "Fixable")
+
+                    loop = self.data
+                    if self.newdata:
+                        loop = self.newdata
+
+                    # Challege - how do you delele a member
+                    # .remove() won't work unless all attributes rebuilt
+                    # Solution - iterate are rebuild list.
+                    fix = loop.copy()  # copy all other parameters
+                    fix[A_MEMBERS] = []
+                    for item in loop[A_MEMBERS]:
+                        if guid.guid == item[A_GUID]:
+                            continue
+                        rebuild = {A_GUID: item[A_GUID]}
+                        fix[A_MEMBERS].append(rebuild)
+                    self.fixit(fix, f"Delete {guid.name} (inactive)")
 
     @debug_trace(5)
     def analyse(self):

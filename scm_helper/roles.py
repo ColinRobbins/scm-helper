@@ -14,8 +14,8 @@ from scm_helper.config import (
     C_ROLES,
     C_UNUSED,
     C_VOLUNTEER,
-    get_config,
     SCM_TRUE,
+    get_config,
 )
 from scm_helper.entity import Entities, Entity
 from scm_helper.issue import (

@@ -3,6 +3,7 @@
 ## 1.11
 02/10/2025
 * Alignment to new SCM API.
+* Added check for latest version
 
 ## 1.10.3
 15/8/2025

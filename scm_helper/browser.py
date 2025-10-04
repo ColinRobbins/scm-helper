@@ -12,7 +12,6 @@ import selenium
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 
-
 from scm_helper.config import (
     C_BASE_URL,
     C_CHECK_URL,

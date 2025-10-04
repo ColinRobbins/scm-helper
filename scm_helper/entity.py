@@ -24,7 +24,7 @@ from scm_helper.config import (
     CTYPE_VOLUNTEER,
     SCM_DATE_FORMAT,
 )
-from scm_helper.issue import E_INACTIVE, debug, debug_trace, issue
+from scm_helper.issue import debug, debug_trace
 from scm_helper.notify import interact, interact_yesno, notify
 
 
@@ -188,6 +188,7 @@ class Entity:
             and (self.data[A_MEMBERS] is not None)
             and (len(self.data[A_MEMBERS]) > 0)
         ):
+
             for swimmer in self.data[A_MEMBERS]:
                 if swimmer[A_GUID] not in members.by_guid:
                     msg = (
@@ -196,30 +197,18 @@ class Entity:
                     debug(msg, 7)
                     continue
                 guid = members.by_guid[swimmer[A_GUID]]
+
+                if guid.is_archived:
+                    continue  # Should net see archived entries, but double check.
+
                 if guid.is_active:
                     self.members.append(guid)
                 else:
-                    if self.newdata and (A_MEMBERS in self.newdata):
-                        fix = self.newdata
-                    else:
-                        fix = {}
-                        fix[A_MEMBERS] = self.data[A_MEMBERS].copy()
-
-                    remove = {A_GUID: guid.guid}
-                    name = guid.name
-
-                    if remove in fix[A_MEMBERS]:
-                        issue(self, E_INACTIVE, f"member {name}", 0, "Fixable")
-                        fix[A_MEMBERS].remove(remove)
-                        self.fixit(fix, f"Delete {guid.name} (inactive)")
-                    else:
-                        if guid.is_archived:
-                            debug(f"{name} not in {self.name} - archived", 6)
-                        else:
-                            debug(
-                                f"{name} not in {self.name} - not archived, so who are they?",
-                                6,
-                            )
+                    debug(f"Inactive member {guid.name} in {self.name}", 9)
+                    # if inactive, need to decide what to do per type,
+                    # so override method.
+                    # Ugly, as you repeat code, but not sure how else to do it.
+                    # Could use a call back?
 
     def check_attribute(self, attribute):
         """Return the value, if there is one."""

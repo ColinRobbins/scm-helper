@@ -44,7 +44,7 @@ class CodesOfConduct(Entities):
         For some reason the (old) API behaved differently,
         we need to read each one...
 
-        When the New API is the only option, this method can be deleted, 
+        When the New API is the only option, this method can be deleted,
         as the default will be fine.
         """
         self._raw_data = []

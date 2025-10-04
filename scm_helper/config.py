@@ -24,6 +24,7 @@ URL_WAITINGLIST = f"{URL_BASE}/WaitingList"
 URL_WHO = f"{URL_BASE}/WhosWho"
 
 HELPURL = "https://github.com/ColinRobbins/scm-helper/wiki"
+VERSIONURL = "https://github.com/ColinRobbins/scm-helper/raw/main/scm_helper/version.py"
 
 USER_AGENT = f"SCM-Helper-v{VERSION} ###CLUB_NAME###"
 

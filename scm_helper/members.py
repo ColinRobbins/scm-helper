@@ -109,6 +109,8 @@ class Members(Entities):
                 self.count += 1
             else:
                 self.count_inactive += 1
+                msg = f"Inactive Member: {data.name} / {data.guid} / {data.is_archived}"
+                debug(msg, 1)
             i += 1
 
         return i

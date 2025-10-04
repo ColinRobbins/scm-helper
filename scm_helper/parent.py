@@ -9,8 +9,8 @@ from scm_helper.config import (
     C_MANDATORY,
     C_MIN_AGE,
     C_PARENTS,
-    get_config,
     SCM_FALSE,
+    get_config,
 )
 from scm_helper.issue import (
     E_INACTIVE,
