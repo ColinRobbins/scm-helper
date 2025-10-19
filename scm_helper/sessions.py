@@ -4,11 +4,13 @@ import datetime
 
 from scm_helper.config import (
     A_ARCHIVED,
+    A_COACHES,
     A_DATEAGREED,
     A_GUID,
     A_LAST_ATTENDED,
     A_MAX_MEMBERS,
     A_MEMBERS,
+    A_SESSION_NAME,
     C_ABSENCE,
     C_CONDUCT,
     C_COVID,
@@ -37,9 +39,6 @@ from scm_helper.issue import (
     issue,
 )
 from scm_helper.notify import notify
-
-A_SESSION_NAME = "SessionName"
-A_COACHES = "Coaches"
 
 
 class Sessions(Entities):

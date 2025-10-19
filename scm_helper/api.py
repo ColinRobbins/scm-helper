@@ -192,11 +192,10 @@ class API:
 
         scm_url = SCMAPI_URL
 
-        if self.api_version() == 2:
-            scm_url = f"{SCMAPI_URL}/{API_SUFFIX}"
-
         if C_SCM_URL in self._config:
             scm_url = self._config[C_SCM_URL]
+        elif self.api_version() == 2:
+            scm_url = f"{SCMAPI_URL}/{API_SUFFIX}"
 
         url_sessions = f"{scm_url}/{ENDPOINT_SESSIONS}"
         url_groups = f"{scm_url}/{ENDPOINT_GROUPS}"
@@ -241,8 +240,8 @@ class API:
         url_events = f"{scm_url}/{ENDPOINT_EVENTS}"
         url_meets = f"{scm_url}/{ENDPOINT_MEETS}"
         url_trials = f"{scm_url}/{ENDPOINT_TRIALS}"
-        url_wait = f"{SCMAPI_URL}/{ENDPOINT_WAITINGLIST}"
-        url_notice = f"{SCMAPI_URL}/{ENDPOINT_NOTICE}"  # TODO - update
+        url_wait = f"{SCMAPI_URL}/{ENDPOINT_WAITINGLIST}"  # Todo
+        url_notice = f"{scm_url}/{ENDPOINT_NOTICE}"
 
         mapping = [
             [INCIDENTBOOK, url_incident, JTAG_INCIDENTBOOK],

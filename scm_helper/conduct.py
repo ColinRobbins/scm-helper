@@ -31,8 +31,6 @@ from scm_helper.issue import (
 )
 from scm_helper.notify import notify
 
-A_DATEAGREED = "LastAttended"  # TODO
-
 
 class CodesOfConduct(Entities):
     """Conduct."""
@@ -47,6 +45,9 @@ class CodesOfConduct(Entities):
         When the New API is the only option, this method can be deleted,
         as the default will be fine.
         """
+
+        # pylint: disable=too-many-branches
+
         self._raw_data = []
 
         notify(f"{self._name}... ")
@@ -56,16 +57,24 @@ class CodesOfConduct(Entities):
             return False
         page = 1
 
-        if self.jtag and self.jtag in entities:
-            entities = entities[self.jtag]
+        if self.jtag:
+            if self.jtag in entities:
+                entities = entities[self.jtag]
+            # Backwards compat, try with lower case 1st letter.
+            else:
+                btag = self.jtag[0].lower() + self.jtag[1:]
+                entities = entities[btag]
 
         inline = True
 
         for entity in entities:
-            guid = entity["Guid"]
 
-            if A_MEMBERS in entity:
+            mtag = A_MEMBERS
+            mtag = mtag[0].lower() + mtag[1:]
+
+            if mtag in entity:
                 # New API
+                guid = entity["guid"]
                 data = self.new_entity(entity)
                 if data:
                     self.entities.append(data)
@@ -76,6 +85,7 @@ class CodesOfConduct(Entities):
                         self.count += 1
             else:
                 # Old API
+                guid = entity["Guid"]
                 notify(f"{page} ")
                 inline = False
 

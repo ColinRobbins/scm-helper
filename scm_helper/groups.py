@@ -3,6 +3,7 @@
 import datetime
 
 from scm_helper.config import (
+    A_GROUP_NAME,
     A_USERNAME,
     C_CHECK_DBS,
     C_CONFIRMATION,
@@ -43,8 +44,6 @@ from scm_helper.issue import (
     issue,
 )
 from scm_helper.notify import notify
-
-A_GROUP_NAME = "GroupName"
 
 
 class Groups(Entities):

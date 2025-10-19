@@ -15,7 +15,7 @@ USER_AGENT = f"SCM-Helper-v{VERSION} ###CLUB_NAME###"
 
 # Do not change below here...
 
-API_SUFFIX = "api"
+API_SUFFIX = "/api"
 
 ENDPOINT_CONDUCT = "CodeOfConduct"
 ENDPOINT_EVENTS = "ClubEvents"
@@ -100,9 +100,11 @@ A_ACTIVE = "Active"
 A_ARCHIVED = "Archived"
 A_ASA_CATEGORY = "ASACategory"
 A_ASA_NUMBER = "ASANumber"
+A_COACHES = "Coaches"
 A_DATEAGREED = "DateAgreed"
 A_DOB = "DOB"
 A_FIRSTNAME = "Firstname"
+A_GROUP_NAME = "GroupName"
 A_GUID = "Guid"
 A_ISCOACH = "IsACoach"
 A_ISMASTER = "Masters"
@@ -113,6 +115,7 @@ A_LAST_ATTENDED = "LastAttended"
 A_LASTNAME = "Lastname"
 A_MAX_MEMBERS = "MaxMembers"
 A_MEMBERS = "Members"
+A_SESSION_NAME = "SessionName"
 A_PARENTS = "Parents"
 A_USERNAME = "Username"
 
