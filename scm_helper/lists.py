@@ -174,7 +174,7 @@ class List(Entity):
     @property
     def name(self):
         """Guid."""
-        return self.data["ListName"]
+        return self.data["listName"]
 
 
 class NewList(Entity):

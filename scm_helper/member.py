@@ -93,10 +93,10 @@ API_TEXT_RE = re.compile(r"API: *[a-zA-Z ]+")  # excluding date
 DATE_RE = re.compile(r"\d\d-\d\d-\d\d\d\d")  # date
 DATE2_RE = re.compile(r"\d\d/\d\d/\d\d\d\d")  # date
 
-A_DATELEFT = "DateLeft"
-A_DBS_RENEWAL_DATE = "DBSRenewalDate"
-A_SAFEGUARDING_RENEWAL_DATE = "SafeguardingRenewalDate"
-A_SWIMMERS = "Swimmers"
+A_DATELEFT = "dateLeft"
+A_DBS_RENEWAL_DATE = "dBSRenewalDate"
+A_SAFEGUARDING_RENEWAL_DATE = "safeguardingRenewalDate"
+A_SWIMMERS = "swimmers"
 
 CAT_MAPPING = {
     "1": "Club Train",

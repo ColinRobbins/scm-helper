@@ -9,7 +9,6 @@ import sys
 from scm_helper.config import (
     A_ACTIVE,
     A_ARCHIVED,
-    A_COACHES,
     A_GUID,
     A_MEMBERS,
     CTYPE_COACH,
@@ -65,10 +64,6 @@ class Entities:
             if self.jtag:
                 if self.jtag in data:
                     xdata = data[self.jtag]
-                # Backwards compat, try with lower case 1st letter.
-                btag = self.jtag[0].lower() + self.jtag[1:]
-                if btag in data:
-                    xdata = data[btag]
 
             loop = self.create_entities(xdata)
             self._raw_data += xdata
@@ -173,48 +168,12 @@ class Entity:
 
     def __init__(self, entity, scm, url):
         """Initialize."""
-        self.data = {}
+        self.data = entity
         self.newdata = None  # used if updating
         self.fixmsg = ""
         self.url = f"{url}/{self.guid}"
         self.members = []
         self._scm = scm
-
-        # Backward Compat, convert first letters to upper.
-        for attr in entity:
-            fixed = attr[0].upper() + attr[1:]
-            self.data[fixed] = entity[attr]
-
-        if (
-            (A_MEMBERS in self.data)
-            and (self.data[A_MEMBERS] is not None)
-            and (len(self.data[A_MEMBERS]) > 0)
-        ):
-            newmbrs = []
-            for mbrs in self.data[A_MEMBERS]:
-                newattr = {}
-                for attr in mbrs:
-                    fixed = attr[0].upper() + attr[1:]
-                    newattr[fixed] = mbrs[attr]
-                newmbrs.append(newattr)
-
-            self.data[A_MEMBERS] = newmbrs
-
-        if (
-            (A_COACHES in self.data)
-            and (self.data[A_COACHES] is not None)
-            and (len(self.data[A_COACHES]) > 0)
-        ):
-            newmbrs = []
-            for mbrs in self.data[A_COACHES]:
-                newattr = {}
-                for attr in mbrs:
-                    fixed = attr[0].upper() + attr[1:]
-                    debug(f"fixing {attr} to {fixed}", 1)
-                    newattr[fixed] = mbrs[attr]
-                newmbrs.append(newattr)
-
-            self.data[A_COACHES] = newmbrs
 
     def print_exception(self, exception):
         """Is the exception allowable."""
@@ -453,27 +412,3 @@ def print_all(xlist):
         grp = "None"
 
     return grp
-
-
-class Who(Entities):
-    """Subclass for Who's who."""
-
-    # pylint: disable=too-many-instance-attributes
-    # Need them all!
-
-    def get_data(self):
-        """Get data."""
-        notify(f"{self._name}... ")
-
-        data = self.scm.api_read(self._url, 1)
-        if data is None:
-            return False
-        count = self.create_entities(data)
-        # line below is subtly different, who's who data is already a list.
-        self._raw_data = data
-
-        notify(f"{count}\n")
-        if count != 1:
-            debug("Who's who assumption failure", 0)
-
-        return True

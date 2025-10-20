@@ -55,54 +55,23 @@ class CodesOfConduct(Entities):
         entities = self.scm.api_read(self._url, 1)
         if entities is None:
             return False
-        page = 1
 
         if self.jtag:
             if self.jtag in entities:
                 entities = entities[self.jtag]
-            # Backwards compat, try with lower case 1st letter.
-            else:
-                btag = self.jtag[0].lower() + self.jtag[1:]
-                entities = entities[btag]
 
         inline = True
 
         for entity in entities:
 
-            mtag = A_MEMBERS
-            mtag = mtag[0].lower() + mtag[1:]
-
-            if mtag in entity:
-                # New API
-                guid = entity["guid"]
-                data = self.new_entity(entity)
-                if data:
-                    self.entities.append(data)
-                    if data.guid:  # Who's who does not have a GUID
-                        self.by_guid[data.guid] = data
-                    self.by_name[data.name] = data
-                    if data.is_active:
-                        self.count += 1
-            else:
-                # Old API
-                guid = entity["Guid"]
-                notify(f"{page} ")
-                inline = False
-
-                api_data = self.scm.api_read(f"{self._url}/{guid}", 1)
-                if api_data is None:
-                    return False
-
-                self._raw_data += [api_data]
-
-                data = self.new_entity(api_data)
+            data = self.new_entity(entity)
+            if data:
                 self.entities.append(data)
-                self.by_guid[data.guid] = data
+                if data.guid:  # Who's who does not have a GUID
+                    self.by_guid[data.guid] = data
                 self.by_name[data.name] = data
-
                 if data.is_active:
                     self.count += 1
-                page += 1
 
         if inline:
             notify(f"{self.count}\n")
@@ -189,7 +158,7 @@ class Conduct(Entity):
     @property
     def name(self):
         """Name."""
-        return self.data["Title"]
+        return self.data["title"]
 
 
 # Outside of class

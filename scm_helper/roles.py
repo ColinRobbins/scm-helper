@@ -109,4 +109,4 @@ class Role(Entity):
     @property
     def name(self):
         """Guid."""
-        return self.data["RoleName"]
+        return self.data["roleName"]

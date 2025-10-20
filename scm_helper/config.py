@@ -6,7 +6,7 @@ from scm_helper.notify import notify
 from scm_helper.version import VERSION
 
 # SCM access URLs etc
-SCMAPI_URL = "https://api.swimclubmanager.co.uk"
+SCMAPI_URL = "https://api2.swimclubmanager.co.uk"
 
 HELPURL = "https://github.com/ColinRobbins/scm-helper/wiki"
 VERSIONURL = "https://github.com/ColinRobbins/scm-helper/raw/main/scm_helper/version.py"
@@ -15,7 +15,7 @@ USER_AGENT = f"SCM-Helper-v{VERSION} ###CLUB_NAME###"
 
 # Do not change below here...
 
-API_SUFFIX = "/api"
+API_SUFFIX = "api"
 
 ENDPOINT_CONDUCT = "CodeOfConduct"
 ENDPOINT_EVENTS = "ClubEvents"
@@ -29,21 +29,19 @@ ENDPOINT_ROLES = "ClubRoles"
 ENDPOINT_SESSIONS = "ClubSessions"
 ENDPOINT_TRIALS = "TrialRequests"
 ENDPOINT_WAITINGLIST = "WaitingList"
-ENDPOINT_WHO = "WhosWho"
 
-JTAG_SESSIONS = "Sessions"
-JTAG_GROUPS = "Groups"
-JTAG_LISTS = "EmailLists"
-JTAG_ROLES = "Roles"
-JTAG_CODES_OF_CONDUCT = "CodeOfConduct"
-JTAG_MEMBERS = "Members"
-JTAG_WHO = "Who"
-JTAG_INCIDENTBOOK = "IncidentBooks"
-JTAG_EVENTS = "ClubEvents"
-JTAG_MEETS = "Meets"
-JTAG_TRIALS = "TrialRequests"
-JTAG_WAITINGLIST = "WaitingLists"
-JTAG_NOTICE = "Notice"
+JTAG_SESSIONS = "sessions"
+JTAG_GROUPS = "groups"
+JTAG_LISTS = "emailLists"
+JTAG_ROLES = "roles"
+JTAG_CODES_OF_CONDUCT = "codeOfConduct"
+JTAG_MEMBERS = "members"
+JTAG_INCIDENTBOOK = "incidentBooks"
+JTAG_EVENTS = "clubEvents"
+JTAG_MEETS = "meets"
+JTAG_TRIALS = "trialRequests"
+JTAG_WAITINGLIST = "waitingLists"
+JTAG_NOTICE = "notice"
 
 BACKUP_DIR = "backups"
 CONFIG_DIR = "scm-helper"
@@ -94,30 +92,37 @@ SCM_ALT_CSV_DATE_FORMAT = "%d %b %Y"
 SCM_FALSE = "0"
 SCM_TRUE = "1"
 
-
 # SCM Data Attributes
-A_ACTIVE = "Active"
-A_ARCHIVED = "Archived"
-A_ASA_CATEGORY = "ASACategory"
-A_ASA_NUMBER = "ASANumber"
-A_COACHES = "Coaches"
-A_DATEAGREED = "DateAgreed"
-A_DOB = "DOB"
-A_FIRSTNAME = "Firstname"
-A_GROUP_NAME = "GroupName"
-A_GUID = "Guid"
-A_ISCOACH = "IsACoach"
-A_ISMASTER = "Masters"
-A_ISPARENT = "IsAParent"
-A_ISVOLUNTEER = "IsAVolunteer"
-A_KNOWNAS = "KnownAs"
-A_LAST_ATTENDED = "LastAttended"
-A_LASTNAME = "Lastname"
-A_MAX_MEMBERS = "MaxMembers"
-A_MEMBERS = "Members"
-A_SESSION_NAME = "SessionName"
-A_PARENTS = "Parents"
-A_USERNAME = "Username"
+A_ACTIVE = "active"
+A_ARCHIVED = "archived"
+A_ASA_CATEGORY = "aSACategory"
+A_ASA_NUMBER = "aSANumber"
+A_COACHES = "coaches"
+A_DATEAGREED = "dateAgreed"
+A_DOB = "dOB"
+A_FIRSTNAME = "firstname"
+A_GROUP_NAME = "groupName"
+A_GUID = "guid"
+A_ISCOACH = "isACoach"
+A_ISMASTER = "masters"
+A_ISPARENT = "isAParent"
+A_ISVOLUNTEER = "isAVolunteer"
+A_KNOWNAS = "knownAs"
+A_LAST_ATTENDED = "lastAttended"
+A_LASTNAME = "lastname"
+A_MAX_MEMBERS = "maxMembers"
+A_MEMBERS = "members"
+A_SESSION_NAME = "sessionName"
+A_PARENTS = "parents"
+A_USERNAME = "username"
+
+# Config Data Attributes - backward compat hack
+AC_ASA_CATEGORY = "ASACategory"
+AC_ASA_NUMBER = "ASANumber"
+AC_DOB = "DOB"
+AC_FIRSTNAME = "Firstname"
+AC_KNOWNAS = "KnownAs"
+AC_LASTNAME = "Lastname"
 
 # Config parameters
 C_25M = "25m"
@@ -402,12 +407,12 @@ SCHEMA = Schema(
                 Optional(C_CHECK_SE_NUMBER): bool,
                 Optional(C_IGNORE_GROUP): [group],
                 C_MAPPING: {
-                    A_FIRSTNAME: str,
-                    A_LASTNAME: str,
-                    Optional(A_KNOWNAS): str,
-                    Optional(A_ASA_NUMBER): str,
-                    Optional(A_ASA_CATEGORY): str,
-                    Optional(A_DOB): str,
+                    AC_FIRSTNAME: str,
+                    AC_LASTNAME: str,
+                    Optional(AC_KNOWNAS): str,
+                    Optional(AC_ASA_NUMBER): str,
+                    Optional(AC_ASA_CATEGORY): str,
+                    Optional(AC_DOB): str,
                     Optional(C_DOB_FORMAT): str,
                 },
             }

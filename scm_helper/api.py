@@ -33,7 +33,6 @@ from scm_helper.config import (
     ENDPOINT_SESSIONS,
     ENDPOINT_TRIALS,
     ENDPOINT_WAITINGLIST,
-    ENDPOINT_WHO,
     EVENTS,
     GROUPS,
     INCIDENTBOOK,
@@ -49,7 +48,6 @@ from scm_helper.config import (
     JTAG_SESSIONS,
     JTAG_TRIALS,
     JTAG_WAITINGLIST,
-    JTAG_WHO,
     KEYFILE,
     LISTS,
     MEETS,
@@ -65,14 +63,13 @@ from scm_helper.config import (
     USER_AGENT,
     VERSIONURL,
     WAITINGLIST,
-    WHO,
     delete_schema,
     get_config,
     verify_schema,
     verify_schema_data,
 )
 from scm_helper.default import create_default_config
-from scm_helper.entity import Entities, Who
+from scm_helper.entity import Entities
 from scm_helper.groups import Groups
 from scm_helper.issue import debug, set_debug_level
 from scm_helper.lists import Lists
@@ -190,19 +187,16 @@ class API:
         if self.get_config(password) is False:
             return False
 
-        scm_url = SCMAPI_URL
-
+        scm_url = f"{SCMAPI_URL}/{API_SUFFIX}"
         if C_SCM_URL in self._config:
             scm_url = self._config[C_SCM_URL]
-        elif self.api_version() == 2:
-            scm_url = f"{SCMAPI_URL}/{API_SUFFIX}"
 
         url_sessions = f"{scm_url}/{ENDPOINT_SESSIONS}"
         url_groups = f"{scm_url}/{ENDPOINT_GROUPS}"
         url_lists = f"{scm_url}/{ENDPOINT_LISTS}"
         url_roles = f"{scm_url}/{ENDPOINT_ROLES}"
         url_conduct = f"{scm_url}/{ENDPOINT_CONDUCT}"
-        url_members = f"{SCMAPI_URL}/{ENDPOINT_MEMBERS}"  # TODO - update
+        url_members = f"{scm_url}/{ENDPOINT_MEMBERS}"
 
         mapping = [
             [SESSIONS, url_sessions, Sessions, JTAG_SESSIONS],
@@ -240,7 +234,7 @@ class API:
         url_events = f"{scm_url}/{ENDPOINT_EVENTS}"
         url_meets = f"{scm_url}/{ENDPOINT_MEETS}"
         url_trials = f"{scm_url}/{ENDPOINT_TRIALS}"
-        url_wait = f"{SCMAPI_URL}/{ENDPOINT_WAITINGLIST}"  # Todo
+        url_wait = f"{scm_url}/{ENDPOINT_WAITINGLIST}"
         url_notice = f"{scm_url}/{ENDPOINT_NOTICE}"
 
         mapping = [
@@ -259,14 +253,6 @@ class API:
             name = name.rstrip("s")  # remove any plural!
             name = name.lower()
             self.class_byname[name] = entity
-
-        # Finally who's who
-        url_who = f"{SCMAPI_URL}/{ENDPOINT_WHO}"  # TODO - update
-
-        entity = Who(self, WHO, url_who, JTAG_WHO)
-        self.backup_classes.append(entity)
-        name = WHO.lower()
-        self.class_byname[name] = entity
 
         return True
 
@@ -296,26 +282,6 @@ class API:
             notify(
                 f"*** Running {VERSION} whereas {latest} is the latest release. ***\n"
             )
-
-    def api_version(self):
-        """Check if using the old or new API"""
-        try:
-            response = requests.get(SCMAPI_URL, timeout=30)
-
-            if response.status_code == 404:  # Must be the new API?
-                debug(f"Cannot access {SCMAPI_URL}", 1)
-                return 2
-
-            # HACK.   New API gives XML, old API this text.
-            msg = "You do not have permission to view this directory or page."
-            if response.text == msg:
-                return 1
-            return 2
-
-        # pylint: disable=bare-except
-        except:
-            debug("Cannot detect API version, assuming new API", 1)
-            return 2
 
     def get_data(self, backup):
         """Get data."""
