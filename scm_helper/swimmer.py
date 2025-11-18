@@ -208,7 +208,7 @@ def check_parents(swimmer):
 
     if swimmer.email:
         email = swimmer.email.split(";")
-        
+
     active_parent = False
     parent_email = None
 
@@ -216,9 +216,9 @@ def check_parents(swimmer):
         count += 1
         if parent.is_active is False:
             continue
-            
+
         active_parent = True
-            
+
         if parent.is_active is False:
             issue(parent, E_INACTIVE, f"Swimmer {swimmer.name}")
 
@@ -231,12 +231,7 @@ def check_parents(swimmer):
             confirm_error = check_confirmed_diff(swimmer, parent)
             if confirm_error:
                 issue(swimmer, E_CONFIRM_DIFF, f"Parent {parent.name}")
-    if (
-        active_parent
-        and swimmer.age
-        and (match is False)
-        and (swimmer.age <= max_age)
-    ):
+    if active_parent and swimmer.age and (match is False) and (swimmer.age <= max_age):
         if swimmer.print_exception(EXCEPTION_EMAILDIFF):
             err = f"{swimmer.email} - {parent_email}"
             issue(swimmer, E_EMAIL_MATCH, err)

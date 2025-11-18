@@ -223,8 +223,7 @@ class Entity:
         date = self.check_attribute(field)
         if date is None:
             return None
-        return datetime.datetime.strptime(date, SCM_DATE_FORMAT)      
-
+        return datetime.datetime.strptime(date, SCM_DATE_FORMAT)
 
     def delete(self):
         """Delete."""

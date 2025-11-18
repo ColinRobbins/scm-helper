@@ -581,7 +581,7 @@ class API:
             return False
 
         for fix in self.fixable:
-            fix.apply_fix() 
+            fix.apply_fix()
 
         self.fixable = []
         return True

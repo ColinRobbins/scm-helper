@@ -239,7 +239,9 @@ class Member(Entity):
     def linkage_restrictions(self):
         """Link restrictinos."""
         for session in self.session_restrictions:
-            if A_GUID in session and session[A_GUID] in self.scm.sessions.by_guid:           # if not - probably archived.
+            if (
+                A_GUID in session and session[A_GUID] in self.scm.sessions.by_guid
+            ):  # if not - probably archived.
                 guid = self.scm.sessions.by_guid[session[A_GUID]]
                 self._restricted.append(guid)
 
@@ -345,7 +347,7 @@ class Member(Entity):
         """Check an inactive member."""
         if self.is_archived:
             return
-            
+
         lastmod = self.last_modified_date
         if lastmod:
             gap = (self.scm.today - lastmod).days

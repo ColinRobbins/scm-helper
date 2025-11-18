@@ -1,14 +1,9 @@
 """SCM Members."""
 
 from scm_helper.config import (
-    A_ACTIVE,
-    A_FIRSTNAME,
-    A_LASTNAME,
     C_NAME,
     C_TYPES,
     CTYPE_SYNCHRO,
-    SCM_FALSE,
-    SCM_TRUE,
     get_config,
 )
 from scm_helper.entity import Entities
@@ -77,25 +72,26 @@ class Members(Entities):
 
     def create_entities(self, entities):
         """Create a member objects."""
+        # pylint: disable=too-many-branches
         i = 0
         for member in entities:
             data = Member(member, self.scm, self._url)
-            
+
             if data.is_archived is False:
                 self.check_duplicate(data)
                 self.by_name[data.name] = data
                 self.knownas[data.knownas] = data
                 self.entities.append(data)
-                if data.asa_number :
+                if data.asa_number:
                     self.by_asa[data.asa_number] = data
 
                 if data.facebook:
                     for face in data.facebook:
-                        self.facebook[face] = data    
-                        
+                        self.facebook[face] = data
+
             self.by_guid[data.guid] = data
 
-            if data.is_active :
+            if data.is_active:
                 if data.is_coach:
                     self.count_coaches += 1
                 if data.is_parent:

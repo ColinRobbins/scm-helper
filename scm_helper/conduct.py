@@ -137,10 +137,10 @@ class Conduct(Entity):
                     continue
 
             person = self.scm.members.by_guid[member[A_GUID]]
-            
+
             if person.is_active is False:
                 continue
-                
+
             if person.confirmed_date:  # Will get a not confirmed error later in not set
 
                 found_ignore = False
