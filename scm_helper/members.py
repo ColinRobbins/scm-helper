@@ -54,46 +54,48 @@ class Members(Entities):
 
     def check_duplicate(self, member):
         """See if member already exists before adding."""
-        firtname = member[A_FIRSTNAME]
-        lastname = member[A_LASTNAME]
-        name = f"{firtname} {lastname}"
+        name = member.name
         if name in self.by_name:
-            if member[A_ACTIVE] == SCM_TRUE and self.by_name[name].is_active:
-                act1 = member[A_ACTIVE]
-                act2 = self.by_name[name].is_active
-                debug(f"{name}: {act1}-{act2}", 6)
+            if member.is_active and self.by_name[name].is_active:
                 issue(self.by_name[name], E_DUPLICATE, name)
             else:
+                if member.is_archived:
+                    return
                 active = self.by_name[name].is_active
-                if member[A_ACTIVE] == SCM_FALSE and active is False:
+                if member.is_active is False and active is False:
                     issue(self.by_name[name], E_DUPLICATE, "BOTH inactive", 9)
                 else:
                     issue(self.by_name[name], E_DUPLICATE, "One is inactive", -1)
             return
         if name in self.knownas:
-            if member[A_ACTIVE] == SCM_TRUE and self.knownas[name].is_active:
+            if member.is_active and self.knownas[name].is_active:
                 issue(self.knownas[name], E_DUPLICATE, name, 0, "(Known as)")
             else:
+                if member.is_archived:
+                    return
                 issue(self.knownas[name], E_DUPLICATE, "One is inactive (Known as)", -1)
 
     def create_entities(self, entities):
         """Create a member objects."""
         i = 0
         for member in entities:
-            self.check_duplicate(member)
-
             data = Member(member, self.scm, self._url)
-            self.entities.append(data)
-            self.by_guid[data.guid] = data
-            self.by_name[data.name] = data
-            self.knownas[data.knownas] = data
-            if data.asa_number:
-                self.by_asa[data.asa_number] = data
+            
+            if data.is_archived is False:
+                self.check_duplicate(data)
+                self.by_name[data.name] = data
+                self.knownas[data.knownas] = data
+                self.entities.append(data)
+                if data.asa_number :
+                    self.by_asa[data.asa_number] = data
 
-            if data.facebook:
-                for face in data.facebook:
-                    self.facebook[face] = data
-            if data.is_active:
+                if data.facebook:
+                    for face in data.facebook:
+                        self.facebook[face] = data    
+                        
+            self.by_guid[data.guid] = data
+
+            if data.is_active :
                 if data.is_coach:
                     self.count_coaches += 1
                 if data.is_parent:
@@ -108,7 +110,8 @@ class Members(Entities):
                     self.count_volunteer += 1
                 self.count += 1
             else:
-                self.count_inactive += 1
+                if data.is_archived is False:
+                    self.count_inactive += 1
                 msg = f"Inactive Member: {data.name} / {data.guid} / {data.is_archived}"
                 debug(msg, 5)
             i += 1

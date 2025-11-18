@@ -57,7 +57,7 @@ def check_coach_permissions(coach, role):
 
     fix = {}
     fixed = False
-    data = coach.data["SessionRestrictions"]
+    data = coach.data["sessionRestrictions"]
     if data:
         fix["SessionRestrictions"] = data.copy()
     else:

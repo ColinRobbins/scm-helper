@@ -317,9 +317,9 @@ class Session(Entity):
     def full_name(self):
         """Full session name."""
         name = self.data[A_SESSION_NAME]
-        weekday = self.data["WeekDay"]
-        location = self.data["SessionLocation"]
-        time = self.data["StartTime"]
+        weekday = self.data["weekDay"]
+        location = self.data["sessionLocation"]
+        time = self.data["startTime"]
         return f"{name}, {weekday}, {location}, {time}"
 
     @property

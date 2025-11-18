@@ -479,8 +479,6 @@ class API:
         headers = {
             "User-Agent": user_agent,
             "Authorization": self._key,
-            "Authorization-token": self._key,
-            "Page": str(page),
         }
 
         purl = url
@@ -514,15 +512,15 @@ class API:
             "content-type": "application/json",
             "User-Agent": user_agent,
             "Authorization": self._key,
-            "Authorization-Token": self._key,
         }
 
         if get_config(entity.scm, C_ALLOW_UPDATE) is False:
             notify("Update prohibited by config.\n")
             return None
 
-        debug(f"URL:\n{entity.url}", 5)
-        debug(f"Headers:\n{headers}", 8)
+        debug(f"URL:\n{entity.url}", 6)
+        debug(f"Headers:\n{headers}", 7)
+        debug(f"Data:\n{entity.newdata}", 8)
 
         data = entity.newdata
         if create:
@@ -583,9 +581,7 @@ class API:
             return False
 
         for fix in self.fixable:
-            if fix.apply_fix() is None:
-                self.fixable = []
-                return False
+            fix.apply_fix() 
 
         self.fixable = []
         return True

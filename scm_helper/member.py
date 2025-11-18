@@ -94,7 +94,7 @@ DATE_RE = re.compile(r"\d\d-\d\d-\d\d\d\d")  # date
 DATE2_RE = re.compile(r"\d\d/\d\d/\d\d\d\d")  # date
 
 A_DATELEFT = "dateLeft"
-A_DBS_RENEWAL_DATE = "dBSRenewalDate"
+A_DBS_RENEWAL_DATE = "dbsRenewalDate"
 A_SAFEGUARDING_RENEWAL_DATE = "safeguardingRenewalDate"
 A_SWIMMERS = "swimmers"
 
@@ -222,12 +222,13 @@ class Member(Entity):
     def linkage_parent(self, members):
         """Link parents."""
         for parent in self.data[A_PARENTS]:
-            guid = members.by_guid[parent[A_GUID]]
+            if A_GUID in parent and parent[A_GUID] in members.by_guid:
+                guid = members.by_guid[parent[A_GUID]]
 
-            if guid == self.guid:
-                issue(self, E_OWNPARENT)
+                if guid == self.guid:
+                    issue(self, E_OWNPARENT)
 
-            self._parents.append(guid)
+                self._parents.append(guid)
 
     def linkage_swimmer(self, members):
         """Link swimmers."""
@@ -238,8 +239,9 @@ class Member(Entity):
     def linkage_restrictions(self):
         """Link restrictinos."""
         for session in self.session_restrictions:
-            guid = self.scm.sessions.by_guid[session[A_GUID]]
-            self._restricted.append(guid)
+            if A_GUID in session and session[A_GUID] in self.scm.sessions.by_guid:           # if not - probably archived.
+                guid = self.scm.sessions.by_guid[session[A_GUID]]
+                self._restricted.append(guid)
 
     def linkage2(self):
         """Link parents to swimmers."""
@@ -341,6 +343,9 @@ class Member(Entity):
 
     def check_inactive(self):
         """Check an inactive member."""
+        if self.is_archived:
+            return
+            
         lastmod = self.last_modified_date
         if lastmod:
             gap = (self.scm.today - lastmod).days
@@ -490,6 +495,8 @@ class Member(Entity):
         # pylint: disable=too-many-statements
 
         if self.is_active is False:
+            if self.is_archived:
+                return
             self.check_inactive()
             return
 
@@ -820,10 +827,11 @@ class Member(Entity):
     def set_dates(self):
         """Calculate dates."""
         self._dob = self.set_date(A_DOB)
-        self._date_joined = self.set_date("DateJoinedClub")
-        self._last_modified = self.set_date("LastModifiedDate")
-        self._confirmed_date = self.set_date("DetailsConfirmedCorrect")
-        self._last_login = self.set_date("LastLoggedIn")
+
+        self._date_joined = self.set_date("dateJoinedClub")
+        self._last_modified = self.set_date("lastModifiedDate")
+        self._confirmed_date = self.set_date("detailsConfirmedCorrect")
+        self._last_login = self.set_date("lastLoggedIn")
 
     def set_joined_today(self):
         """Set joined date."""
@@ -867,7 +875,7 @@ class Member(Entity):
     @property
     def notes(self):
         """Set Notes."""
-        return self.check_attribute("Notes")
+        return self.check_attribute("notes")
 
     @property
     def username(self):
@@ -877,32 +885,33 @@ class Member(Entity):
     @property
     def homephone(self):
         """Set homephone."""
-        return self.check_attribute("HomePhone")
+        return self.check_attribute("homePhone")
 
     @property
     def mobilephone(self):
         """Set mobilephone."""
-        return self.check_attribute("MobilePhone")
+        return self.check_attribute("mobilePhone")
 
     @property
     def address(self):
         """Set address."""
-        return self.check_attribute("Address1")
+        return self.check_attribute("address1")
 
     @property
     def is_active(self):
         """Is the entry active..."""
         isa = self.check_attribute(A_ACTIVE)
         if isa == "1":
-            return True
+            return not self.is_archived
         if isa == "Yes":
-            return True
+            return not self.is_archived
         return False
 
     @property
     def is_archived(self):
         """Is the entry arcchived..."""
         isa = self.check_attribute(A_ARCHIVED)
+
         if isa == "1":
             return True
         if isa == "Yes":
@@ -912,7 +921,7 @@ class Member(Entity):
     @property
     def is_swimmer(self):
         """Is it a swimmer."""
-        isa = self.check_attribute("IsASwimmer")
+        isa = self.check_attribute("isASwimmer")
         if isa == "1":
             return True
         if isa == "Yes":
@@ -952,7 +961,7 @@ class Member(Entity):
     @property
     def is_synchro(self):
         """Is it a syncro swimmer."""
-        isa = self.check_attribute("SynchronisedSwimming")
+        isa = self.check_attribute("synchronisedSwimming")
         if isa == "1":
             return True
         if isa == "Yes":
@@ -962,7 +971,7 @@ class Member(Entity):
     @property
     def is_lts(self):
         """Is it a LTS Teacher."""
-        isa = self.check_attribute("LTSTeacher")
+        isa = self.check_attribute("lTSTeacher")
         if isa == "1":
             return True
         if isa == "Yes":
@@ -972,7 +981,7 @@ class Member(Entity):
     @property
     def is_openwater(self):
         """Is it a Open Water swimmer."""
-        isa = self.check_attribute("OpenWater")
+        isa = self.check_attribute("openWater")
         if isa == "1":
             return True
         if isa == "Yes":
@@ -982,7 +991,7 @@ class Member(Entity):
     @property
     def is_lifesaving(self):
         """Is it a Life saver."""
-        isa = self.check_attribute("LifeSaving")
+        isa = self.check_attribute("lifeSaving")
         if isa == "1":
             return True
         if isa == "Yes":
@@ -992,7 +1001,7 @@ class Member(Entity):
     @property
     def is_polo(self):
         """Is it a polo player."""
-        isa = self.check_attribute("WaterPolo")
+        isa = self.check_attribute("waterPolo")
         if isa == "1":
             return True
         if isa == "Yes":
@@ -1002,7 +1011,7 @@ class Member(Entity):
     @property
     def is_committee_member(self):
         """Is it a CommitteeMember."""
-        isa = self.check_attribute("CommitteeMember")
+        isa = self.check_attribute("committeeMember")
         if isa == "1":
             return True
         if isa == "Yes":
@@ -1022,7 +1031,7 @@ class Member(Entity):
     @property
     def email(self):
         """Set email."""
-        email = self.check_attribute("Email")
+        email = self.check_attribute("email")
         if email:
             return email.lower()
         return None
@@ -1030,17 +1039,17 @@ class Member(Entity):
     @property
     def gender(self):
         """Set Gender."""
-        return self.check_attribute("Gender")
+        return self.check_attribute("gender")
 
     @property
     def session_restrictions(self):
         """Return sessions restrictions."""
-        return self.check_attribute("SessionRestrictions")
+        return self.check_attribute("sessionRestrictions")
 
     @property
     def jobtitle(self):
         """Return job title."""
-        return self.check_attribute("JobTitle")
+        return self.check_attribute("jobTitle")
 
     @property
     def lastseen_str(self):

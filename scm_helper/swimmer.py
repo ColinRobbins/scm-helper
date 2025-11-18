@@ -208,27 +208,37 @@ def check_parents(swimmer):
 
     if swimmer.email:
         email = swimmer.email.split(";")
+        
+    active_parent = False
+    parent_email = None
 
     for parent in swimmer.parents:
         count += 1
+        if parent.is_active is False:
+            continue
+            
+        active_parent = True
+            
         if parent.is_active is False:
             issue(parent, E_INACTIVE, f"Swimmer {swimmer.name}")
 
         if match is False:
             match = check_parent_email_match(email, parent)
+            if match is False:
+                parent_email = parent.email
 
         if confirm_verify:
             confirm_error = check_confirmed_diff(swimmer, parent)
             if confirm_error:
                 issue(swimmer, E_CONFIRM_DIFF, f"Parent {parent.name}")
     if (
-        swimmer.parents
+        active_parent
         and swimmer.age
         and (match is False)
         and (swimmer.age <= max_age)
     ):
         if swimmer.print_exception(EXCEPTION_EMAILDIFF):
-            err = f"{swimmer.email} - {swimmer.parents[0].email}"
+            err = f"{swimmer.email} - {parent_email}"
             issue(swimmer, E_EMAIL_MATCH, err)
 
     if count == 0:
@@ -267,7 +277,6 @@ def check_confirmed_diff(swimmer, parent):
         child_mon = int((swimmer.confirmed_date.month - 1) / 3) * 3
     if parent.confirmed_date:
         parent_mon = int((parent.confirmed_date.month - 1) / 3) * 3
-
     if swimmer.age > get_config(swimmer.scm, C_SWIMMERS, C_PARENT, C_MAX_AGE):
         return False
 

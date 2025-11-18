@@ -1,5 +1,15 @@
 # Changelog
 
+## 2.0.1
+17/11/2025
+* Deal with archived entries
+* Fix attribte ASA and DOB attribute names
+
+## 2.0
+20/10/2025
+* BREAKING CHANGE
+* New version for new API, had hope to be backward compatible, but this was not possible - too many changes needed.
+
 ## 1.11
 02/10/2025
 * Alignment to new SCM API.
