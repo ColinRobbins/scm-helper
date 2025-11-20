@@ -521,6 +521,7 @@ class API:
         debug(f"URL:\n{entity.url}", 6)
         debug(f"Headers:\n{headers}", 7)
         debug(f"Data:\n{entity.newdata}", 8)
+        debug(f"ORIG Data:\n{entity.data}", 9)
 
         data = entity.newdata
         if create:
@@ -538,8 +539,8 @@ class API:
         if response.ok:
             return response
 
-        notify(f"\nErroring posting data {entity.name}\n")
-        notify(response.reason)
+        notify(f"\nErroring posting data {entity.name}...\n")
+        notify(f"{response.reason}:{response.content}")
         notify("\n")
         return None
 

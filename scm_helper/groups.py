@@ -185,19 +185,19 @@ class Group(Entity):
                 attr = None
 
                 if xtype == CTYPE_MASTER:
-                    attr = "Masters"
+                    attr = "masters"
 
                 if xtype == CTYPE_SWIMMER:
-                    attr = "IsASwimmer"
+                    attr = "isASwimmer"
 
                 if xtype == CTYPE_SYNCHRO:
-                    attr = "SynchronisedSwimming"
+                    attr = "synchronisedSwimming"
 
                 if xtype == CTYPE_COACH:
-                    attr = "IsACoach"
+                    attr = "isACoach"
 
                 if xtype == CTYPE_POLO:
-                    attr = "WaterPolo"
+                    attr = "waterPolo"
 
                 if attr:
                     fix[attr] = SCM_TRUE
