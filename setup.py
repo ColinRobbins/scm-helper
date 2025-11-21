@@ -33,6 +33,7 @@ setuptools.setup(
         "cryptography>=2.8",
         "func-timeout>=4.3.5",
         "selenium>=4.12.0",
+        "parse>=1.20.2",       
     ],
     classifiers=[
         "Programming Language :: Python :: 3",
