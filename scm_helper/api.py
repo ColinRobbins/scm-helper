@@ -499,7 +499,7 @@ class API:
             return response.json()
 
         notify(f"\nErroring getting data from {url}, page:{page}\n")
-        notify(response.reason)
+        notify(f"{response.reason}:{response.text)
         notify("\n")
         return None
 
@@ -540,7 +540,7 @@ class API:
             return response
 
         notify(f"\nErroring posting data {entity.name}...\n")
-        notify(f"{response.reason}:{response.content}")
+        notify(f"{response.reason}:{response.text)
         notify("\n")
         return None
 

@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.0.2
+21/11/2025
+* Improved http response error handling
+
 ## 2.0.1
 17/11/2025
 * Deal with archived entries
