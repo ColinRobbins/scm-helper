@@ -93,4 +93,3 @@ def check_coach_permissions(coach, role):
 
         debug(f"Orig  restrictions\n{data}", 8)
         debug(f"fixed restrictions\n{fix}", 8)
-
