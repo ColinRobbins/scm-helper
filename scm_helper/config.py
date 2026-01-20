@@ -6,7 +6,7 @@ from scm_helper.notify import notify
 from scm_helper.version import VERSION
 
 # SCM access URLs etc
-SCMAPI_URL = "https://api2.swimclubmanager.co.uk"
+SCMAPI_URL = "https://api.swimclubmanager.co.uk"
 
 HELPURL = "https://github.com/ColinRobbins/scm-helper/wiki"
 VERSIONURL = "https://github.com/ColinRobbins/scm-helper/raw/main/scm_helper/version.py"

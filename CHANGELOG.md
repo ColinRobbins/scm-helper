@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.0.3
+20/01/2026
+* Adjust default URL
+* Fix "Fixit" for session restrictions
+
 ## 2.0.2
 21/11/2025
 * Improved http response error handling
