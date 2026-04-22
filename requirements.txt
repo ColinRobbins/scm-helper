@@ -1,4 +1,4 @@
-schema>=0.7.2
+schema>=0.7.8
 requests>=2.22.0
 pyyaml>=5.3
 cryptography>=2.8
